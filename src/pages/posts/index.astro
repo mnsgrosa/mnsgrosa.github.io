@@ -2,9 +2,8 @@
 // src/pages/posts/index.astro
 import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('posts', ({ data }) => {
-  // Sort posts by date, newest first
-  return data.pubDate > data.pubDate;
+const allPosts = (await getCollection('posts')).sort((a, b) => {
+  return b.data.pubDate.getTime() - a.data.pubDate.getTime();
 });
 ---
 

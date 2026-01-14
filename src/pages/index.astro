@@ -1,52 +1,119 @@
 ---
+import { getCollection, getEntry } from 'astro:content';
+import MainLayout from '../layouts/MainLayout.astro';
+const homePage = await getEntry('pages', 'home');
+const { Content } = await homePage.render();
+
+const experiencePage = await getEntry('pages', 'experience');
+const { Content: ExperienceContent } = await experiencePage.render();
+
+const experiences = (await getCollection('experiences')).sort((a, b) => {
+  return b.data.startDate.getTime() - a.data.startDate.getTime();
+});
+
+const articles = (await getCollection('posts')).sort((a, b) => {
+  return b.data.pubDate.getTime() - a.data.pubDate.getTime();
+});
+
+const projects = (await getCollection('projects')).sort((a, b) => {
+  return b.data.date.getTime() - a.data.date.getTime();
+});
 ---
 
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width" />
-	<title>Home Page</title>
-	<style>
-		body {
-			font-family: sans-serif;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100vh;
-			margin: 0;
-			background-color: #f0f4f8;
-		}
-		h1 {
-			font-size: 3rem;
-			color: #1e293b;
-		}
-		nav {
-			display: flex;
-			gap: 1rem;
-			margin-top: 2rem;
-		}
-		.button {
-			display: inline-block;
-			padding: 0.8rem 1.5rem;
-			background-color: #007bff;
-			color: white;
-			text-decoration: none;
-			border-radius: 8px;
-			font-size: 1.1rem;
-			font-weight: bold;
-			transition: background-color 0.3s ease;
-		}
-		.button:hover {
-			background-color: #0056b3;
-		}
-	</style>
-</head>
-<body>
-	<h1>Welcome to My Site</h1>
-	<nav>
-		<a href="/dashboard" class="button">Dashboard</a>
-		<a href="/posts" class="button">Posts</a>
-	</nav>
-</body>
-</html>
+<MainLayout title="My Portfolio">
+    <Content />
+
+    <hr />
+
+    <section>
+        <h2>Experience</h2>
+        <div class="experiencePreview">
+            <ExperienceContent />
+        </div>
+        <p><a href="/experience/">See all experience</a></p>
+        <ul>
+            {experiences.slice(0, 3).map((exp) => (
+                <li>
+                    <strong>{exp.data.role}</strong> @ {exp.data.company}
+                </li>
+            ))}
+        </ul>
+    </section>
+
+    <section>
+        <div class="twoCol">
+            <div class="col">
+                <h2>Articles</h2>
+                <p><a href="/articles/">See all articles</a></p>
+                <ul>
+                    {articles.slice(0, 5).map((post) => (
+                        <li>
+                            <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div class="col">
+                <h2>Projects</h2>
+                <ul>
+                    {projects.slice(0, 5).map((project) => (
+                        <li>
+                            {project.data.url ? (
+                                <a href={project.data.url} target="_blank" rel="noreferrer">{project.data.title}</a>
+                            ) : project.data.repo ? (
+                                <a href={project.data.repo} target="_blank" rel="noreferrer">{project.data.title}</a>
+                            ) : (
+                                <span>{project.data.title}</span>
+                            )}
+                            <div>{project.data.description}</div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .twoCol {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .twoCol {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .col {
+            background: var(--ctp-mantle);
+            border: 1px solid var(--ctp-surface1);
+            border-radius: 16px;
+            padding: 1.25rem;
+        }
+
+        .col :global(h2) {
+            margin-top: 0;
+        }
+
+        .experiencePreview {
+            max-height: 340px;
+            overflow: hidden;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .experiencePreview::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 120px;
+            background: linear-gradient(to bottom, rgba(18, 15, 34, 0), rgba(18, 15, 34, 1));
+            pointer-events: none;
+        }
+    </style>
+</MainLayout>

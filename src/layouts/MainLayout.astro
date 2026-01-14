@@ -1,0 +1,85 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+const { title } = Astro.props;
+---
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <style>
+        :global(:root) {
+            --ctp-base: #241b3d;
+            --ctp-mantle: #1E1831;
+            --ctp-crust: #120f22;
+            --ctp-text: #cdd6f4;
+            --ctp-subtext1: #bac2de;
+            --ctp-subtext0: #a6adc8;
+            --ctp-surface0: #2f2647;
+            --ctp-surface1: #3b2f5a;
+            --ctp-surface2: #4a3a73;
+            --ctp-mauve: #cba6f7;
+            --ctp-lavender: #b4befe;
+            --ctp-pink: #f5c2e7;
+            --ctp-sapphire: #74c7ec;
+        }
+
+        body {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, sans-serif;
+            background: var(--ctp-crust);
+            color: var(--ctp-text);
+        }
+        main {
+            padding: 2rem;
+        }
+
+        a {
+            color: var(--ctp-mauve);
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid var(--ctp-surface1);
+            margin: 2rem 0;
+        }
+
+        .content {
+            max-width: 900px;
+            margin: 0;
+            text-align: left;
+        }
+
+        .content :global(p) {
+            color: var(--ctp-subtext1);
+        }
+
+        .content :global(h1),
+        .content :global(h2),
+        .content :global(h3) {
+            color: var(--ctp-text);
+        }
+
+        .content :global(ul) {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .content :global(li) {
+            margin: 0.75rem 0;
+        }
+    </style>
+</head>
+<body>
+    <Sidebar />
+    <main>
+        <div class="content">
+            <slot />
+        </div>
+    </main>
+</body>
+</html>

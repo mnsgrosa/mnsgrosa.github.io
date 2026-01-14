@@ -1,0 +1,32 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+
+const experiencePage = await getEntry('pages', 'experience');
+const { Content } = await experiencePage.render();
+
+const experiences = (await getCollection('experiences')).sort((a, b) => {
+  return b.data.startDate.getTime() - a.data.startDate.getTime();
+});
+---
+
+<MainLayout title="Experience">
+  <Content />
+  <ul>
+    {experiences.map((exp) => (
+      <li>
+        <h2>{exp.data.role} @ {exp.data.company}</h2>
+        <p>
+          <strong>{exp.data.startDate.toLocaleDateString()}</strong>
+          {exp.data.endDate ? (
+            <> - <strong>{exp.data.endDate.toLocaleDateString()}</strong></>
+          ) : (
+            <> - <strong>Present</strong></>
+          )}
+          {exp.data.location ? <> · {exp.data.location}</> : null}
+        </p>
+        {exp.data.summary ? <p>{exp.data.summary}</p> : null}
+      </li>
+    ))}
+  </ul>
+</MainLayout>

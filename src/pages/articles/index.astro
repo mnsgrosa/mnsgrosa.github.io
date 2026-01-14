@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+
+const articles = (await getCollection('posts')).sort((a, b) => {
+  return b.data.pubDate.getTime() - a.data.pubDate.getTime();
+});
+---
+
+<MainLayout title="Articles">
+  <h1>Articles</h1>
+  <ul>
+    {articles.map((post) => (
+      <li>
+        <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+        <div>{post.data.pubDate.toLocaleDateString()}</div>
+        <p>{post.data.description}</p>
+      </li>
+    ))}
+  </ul>
+</MainLayout>

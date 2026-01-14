@@ -1,6 +1,7 @@
 ---
 // src/pages/posts/[slug].astro
 import { getCollection } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
 
 // This function is required for dynamic routes in static mode.
 // It tells Astro which pages to generate at build time.
@@ -17,19 +18,7 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 ---
 
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{post.data.title}</title>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 2rem auto; }
-        .post-content { margin-top: 2rem; }
-        img { max-width: 100%; height: auto; }
-    </style>
-</head>
-<body>
-    <a href="/">&larr; Back to Home</a>
+<MainLayout title={post.data.title}>
     <h1>{post.data.title}</h1>
     <p>Published on: {post.data.pubDate.toLocaleDateString()}</p>
     <hr>
@@ -38,5 +27,4 @@ const { Content } = await post.render();
     <div class="post-content">
         <Content />
     </div>
-</body>
-</html>
+</MainLayout>

@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+const posts = await getCollection('posts');
+---
+<aside>
+    <div class="brand">
+        <a class="logo" href="/" aria-label="Go to home">
+            <img src="/assets/logo.png" alt="Site logo" width="64" height="64" loading="eager" />
+        </a>
+        <a class="pic" href="/" aria-label="Go to home">
+            <img src="/assets/pic.jpg" alt="Owner picture" width="64" height="64" loading="eager" />
+        </a>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/experience/">Experience</a></li>
+            <li><a href="/articles/">Articles</a></li>
+            <li><a href="/posts">Posts</a></li>
+        </ul>
+    </nav>
+    <h3>Blog Posts</h3>
+    <ul>
+        {posts.map(post => (
+            <li>
+                <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+            </li>
+        ))}
+    </ul>
+    <style>
+        aside {
+            background: var(--ctp-mantle);
+            padding: 2rem;
+            border-right: 1px solid var(--ctp-surface1);
+            min-height: 100vh;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            background: var(--ctp-mantle);
+            border: 1px solid rgba(186, 194, 222, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(203, 166, 247, 0.06);
+        }
+
+        .logo:hover {
+            border-color: rgba(203, 166, 247, 0.35);
+            box-shadow:
+                inset 0 0 0 1px rgba(203, 166, 247, 0.12),
+                0 0 0 4px rgba(203, 166, 247, 0.10);
+        }
+
+        .logo img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0.92;
+            filter: drop-shadow(0 6px 18px rgba(17, 17, 27, 0.55));
+        }
+
+        .pic {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            background: var(--ctp-surface0);
+            border: 1px solid var(--ctp-surface1);
+        }
+
+        .pic:hover {
+            border-color: var(--ctp-mauve);
+        }
+
+        .pic img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            margin-bottom: 1rem;
+        }
+        a {
+            color: var(--ctp-text);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: var(--ctp-mauve);
+        }
+
+        h3 {
+            color: var(--ctp-lavender);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</aside>
