@@ -1,32 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
-const posts = await getCollection('posts');
 ---
 <aside>
     <div class="brand">
-        <a class="logo" href="/" aria-label="Go to home">
-            <img src="/assets/logo.png" alt="Site logo" width="64" height="64" loading="eager" />
+        <a class="logo" href="/my-site/" aria-label="Go to home">
+            <img src="/my-site/assets/logo.png" alt="Site logo" width="64" height="64" loading="eager" />
         </a>
-        <a class="pic" href="/" aria-label="Go to home">
-            <img src="/assets/pic.jpg" alt="Owner picture" width="64" height="64" loading="eager" />
+        <a class="pic" href="/my-site/" aria-label="Go to home">
+            <img src="/my-site/assets/pic.jpg" alt="Owner picture" width="64" height="64" loading="eager" />
         </a>
     </div>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/experience/">Experience</a></li>
-            <li><a href="/articles/">Articles</a></li>
-            <li><a href="/posts">Posts</a></li>
+            <li><a href="/my-site/">Home</a></li>
+            <li><a href="/my-site/experience/">Experience</a></li>
+            <li><a href="/my-site/articles/">Articles</a></li>
+            <li><a href="/my-site/projects/">Projects</a></li>
         </ul>
     </nav>
-    <h3>Blog Posts</h3>
-    <ul>
-        {posts.map(post => (
-            <li>
-                <a href={`/posts/${post.slug}`}>{post.data.title}</a>
-            </li>
-        ))}
-    </ul>
     <style>
         aside {
             background: #201935;
@@ -105,12 +95,6 @@ const posts = await getCollection('posts');
 
         a:hover {
             color: var(--ctp-mauve);
-        }
-
-        h3 {
-            color: var(--ctp-lavender);
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
         }
     </style>
 </aside>

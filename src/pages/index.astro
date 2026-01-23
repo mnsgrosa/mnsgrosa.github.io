@@ -30,7 +30,7 @@ const projects = (await getCollection('projects')).sort((a, b) => {
         <div class="experiencePreview">
             <ExperienceContent />
         </div>
-        <p><a href="/experience/">See all experience</a></p>
+        <p><a href="/my-site/experience/">See all experience</a></p>
         <ul>
             {experiences.slice(0, 3).map((exp) => (
                 <li>
@@ -44,17 +44,18 @@ const projects = (await getCollection('projects')).sort((a, b) => {
         <div class="twoCol">
             <div class="col">
                 <h2>Articles</h2>
-                <p><a href="/articles/">See all articles</a></p>
+                <p><a href="/my-site/articles/">See all articles</a></p>
                 <ul>
                     {articles.slice(0, 5).map((post) => (
                         <li>
-                            <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+                            <a href={`/my-site/posts/${post.slug}/`}>{post.data.title}</a>
                         </li>
                     ))}
                 </ul>
             </div>
             <div class="col">
                 <h2>Projects</h2>
+                <p><a href="/my-site/projects/">See all projects</a></p>
                 <ul>
                     {projects.slice(0, 5).map((project) => (
                         <li>
@@ -92,6 +93,7 @@ const projects = (await getCollection('projects')).sort((a, b) => {
             border: 1px solid var(--ctp-surface1);
             border-radius: 16px;
             padding: 1.25rem;
+            text-align: left;
         }
 
         .col :global(h2) {

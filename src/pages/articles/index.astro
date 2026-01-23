@@ -12,7 +12,7 @@ const articles = (await getCollection('posts')).sort((a, b) => {
   <ul>
     {articles.map((post) => (
       <li>
-        <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+        <a href={`/my-site/posts/${post.slug}/`}>{post.data.title}</a>
         <div>{post.data.pubDate.toLocaleDateString()}</div>
         <p>{post.data.description}</p>
       </li>

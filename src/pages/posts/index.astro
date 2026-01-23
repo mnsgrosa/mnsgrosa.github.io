@@ -21,12 +21,12 @@ const allPosts = (await getCollection('posts')).sort((a, b) => {
     </style>
 </head>
 <body>
-    <a href="/">&larr; Back to Home</a>
+    <a href="/my-site/">&larr; Back to Home</a>
     <h1>All Posts</h1>
     <ul>
         {allPosts.map(post => (
             <li>
-                <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+                <a href={`/my-site/posts/${post.slug}/`}>{post.data.title}</a>
                 <span>Published on: {post.data.pubDate.toLocaleDateString()}</span>
             </li>
         ))}
