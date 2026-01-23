@@ -8,7 +8,7 @@ const projects = (await getCollection('projects')).sort((a, b) => {
 ---
 
 <MainLayout title="Projects">
-    <a href="/my-repo/">&larr; Back to Home</a>
+    <a href="/">&larr; Back to Home</a>
     <h1>Projects</h1>
     <div class="projects-grid">
         {projects.map((project) => (

@@ -30,7 +30,7 @@ const projects = (await getCollection('projects')).sort((a, b) => {
         <div class="experiencePreview">
             <ExperienceContent />
         </div>
-        <p><a href="/my-repo/experience/">See all experience</a></p>
+        <p><a href="/experience/">See all experience</a></p>
         <ul>
             {experiences.slice(0, 3).map((exp) => (
                 <li>
@@ -44,18 +44,18 @@ const projects = (await getCollection('projects')).sort((a, b) => {
         <div class="twoCol">
             <div class="col">
                 <h2>Articles</h2>
-                <p><a href="/my-repo/articles/">See all articles</a></p>
+                <p><a href="/articles/">See all articles</a></p>
                 <ul>
                     {articles.slice(0, 5).map((post) => (
                         <li>
-                            <a href={`/my-repo/posts/${post.slug}/`}>{post.data.title}</a>
+                            <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
                         </li>
                     ))}
                 </ul>
             </div>
             <div class="col">
                 <h2>Projects</h2>
-                <p><a href="/my-repo/projects/">See all projects</a></p>
+                <p><a href="/projects/">See all projects</a></p>
                 <ul>
                     {projects.slice(0, 5).map((project) => (
                         <li>
