@@ -166,23 +166,23 @@ declare module 'astro:content' {
 } & { render(): Render[".md"] };
 };
 "posts": {
-"first-post.md": {
-	id: "first-post.md";
-  slug: "first-post";
+"Make_the_LLM_choose_PT.md": {
+	id: "Make_the_LLM_choose_PT.md";
+  slug: "make_the_llm_choose_pt";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
-"first-steps.md": {
-	id: "first-steps.md";
-  slug: "first-steps";
+"Make_the_LLM_choose_en.md": {
+	id: "Make_the_LLM_choose_en.md";
+  slug: "make_the_llm_choose_en";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
-"second-post.md": {
-	id: "second-post.md";
-  slug: "second-post";
+"stepback.md": {
+	id: "stepback.md";
+  slug: "stepback";
   body: string;
   collection: "posts";
   data: InferEntrySchema<"posts">

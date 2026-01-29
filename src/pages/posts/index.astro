@@ -6,17 +6,41 @@ import MainLayout from '../../layouts/MainLayout.astro';
 const allPosts = (await getCollection('posts')).sort((a, b) => {
   return b.data.pubDate.getTime() - a.data.pubDate.getTime();
 });
+
+const ptPosts = allPosts.filter(post => post.data.lang === 'pt');
+const enPosts = allPosts.filter(post => post.data.lang === 'en');
 ---
 
 <MainLayout title="All Posts">
     <h1>All Posts</h1>
+    
+    <div class="language-filter">
+        <button class="filter-btn active" data-lang="all">
+            All
+            <span class="count">{allPosts.length}</span>
+        </button>
+        <button class="filter-btn" data-lang="pt">
+            🇧🇷 Português
+            <span class="count">{ptPosts.length}</span>
+        </button>
+        <button class="filter-btn" data-lang="en">
+            🇺🇸 English
+            <span class="count">{enPosts.length}</span>
+        </button>
+    </div>
+
     <div class="posts-grid">
         {allPosts.map(post => (
-            <a href={`/posts/${post.slug}/`} class="post-card">
+            <a href={`/posts/${post.slug}/`} class="post-card" data-lang={post.data.lang}>
                 <article>
+                    <div class="post-header">
+                        <span class="lang-badge" data-lang={post.data.lang}>
+                            {post.data.lang === 'pt' ? '🇧🇷 PT' : '🇺🇸 EN'}
+                        </span>
+                    </div>
                     <h2>{post.data.title}</h2>
                     <time datetime={post.data.pubDate.toISOString()}>
-                        {post.data.pubDate.toLocaleDateString('en-US', {
+                        {post.data.pubDate.toLocaleDateString(post.data.lang === 'pt' ? 'pt-BR' : 'en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -30,6 +54,53 @@ const allPosts = (await getCollection('posts')).sort((a, b) => {
 </MainLayout>
 
 <style>
+    .language-filter {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border: 1px solid var(--ctp-surface2);
+        border-radius: 999px;
+        background: var(--ctp-surface0);
+        color: var(--ctp-text);
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+        background: var(--ctp-surface1);
+        border-color: var(--ctp-mauve);
+    }
+
+    .filter-btn.active {
+        background: var(--ctp-mauve);
+        color: var(--ctp-base);
+        border-color: var(--ctp-mauve);
+    }
+
+    .filter-btn .count {
+        background: var(--ctp-surface2);
+        color: var(--ctp-text);
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .filter-btn.active .count {
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--ctp-base);
+    }
+
     .posts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -42,13 +113,41 @@ const allPosts = (await getCollection('posts')).sort((a, b) => {
         border-radius: 12px;
         padding: 1.5rem;
         text-decoration: none;
-        transition: transform 0.2s, background-color 0.2s;
+        transition: all 0.3s ease;
         display: block;
     }
 
     .post-card:hover {
         transform: translateY(-4px);
         background-color: var(--ctp-surface1);
+    }
+
+    .post-card.hidden {
+        display: none;
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .lang-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .lang-badge[data-lang="pt"] {
+        background: linear-gradient(135deg, #009c3b 0%, #002776 100%);
+        color: white;
+    }
+
+    .lang-badge[data-lang="en"] {
+        background: linear-gradient(135deg, #3c3b6e 0%, #b22234 100%);
+        color: white;
     }
 
     .post-card h2 {
@@ -68,3 +167,31 @@ const allPosts = (await getCollection('posts')).sort((a, b) => {
         line-height: 1.5;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const postCards = document.querySelectorAll('.post-card');
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const selectedLang = btn.getAttribute('data-lang');
+
+                // Filter posts
+                postCards.forEach(card => {
+                    const cardLang = card.getAttribute('data-lang');
+                    
+                    if (selectedLang === 'all' || cardLang === selectedLang) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    });
+</script>

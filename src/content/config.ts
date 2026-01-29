@@ -8,32 +8,33 @@ const postsCollection = defineCollection({
     title: z.string(),
     pubDate: z.date(),
     description: z.string(),
+    lang: z.enum(['pt', 'en']),
   }),
 });
 
- const experiencesCollection = defineCollection({
-   type: 'content',
-   schema: z.object({
-     company: z.string(),
-     role: z.string(),
-     startDate: z.date(),
-     endDate: z.date().optional(),
-     location: z.string().optional(),
-     summary: z.string().optional(),
-   }),
- });
+const experiencesCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    company: z.string(),
+    role: z.string(),
+    startDate: z.date(),
+    endDate: z.date().optional(),
+    location: z.string().optional(),
+    summary: z.string().optional(),
+  }),
+});
 
- const projectsCollection = defineCollection({
-   type: 'content',
-   schema: z.object({
-     title: z.string(),
-     description: z.string(),
-     date: z.date(),
-     url: z.string().optional(),
-     repo: z.string().optional(),
-     tags: z.array(z.string()).optional(),
-   }),
- });
+const projectsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    url: z.string().optional(),
+    repo: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
 
 const pagesCollection = defineCollection({
   type: 'content',
