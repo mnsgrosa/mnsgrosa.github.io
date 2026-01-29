@@ -2,6 +2,7 @@
 title: 'My Second Post'
 pubDate: 2024-07-30
 description: 'Following up on the first post, this is the second!'
+lang: 'en'
 ---
 
 ## This is Post Number Two

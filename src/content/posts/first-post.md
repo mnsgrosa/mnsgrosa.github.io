@@ -2,6 +2,7 @@
 title: 'My First Post'
 pubDate: 2024-07-29
 description: 'This is the first post on my new Astro repo!'
+lang: 'en'
 ---
 
 ## Hello World
