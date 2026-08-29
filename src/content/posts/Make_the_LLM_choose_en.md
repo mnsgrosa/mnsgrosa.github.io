@@ -1,5 +1,5 @@
 ---
-title: "What if the LLMs could choose?"
+title: "What if LLMs could choose?"
 date: 2026-01-30
 description: "The routing pattern for LLMs"
 lang: 'en'

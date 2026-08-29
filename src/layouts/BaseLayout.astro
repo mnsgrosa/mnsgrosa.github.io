@@ -7,8 +7,9 @@ import '../styles/code.css';
 import '../styles/tables.css';
 import '../styles/misc.css';
 import '../styles/tags.css';
+import '../styles/home.css';
 import '../styles/portfolio.css';
-import { sections } from '../data/sections';
+import { contact } from '../data/contact';
 
 interface Props {
   title?: string;
@@ -42,8 +43,7 @@ const pageTitle = isHome
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1b" />
+    <meta name="theme-color" content="#1e1e2e" />
 
     <meta name="description" content={description ?? pageTitle} />
 
@@ -51,15 +51,10 @@ const pageTitle = isHome
 
     <title>{pageTitle}</title>
 
-    <!-- Prevent flicker on page load. -->
+    <!-- Prevent flicker on page load (Catppuccin Mocha, dark only). -->
     <style>
       :root {
-        --background: #ffffff;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --background: #1b1b1b;
-        }
+        --background: #1e1e2e;
       }
       html {
         background-color: var(--background);
@@ -71,13 +66,13 @@ const pageTitle = isHome
   </head>
 
   <body>
-    <nav>
-      <ul class="menu">
-        <li><a tabindex="-1" class="menu-link" href="/"><u>I</u>nício</a></li>
-        {sections.map((section) => (
-          <li><a tabindex="-1" class="menu-link" href={section.url}>{section.label}</a></li>
-        ))}
-      </ul>
+    <nav class="site-header">
+      <a class="brand" href="/">Matheus Rosa</a>
+      <div class="header-contact">
+        <a href={contact.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={contact.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href={`mailto:${contact.email}`}>Email</a>
+      </div>
     </nav>
 
     <slot />

@@ -1,0 +1,56 @@
+---
+import { formatDate, parseTags } from '../lib/content';
+
+interface Props {
+  title: string;
+  url: string;
+  category: string;
+  date?: Date;
+  description?: string;
+  tags?: string;
+  image?: string;
+  readingTime?: number;
+}
+
+const { title, url, category, date, description, tags, image, readingTime } = Astro.props;
+const parsedTags = parseTags(tags);
+---
+
+<article class="post-card" data-cat={category}>
+  {
+    image ? (
+      <a class="post-card-media" href={url} tabindex="-1" aria-hidden="true">
+        <img class="post-card-image" src={image} alt="" loading="lazy" />
+      </a>
+    ) : null
+  }
+
+  <div class="post-card-body">
+    <p class="post-card-meta">
+      <span class="date">{formatDate(date)}</span>
+      {
+        readingTime && (
+          <span class="post-card-reading">{readingTime} min read</span>
+        )
+      }
+    </p>
+
+    <h3 class="post-card-title">
+      <a href={url}>{title}</a>
+    </h3>
+
+    {
+      description && <p class="post-card-excerpt">{description}</p>
+    }
+
+    {
+      parsedTags.length > 0 && (
+        <footer class="post-card-footer">
+          <ul class="tag-list">
+            {parsedTags.map((tag) => <li class="tag-chip">{tag}</li>)}
+          </ul>
+        </footer>
+      )
+    }
+  </div>
+</article>

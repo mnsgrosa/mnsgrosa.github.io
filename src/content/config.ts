@@ -26,6 +26,7 @@ const postsCollection = defineCollection({
     bold: z.boolean().optional(),
     toc: z.boolean().optional(),
     tags: z.string().optional(),
+    image: z.string().optional(),
   }),
 });
 
@@ -37,6 +38,7 @@ const estudosCollection = defineCollection({
     subtitle: z.string().optional(),
     description: z.string().optional(),
     toc: z.boolean().optional(),
+    image: z.string().optional(),
   }),
 });
 
@@ -49,6 +51,7 @@ const diversosCollection = defineCollection({
     description: z.string().optional(),
     toc: z.boolean().optional(),
     tags: z.string().optional(),
+    image: z.string().optional(),
   }),
 });
 
@@ -58,6 +61,9 @@ const experienceCollection = defineCollection({
     title: z.string(),
   }),
 });
+
+// NOTE: the standalone 'experience' section was merged into 'portfolio'.
+// Experience is rendered from src/data/experience.ts on the portfolio page.
 
 export const collections = {
   portfolio: portfolioCollection,

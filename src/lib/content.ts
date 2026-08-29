@@ -87,6 +87,16 @@ export async function safeGetCollection(collection: ListCollection) {
 }
 
 /**
+ * Estimate the reading time (in minutes) of a markdown body at ~200 words per
+ * minute, rounded up to at least 1 minute.
+ */
+export function readingTime(body: string): number {
+  const words = body.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.ceil(words / 200);
+  return Math.max(1, minutes);
+}
+
+/**
  * Format a date-only value as "Jan 2, 2006" (Hugo's "Jan 2, 2006" layout).
  * Rendered in UTC so date-only frontmatter (e.g. `date: 2026-01-29`) never
  * shifts a day depending on the build machine's local timezone.

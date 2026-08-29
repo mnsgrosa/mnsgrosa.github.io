@@ -1,62 +1,117 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { sections } from '../data/sections';
-import { safeGetCollection, formatDate, sortByUploadDate } from '../lib/content';
+import PostCard from '../components/PostCard.astro';
+import { safeGetCollection, sortByUploadDate, parseTags, readingTime } from '../lib/content';
 
-interface ListItem {
+interface RawEntry {
+  collection: string;
+  id: string;
   slug: string;
-  title: string;
-  date?: Date;
+  body: string;
+  data: {
+    title?: string;
+    date?: Date;
+    description?: string;
+    tags?: string;
+    image?: string;
+  };
 }
 
-// Maps entries to the light list shape, preserving the given order (callers
-// are responsible for sorting).
-const toItems = (
-  entries: Array<{ slug: string; data: { title: string; date?: Date } }>
-): ListItem[] =>
-  entries.map((entry) => ({ slug: entry.slug, title: entry.data.title, date: entry.data.date }));
+interface HomeCard {
+  title: string;
+  url: string;
+  category: string;
+  date?: Date;
+  description?: string;
+  tags?: string;
+  image?: string;
+  readingTime: number;
+}
 
-const listItems: Record<string, ListItem[]> = {
-  portfolio: toItems(sortByUploadDate(await safeGetCollection('portfolio'))),
-  posts: toItems(sortByUploadDate(await safeGetCollection('posts'))),
-  estudos: toItems(
-    (await safeGetCollection('estudos')).slice().sort(
-      (a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)
-    )
-  ),
-  diversos: toItems(sortByUploadDate(await safeGetCollection('diversos'))),
-};
+// Aggregate posts + estudos + diversos and sort them together by git upload date.
+const posts = (await safeGetCollection('posts')) as unknown as RawEntry[];
+const estudos = (await safeGetCollection('estudos')) as unknown as RawEntry[];
+const diversos = (await safeGetCollection('diversos')) as unknown as RawEntry[];
+const combined = sortByUploadDate([...posts, ...estudos, ...diversos]);
+
+const cards: HomeCard[] = combined.map((entry) => ({
+  title: entry.data.title ?? 'Sem título',
+  url: `/${entry.collection}/${entry.slug}/`,
+  category: entry.collection,
+  date: entry.data.date,
+  description: entry.data.description,
+  tags: entry.data.tags,
+  image: entry.data.image,
+  readingTime: readingTime(entry.body),
+}));
+
+// Grid filter categories (list sections). Portfolio is presented as prominent
+// links at the top; posts (Técnicos) appear only under "Todos".
+const filters = [
+  { id: 'todos', label: 'Todos' },
+  { id: 'estudos', label: 'Estudos' },
+  { id: 'diversos', label: 'Diversos' },
+];
 ---
 
 <BaseLayout isHome>
   <div class="home-content">
-    <h1>Matheus Rosa</h1>
     <p>Portfolio, posts técnicos, estudos e diversos — gerados a partir de markdown.</p>
   </div>
 
-  {
-    sections.map((section) => {
-      const items = section.kind === 'list' ? (listItems[section.id] ?? []) : [];
-      return (
-        <section>
-          <h2 class="section-title">
-            <a href={section.url}>{section.label}</a>
-          </h2>
-          <p>{section.description}</p>
-          {items.length > 0 && (
-            <ul class="post-list">
-              {items.map((item) => (
-                <li>
-                  <div style="display: grid; grid-template-columns: 7em auto">
-                    <span class="date">{formatDate(item.date)}</span>
-                    <a href={`${section.url}${item.slug}/`}>{item.title}</a>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      );
-    })
-  }
+  <section class="home-portfolio">
+    <a class="home-cta" href="/portfolio/">
+      <span class="home-cta-title">Portfolio</span>
+      <span class="home-cta-sub">Experiência, projetos e GitHub</span>
+    </a>
+  </section>
+
+  <div class="home-filters" role="group" aria-label="Filtrar por seção">
+    {
+      filters.map((f) => (
+        <button
+          type="button"
+          class={f.id === 'todos' ? 'home-filter-btn active' : 'home-filter-btn'}
+          data-cat={f.id}
+        >
+          {f.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <ul class="post-grid">
+    {
+      cards.map((card) => (
+        <li data-cat={card.category}><PostCard {...card} /></li>
+      ))
+    }
+  </ul>
+
+  <p id="home-empty" class="home-empty" hidden>Nenhum item nesta seção por enquanto.</p>
 </BaseLayout>
+
+<script>
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.home-filter-btn'));
+  // Grid cells are the <li> wrappers; hiding the whole item lets the CSS grid
+  // reflow the remaining cards left-to-right, top-to-bottom with no gaps.
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.post-grid > li'));
+  const empty = document.querySelector<HTMLElement>('#home-empty');
+
+  function applyFilter(cat: string) {
+    buttons.forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.cat === cat);
+    });
+    let visible = 0;
+    items.forEach((item) => {
+      const show = cat === 'todos' || item.dataset.cat === cat;
+      item.style.display = show ? '' : 'none';
+      if (show) visible += 1;
+    });
+    if (empty) empty.hidden = visible > 0;
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => applyFilter(btn.dataset.cat ?? 'todos'));
+  });
+</script>

@@ -1,0 +1,220 @@
+/* HOME: hero, category filter bar, and post card grid */
+
+.home-content {
+  margin-bottom: 1.5rem;
+}
+
+/* Prominent portfolio call-to-action (recruiter-friendly) */
+.home-portfolio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.home-cta {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.home-cta:hover {
+  text-decoration: none;
+}
+
+.home-cta-title {
+  font-size: 1.15em;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.home-cta:hover .home-cta-title {
+  color: var(--link);
+}
+
+.home-cta-sub {
+  font-size: 0.82em;
+  color: var(--text-dim);
+}
+
+.home-empty {
+  text-align: center;
+  color: var(--text-faded);
+  margin: 2rem 0;
+}
+
+/* Category filter pills */
+.home-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.home-filter-btn {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9em;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--border-general);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-dim);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.home-filter-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.home-filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1e1e2e;
+}
+
+/* Card grid */
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each cell stretches to its row's height and lets the card fill it, so every
+   card keeps the same height and width across the whole grid. */
+.post-grid > li {
+  display: flex;
+}
+
+/* Post card — no box, content blends straight into the page background. */
+.post-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+}
+
+.post-card-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Soft dark edge at the bottom so the image sits naturally on the page bg. */
+.post-card-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 62%, rgba(30, 30, 46, 0.45) 100%);
+  pointer-events: none;
+}
+
+.post-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover .post-card-image {
+  transform: scale(1.05);
+}
+
+.post-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0.9rem 0.15rem 0;
+}
+
+.post-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  color: var(--text-faded);
+  font-size: 0.8em;
+  letter-spacing: 0.02em;
+}
+
+.post-card-meta .date {
+  color: var(--text-faded);
+  padding-top: 0;
+  font-size: 1em;
+}
+
+.post-card-title {
+  margin: 0 0 0.45rem;
+  font-size: 1.08em;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-card-title a {
+  color: var(--text);
+}
+
+.post-card-title a:hover {
+  color: var(--link);
+}
+
+.post-card-excerpt {
+  margin: 0 0 1rem;
+  color: var(--text-dim);
+  font-size: 0.9em;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.post-card-footer .tag-list {
+  margin: 0;
+}
+
+/* Article tags blend with the card/background (no chip box). */
+.post-card .tag-list {
+  gap: 0.5rem;
+}
+
+.post-card .tag-chip {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+}

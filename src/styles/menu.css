@@ -1,8 +1,56 @@
+/* SITE HEADER (brand + centered nav) */
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+  margin: 0.75rem 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-general);
+}
+
+.brand {
+  font-family: "Linux Libertine", "Georgia", "Times", serif;
+  font-weight: bold;
+  font-size: 1.15em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.brand:hover {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+/* Contact links in the header, next to the name. */
+.header-contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 1rem;
+}
+
+.header-contact a {
+  color: var(--text-dim);
+  font-size: 0.92em;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.header-contact a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
 .menu {
-  padding: 0px 4px 0px 0px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  margin: 0px;
+  list-style: none;
   z-index: 9999;
-  text-align: left;
-  margin-bottom: 10px;
 }
 
 .menu li {
@@ -10,15 +58,21 @@
 }
 
 .menu a {
-  margin-right: 1.1em;
+  margin-right: 0.9em;
   text-decoration: none;
   border-radius: 5px;
+  color: var(--text-dim);
+}
+
+.menu a:last-child {
+  margin-right: 0;
 }
 
 .menu a:visited {
-  color: var(--link);
+  color: var(--text-dim);
 }
 
 .menu a:hover {
   text-decoration: underline;
+  color: var(--accent);
 }

@@ -13,8 +13,8 @@
   padding: 0.05rem 0.55rem;
   border: 1px solid var(--border-general);
   border-radius: 999px;
-  color: var(--text-dim);
-  background: var(--toc-background);
+  color: var(--accent);
+  background: var(--surface);
   font-size: 0.78em;
   line-height: 1.5;
   white-space: nowrap;

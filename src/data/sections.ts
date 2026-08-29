@@ -21,13 +21,6 @@ export const sections: Section[] = [
     kind: 'single',
   },
   {
-    id: 'experience',
-    label: 'Experience',
-    url: '/experience/',
-    description: 'Experiência profissional.',
-    kind: 'single',
-  },
-  {
     id: 'posts',
     label: 'Técnicos',
     url: '/posts/',

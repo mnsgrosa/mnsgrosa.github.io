@@ -1,4 +1,52 @@
 /* PORTFOLIO PAGE */
+.profile-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 0 0 2.5rem;
+}
+
+.profile-photo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border-general);
+  margin: 0;
+}
+
+.profile-info {
+  flex: 1 1 220px;
+}
+
+.profile-name {
+  margin: 0 0 0.35rem;
+  font-size: 1.8em;
+}
+
+.profile-bio {
+  margin: 0 0 0.75rem;
+  color: var(--text-dim);
+}
+
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.contact-row a {
+  color: var(--link);
+}
+
+.contact-row a:hover {
+  color: var(--accent);
+}
+
 .experience-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

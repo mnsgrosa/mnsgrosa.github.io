@@ -4,13 +4,31 @@ import GithubActivity from '../../components/GithubActivity.astro';
 import GithubRepoCard from '../../components/widgets/GithubRepoCard.astro';
 import { experience } from '../../data/experience';
 import { github } from '../../data/github';
+import { contact } from '../../data/contact';
 ---
 
 <BaseLayout title="Portfolio">
-  <div id="single-header">
-    <h1>Portfolio</h1>
-    <p id="subtitle">Projetos, trabalhos e GitHub.</p>
-  </div>
+  <section class="profile-section">
+    <img class="profile-photo" src="/profile.jpg" alt="Foto de perfil de Matheus Rosa" />
+    <div class="profile-info">
+      <h1 class="profile-name">Matheus Rosa</h1>
+      <p class="profile-bio">
+        Engenheiro de aprendizado de máquina, construindo agentes, pipelines e
+        ferramentas para LLMs.
+      </p>
+      <ul class="contact-row">
+        <li>
+          <a href={contact.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+        </li>
+        <li>
+          <a href={contact.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </li>
+        <li>
+          <a href={`mailto:${contact.email}`}>Email</a>
+        </li>
+      </ul>
+    </div>
+  </section>
 
   <section>
     <h2 class="section-title">Experiência</h2>
