@@ -1,0 +1,51 @@
+---
+/**
+ * GitHub repo card embed via gh-card.dev.
+ *
+ * Props:
+ *  - repo: "owner/repo" (e.g. "facebook/react")
+ *  - title: optional heading shown above the card
+ */
+interface Props {
+  repo: string;
+  title?: string;
+}
+
+const { repo, title } = Astro.props;
+const [owner, name] = repo.split('/');
+---
+
+<div class="github-card">
+  {title && <h4>{title}</h4>}
+  <a
+    class="gh-card"
+    href={`https://github.com/${repo}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img
+      src={`https://gh-card.dev/repos/${repo}.svg`}
+      alt={`${owner}/${name}`}
+      loading="lazy"
+    />
+  </a>
+</div>
+
+<style>
+  .github-card {
+    margin: 1rem 0;
+  }
+  .github-card h4 {
+    margin: 0 0 0.4rem;
+  }
+  .gh-card {
+    display: inline-block;
+    max-width: 100%;
+  }
+  .gh-card img {
+    border: 1px solid var(--border-general);
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+  }
+</style>

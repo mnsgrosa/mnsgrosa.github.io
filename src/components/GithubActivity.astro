@@ -1,0 +1,92 @@
+---
+/**
+ * Recent GitHub activity feed, fetched client-side from the public events API.
+ *
+ * Props:
+ *  - username: GitHub username to fetch events for.
+ */
+interface Props {
+  username: string;
+}
+
+const { username } = Astro.props;
+const apiUrl = `https://api.github.com/users/${username}/events/public`;
+---
+
+<section class="gh-activity" data-api={apiUrl}>
+  <h3>Atividade recente</h3>
+  <p id="gh-activity-status" class="gh-activity-status">Carregando…</p>
+  <ul id="gh-activity-list" class="gh-activity-list"></ul>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>('.gh-activity');
+  if (section) {
+    const apiUrl = section.dataset.api ?? '';
+    const status = section.querySelector<HTMLElement>('#gh-activity-status');
+    const list = section.querySelector<HTMLElement>('#gh-activity-list');
+
+    async function loadActivity() {
+      if (!list || !status) return;
+      try {
+        const res = await fetch(apiUrl, { headers: { Accept: 'application/vnd.github+json' } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const events: Array<{
+          type: string;
+          created_at: string;
+          repo: { name: string };
+        }> = await res.json();
+        if (!events.length) {
+          status.textContent = 'Sem atividade pública recente.';
+          return;
+        }
+        status.style.display = 'none';
+        const labels: Record<string, string> = {
+          PushEvent: 'fez push em',
+          PullRequestEvent: 'abriu PR em',
+          IssuesEvent: 'interagiu com issues em',
+          CreateEvent: 'criou em',
+          ForkEvent: 'fez fork de',
+          WatchEvent: 'deu star em',
+        };
+        for (const event of events.slice(0, 10)) {
+          const li = document.createElement('li');
+          const action = labels[event.type] ?? 'atuou em';
+          const date = new Date(event.created_at).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          });
+          const repoLink = document.createElement('a');
+          repoLink.href = `https://github.com/${event.repo.name}`;
+          repoLink.target = '_blank';
+          repoLink.rel = 'noopener noreferrer';
+          repoLink.textContent = event.repo.name;
+          li.append(document.createTextNode(`${action} `), repoLink, document.createTextNode(` · ${date}`));
+          list.appendChild(li);
+        }
+      } catch (err) {
+        status.textContent = 'Não foi possível carregar a atividade.';
+        console.error('GitHub activity fetch failed:', err);
+      }
+    }
+
+    loadActivity();
+  }
+</script>
+
+<style>
+  .gh-activity {
+    margin: 1rem 0;
+  }
+  .gh-activity-status {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .gh-activity-list {
+    padding-left: 1.2rem;
+  }
+  .gh-activity-list li {
+    margin: 0.4rem 0;
+  }
+</style>

@@ -35,6 +35,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Fetch full history so git commit dates are available for
+          # upload-date sorting of content at build time.
+          fetch-depth: 0
       - name: Detect package manager
         id: detect-package-manager
         run: |

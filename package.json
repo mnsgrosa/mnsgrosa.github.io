@@ -10,10 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/react": "^4.4.2",
-    "astro": "^4.0.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "@astrojs/mdx": "^3.1.9",
+    "@astrojs/rss": "^4.0.0",
+    "astro": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0"

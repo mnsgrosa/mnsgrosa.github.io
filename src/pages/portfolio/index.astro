@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GithubActivity from '../../components/GithubActivity.astro';
+import GithubRepoCard from '../../components/widgets/GithubRepoCard.astro';
+import { experience } from '../../data/experience';
+import { github } from '../../data/github';
+---
+
+<BaseLayout title="Portfolio">
+  <div id="single-header">
+    <h1>Portfolio</h1>
+    <p id="subtitle">Projetos, trabalhos e GitHub.</p>
+  </div>
+
+  <section>
+    <h2 class="section-title">Experiência</h2>
+    <div class="experience-grid">
+      {
+        experience.map((job) => (
+          <article class="experience-card">
+            <h3 class="experience-role">{job.role}</h3>
+            <p class="experience-company">{job.company}</p>
+            <p class="experience-period">{job.period}</p>
+            <p class="experience-summary">{job.summary}</p>
+            {
+              job.stack && job.stack.length > 0 && (
+                <ul class="tag-list">
+                  {job.stack.map((tech) => <li class="tag-chip">{tech}</li>)}
+                </ul>
+              )
+            }
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Projetos</h2>
+    <div class="repo-grid">
+      {github.repos.map((repo) => <GithubRepoCard repo={repo} />)}
+    </div>
+  </section>
+
+  <GithubActivity username={github.username} />
+</BaseLayout>

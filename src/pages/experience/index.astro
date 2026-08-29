@@ -1,32 +1,17 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
-import MainLayout from '../../layouts/MainLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
 
-const experiencePage = await getEntry('pages', 'experience');
-const { Content } = await experiencePage.render();
-
-const experiences = (await getCollection('experiences')).sort((a, b) => {
-  return b.data.startDate.getTime() - a.data.startDate.getTime();
-});
+const entry = await getEntry('experience', 'cv');
+if (!entry) {
+  throw new Error('Experience content not found');
+}
+const { Content } = await entry.render();
 ---
 
-<MainLayout title="Experience">
-  <Content />
-  <ul>
-    {experiences.map((exp) => (
-      <li>
-        <h2>{exp.data.role} @ {exp.data.company}</h2>
-        <p>
-          <strong>{exp.data.startDate.toLocaleDateString()}</strong>
-          {exp.data.endDate ? (
-            <> - <strong>{exp.data.endDate.toLocaleDateString()}</strong></>
-          ) : (
-            <> - <strong>Present</strong></>
-          )}
-          {exp.data.location ? <> · {exp.data.location}</> : null}
-        </p>
-        {exp.data.summary ? <p>{exp.data.summary}</p> : null}
-      </li>
-    ))}
-  </ul>
-</MainLayout>
+<BaseLayout title={entry.data.title}>
+  <div id="single-header">
+    <h1>{entry.data.title}</h1>
+  </div>
+  <main><Content /></main>
+</BaseLayout>

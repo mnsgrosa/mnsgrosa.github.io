@@ -1,52 +1,68 @@
 // src/content/config.ts
 import { defineCollection, z } from 'astro:content';
 
-// Define a collection for our posts
-const postsCollection = defineCollection({
-  type: 'content', // 'content' for Markdown/MDX files
-  schema: z.object({
-    title: z.string(),
-    pubDate: z.date(),
-    description: z.string(),
-    lang: z.enum(['pt', 'en']),
-  }),
-});
-
-const experiencesCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    company: z.string(),
-    role: z.string(),
-    startDate: z.date(),
-    endDate: z.date().optional(),
-    location: z.string().optional(),
-    summary: z.string().optional(),
-  }),
-});
-
-const projectsCollection = defineCollection({
+const portfolioCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
-    date: z.date(),
+    date: z.coerce.date().optional(),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
     url: z.string().optional(),
     repo: z.string().optional(),
     tags: z.array(z.string()).optional(),
+    toc: z.boolean().optional(),
   }),
 });
 
-const pagesCollection = defineCollection({
+const postsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
+    lang: z.enum(['pt', 'en']).optional(),
+    bold: z.boolean().optional(),
+    toc: z.boolean().optional(),
+    tags: z.string().optional(),
+  }),
+});
+
+const estudosCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date().optional(),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
+    toc: z.boolean().optional(),
+  }),
+});
+
+const diversosCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date().optional(),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
+    toc: z.boolean().optional(),
+    tags: z.string().optional(),
+  }),
+});
+
+const experienceCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
   }),
 });
 
-// Export a `collections` object to register our collection(s)
 export const collections = {
-  'posts': postsCollection,
-  'experiences': experiencesCollection,
-  'projects': projectsCollection,
-  'pages': pagesCollection,
+  portfolio: portfolioCollection,
+  posts: postsCollection,
+  estudos: estudosCollection,
+  diversos: diversosCollection,
+  experience: experienceCollection,
 };

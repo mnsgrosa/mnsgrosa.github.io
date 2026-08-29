@@ -1,0 +1,41 @@
+---
+/**
+ * Spotify embed.
+ *
+ * Props:
+ *  - type: "track" | "album" | "playlist" | "artist"
+ *  - id: Spotify content id
+ *  - title: optional title attribute
+ */
+interface Props {
+  type: 'track' | 'album' | 'playlist' | 'artist';
+  id: string;
+  title?: string;
+}
+
+const { type, id, title } = Astro.props;
+---
+
+<div class="spotify">
+  {title && <h4>{title}</h4>}
+  <iframe
+    title={title ?? `Spotify ${type}`}
+    src={`https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`}
+    width="100%"
+    height="152"
+    style="border-radius: 12px; border: 0;"
+    frameBorder="0"
+    allowfullscreen
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+  ></iframe>
+</div>
+
+<style>
+  .spotify {
+    margin: 1rem 0;
+  }
+  .spotify h4 {
+    margin: 0 0 0.4rem;
+  }
+</style>

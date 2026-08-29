@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { listSections } from '../../data/sections';
+import { safeGetCollection, formatDate, sortByUploadDate, parseTags } from '../../lib/content';
+
+type ListCollection = 'portfolio' | 'posts' | 'estudos' | 'diversos';
+
+export async function getStaticPaths() {
+  return listSections.map((section) => ({ params: { section: section.id } }));
+}
+
+const { section } = Astro.params;
+const meta = listSections.find((s) => s.id === section);
+
+// `posts` and `diversos` sort by git upload date (newest first). `estudos`
+// keeps frontmatter-date sorting for now.
+const rawEntries = await safeGetCollection(section as ListCollection);
+const entries =
+  section === 'posts' || section === 'diversos'
+    ? sortByUploadDate(rawEntries)
+    : rawEntries
+        .slice()
+        .sort((a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0));
+---
+
+<BaseLayout title={meta?.label}>
+  <h2 class="section-title">{meta?.label}</h2>
+  <p>{meta?.description}</p>
+
+  {
+    entries.length > 0 ? (
+      <ul class="post-list">
+        {entries.map((entry) => {
+          const tags = parseTags(entry.data.tags);
+          return (
+            <li>
+              <div style="display: grid; grid-template-columns: 7em auto">
+                <span class="date">{formatDate(entry.data.date)}</span>
+                <div>
+                  <a href={`/${section}/${entry.slug}/`}>{entry.data.title}</a>
+                  {
+                    tags.length > 0 && (
+                      <ul class="tag-list">
+                        {tags.map((tag) => <li class="tag-chip">{tag}</li>)}
+                      </ul>
+                    )
+                  }
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <p>Sem posts por enquanto.</p>
+    )
+  }
+</BaseLayout>

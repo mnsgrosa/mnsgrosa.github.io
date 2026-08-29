@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import GithubRepoCard from '../../components/widgets/GithubRepoCard.astro';
+import YouTube from '../../components/widgets/YouTube.astro';
+import Spotify from '../../components/widgets/Spotify.astro';
+import { listSections } from '../../data/sections';
+import { safeGetCollection, formatDate, parseTags } from '../../lib/content';
+
+// Components made available to MDX content without requiring per-file imports.
+const mdxComponents = {
+  GithubRepoCard,
+  YouTube,
+  Spotify,
+};
+
+type ListCollection = 'portfolio' | 'posts' | 'estudos' | 'diversos';
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { section: string; slug: string } }> = [];
+  for (const section of listSections) {
+    const entries = await safeGetCollection(section.id as ListCollection);
+    for (const entry of entries) {
+      paths.push({ params: { section: section.id, slug: entry.slug } });
+    }
+  }
+  return paths;
+}
+
+const { section, slug } = Astro.params;
+const entries = await safeGetCollection(section as ListCollection);
+const entry = entries.find((e) => e.slug === slug);
+
+if (!entry) {
+  throw new Error(`Not found: ${section}/${slug}`);
+}
+
+const { Content, headings } = await entry.render();
+
+const toc =
+  entry.data.toc === true
+    ? headings.filter((h) => h.depth >= 2 && h.depth <= 3)
+    : [];
+
+const tags = parseTags(entry.data.tags);
+---
+
+<BaseLayout title={entry.data.title}>
+  <div id="single-header">
+    <h1>{entry.data.title}</h1>
+    <div id="single-meta">
+      {entry.data.subtitle && <p id="subtitle">{entry.data.subtitle}</p>}
+      {entry.data.date && <span class="datesub">{formatDate(entry.data.date)}</span>}
+      {
+        tags.length > 0 && (
+          <ul class="tag-list" id="tags">
+            {tags.map((tag) => <li class="tag-chip">{tag}</li>)}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+
+  {
+    toc.length > 0 && (
+      <aside class="toc" id="tableOfContentContainer">
+        <nav id="TableOfContents">
+          <ul>
+            {toc.map((heading) => (
+              <li style={`margin-left: ${(heading.depth - 2) * 1}rem;`}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+    )
+  }
+
+  <main><Content components={mdxComponents} /></main>
+</BaseLayout>

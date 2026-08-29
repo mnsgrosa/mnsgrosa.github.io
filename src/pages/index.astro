@@ -1,121 +1,62 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
-import MainLayout from '../layouts/MainLayout.astro';
-const homePage = await getEntry('pages', 'home');
-const { Content } = await homePage.render();
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { sections } from '../data/sections';
+import { safeGetCollection, formatDate, sortByUploadDate } from '../lib/content';
 
-const experiencePage = await getEntry('pages', 'experience');
-const { Content: ExperienceContent } = await experiencePage.render();
+interface ListItem {
+  slug: string;
+  title: string;
+  date?: Date;
+}
 
-const experiences = (await getCollection('experiences')).sort((a, b) => {
-  return b.data.startDate.getTime() - a.data.startDate.getTime();
-});
+// Maps entries to the light list shape, preserving the given order (callers
+// are responsible for sorting).
+const toItems = (
+  entries: Array<{ slug: string; data: { title: string; date?: Date } }>
+): ListItem[] =>
+  entries.map((entry) => ({ slug: entry.slug, title: entry.data.title, date: entry.data.date }));
 
-const articles = (await getCollection('posts')).sort((a, b) => {
-  return b.data.pubDate.getTime() - a.data.pubDate.getTime();
-});
-
-const projects = (await getCollection('projects')).sort((a, b) => {
-  return b.data.date.getTime() - a.data.date.getTime();
-});
+const listItems: Record<string, ListItem[]> = {
+  portfolio: toItems(sortByUploadDate(await safeGetCollection('portfolio'))),
+  posts: toItems(sortByUploadDate(await safeGetCollection('posts'))),
+  estudos: toItems(
+    (await safeGetCollection('estudos')).slice().sort(
+      (a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)
+    )
+  ),
+  diversos: toItems(sortByUploadDate(await safeGetCollection('diversos'))),
+};
 ---
 
-<MainLayout title="My Portfolio">
-    <Content />
+<BaseLayout isHome>
+  <div class="home-content">
+    <h1>Matheus Rosa</h1>
+    <p>Portfolio, posts técnicos, estudos e diversos — gerados a partir de markdown.</p>
+  </div>
 
-    <hr />
-
-    <section>
-        <h2>Experience</h2>
-        <div class="experiencePreview">
-            <ExperienceContent />
-        </div>
-        <p><a href="/experience/">See all experience</a></p>
-        <ul>
-            {experiences.slice(0, 3).map((exp) => (
+  {
+    sections.map((section) => {
+      const items = section.kind === 'list' ? (listItems[section.id] ?? []) : [];
+      return (
+        <section>
+          <h2 class="section-title">
+            <a href={section.url}>{section.label}</a>
+          </h2>
+          <p>{section.description}</p>
+          {items.length > 0 && (
+            <ul class="post-list">
+              {items.map((item) => (
                 <li>
-                    <strong>{exp.data.role}</strong> @ {exp.data.company}
+                  <div style="display: grid; grid-template-columns: 7em auto">
+                    <span class="date">{formatDate(item.date)}</span>
+                    <a href={`${section.url}${item.slug}/`}>{item.title}</a>
+                  </div>
                 </li>
-            ))}
-        </ul>
-    </section>
-
-    <section>
-        <div class="twoCol">
-            <div class="col">
-                <h2>Articles</h2>
-                <p><a href="/articles/">See all articles</a></p>
-                <ul>
-                    {articles.slice(0, 5).map((post) => (
-                        <li>
-                            <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div class="col">
-                <h2>Projects</h2>
-                <p><a href="/projects/">See all projects</a></p>
-                <ul>
-                    {projects.slice(0, 5).map((project) => (
-                        <li>
-                            {project.data.url ? (
-                                <a href={project.data.url} target="_blank" rel="noreferrer">{project.data.title}</a>
-                            ) : project.data.repo ? (
-                                <a href={project.data.repo} target="_blank" rel="noreferrer">{project.data.title}</a>
-                            ) : (
-                                <span>{project.data.title}</span>
-                            )}
-                            <div>{project.data.description}</div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <style>
-        .twoCol {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        @media (max-width: 900px) {
-            .twoCol {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .col {
-            background: var(--ctp-mantle);
-            border: 1px solid var(--ctp-surface1);
-            border-radius: 16px;
-            padding: 1.25rem;
-            text-align: left;
-        }
-
-        .col :global(h2) {
-            margin-top: 0;
-        }
-
-        .experiencePreview {
-            max-height: 340px;
-            overflow: hidden;
-            position: relative;
-            margin: 1rem 0;
-        }
-
-        .experiencePreview::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 120px;
-            background: linear-gradient(to bottom, rgba(18, 15, 34, 0), rgba(18, 15, 34, 1));
-            pointer-events: none;
-        }
-    </style>
-</MainLayout>
+              ))}
+            </ul>
+          )}
+        </section>
+      );
+    })
+  }
+</BaseLayout>

@@ -1,6 +1,6 @@
 ---
 title: "What if the LLMs could choose?"
-pubDate: 2026-01-30
+date: 2026-01-30
 description: "The routing pattern for LLMs"
 lang: 'en'
 ---

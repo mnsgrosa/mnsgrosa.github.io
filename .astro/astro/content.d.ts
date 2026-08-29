@@ -1,4 +1,15 @@
 declare module 'astro:content' {
+	interface Render {
+		'.mdx': Promise<{
+			Content: import('astro').MarkdownInstance<{}>['Content'];
+			headings: import('astro').MarkdownHeading[];
+			remarkPluginFrontmatter: Record<string, any>;
+			components: import('astro').MDXInstance<{}>['components'];
+		}>;
+	}
+}
+
+declare module 'astro:content' {
 	interface RenderResult {
 		Content: import('astro/runtime/server/index.js').AstroComponentFactory;
 		headings: import('astro').MarkdownHeading[];
@@ -140,31 +151,40 @@ declare module 'astro:content' {
 	>;
 
 	type ContentEntryMap = {
-		"experiences": {
-"tech-corp.md": {
-	id: "tech-corp.md";
-  slug: "tech-corp";
+		"diversos": {
+"widgets-test.mdx": {
+	id: "widgets-test.mdx";
+  slug: "widgets-test";
   body: string;
-  collection: "experiences";
-  data: InferEntrySchema<"experiences">
+  collection: "diversos";
+  data: InferEntrySchema<"diversos">
+} & { render(): Render[".mdx"] };
+};
+"estudos": Record<string, {
+  id: string;
+  slug: string;
+  body: string;
+  collection: "estudos";
+  data: InferEntrySchema<"estudos">;
+  render(): Render[".md"];
+}>;
+"experience": {
+"cv.md": {
+	id: "cv.md";
+  slug: "cv";
+  body: string;
+  collection: "experience";
+  data: InferEntrySchema<"experience">
 } & { render(): Render[".md"] };
 };
-"pages": {
-"experience.md": {
-	id: "experience.md";
-  slug: "experience";
+"portfolio": Record<string, {
+  id: string;
+  slug: string;
   body: string;
-  collection: "pages";
-  data: InferEntrySchema<"pages">
-} & { render(): Render[".md"] };
-"home.md": {
-	id: "home.md";
-  slug: "home";
-  body: string;
-  collection: "pages";
-  data: InferEntrySchema<"pages">
-} & { render(): Render[".md"] };
-};
+  collection: "portfolio";
+  data: InferEntrySchema<"portfolio">;
+  render(): Render[".md"];
+}>;
 "posts": {
 "Make_the_LLM_choose_PT.md": {
 	id: "Make_the_LLM_choose_PT.md";
@@ -187,21 +207,12 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
-};
-"projects": {
-"project-1.md": {
-	id: "project-1.md";
-  slug: "project-1";
+"teste_1.md": {
+	id: "teste_1.md";
+  slug: "teste_1";
   body: string;
-  collection: "projects";
-  data: InferEntrySchema<"projects">
-} & { render(): Render[".md"] };
-"project-2.md": {
-	id: "project-2.md";
-  slug: "project-2";
-  body: string;
-  collection: "projects";
-  data: InferEntrySchema<"projects">
+  collection: "posts";
+  data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
 };
 
