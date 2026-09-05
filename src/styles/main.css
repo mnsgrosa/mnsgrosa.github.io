@@ -6,25 +6,26 @@
   --text: #cdd6f4;
   --code: #cdd6f4;
   --text-dim: #a6adc8;
-  --text-faded: #7f849c;
-  --accent: #cba6f7;
-  --link: #89b4fa;
-  --link-visited: #cba6f7;
-  --complimentary: #cba6f7;
-  --border-general: #45475a;
+  --text-faded: #6c7086;
+  --accent: #74c7ec;
+  --accent-soft: #cba6f7;
+  --link: #74c7ec;
+  --link-visited: var(--accent-soft);
+  --complimentary: #74c7ec;
+  --border-general: #585b70;
   --code-background: #313244;
-  --code-border: #45475a;
+  --code-border: #585b70;
   --code-hl: #45475a;
   --table-th: #313244;
   --table-tr: #181825;
   --toc-background: #181825;
-  --toc-border: #45475a;
+  --toc-border: #585b70;
   --output-background: #181825;
-  --output-foreground: #cba6f7;
+  --output-foreground: var(--accent-soft);
 }
 
 #gitinfo-date {
-  color: var(--text-dim);
+  color: var(--text-faded);
   filter: opacity(40%);
   font-style: italic;
   font-size: 0.9em;
@@ -59,6 +60,18 @@ body {
     sans-serif;
   line-height: 1.54;
   text-align: justify;
+}
+
+/* Justified body text stretches non-final lines, which makes short or
+   wrapped headings look like they have huge gaps between words (e.g. the
+   role titles on the portfolio page). Headings should never be justified. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-align: left;
 }
 
 @media screen and (min-width: 760px) {
@@ -102,7 +115,7 @@ h1 {
 
 h2 {
   border-bottom: 1px solid;
-  border-color: var(--text-dim);
+  border-color: var(--border-general);
   margin-bottom: 0.5em;
   margin-top: 1.2em;
   font-weight: normal;
@@ -121,7 +134,7 @@ h4 {
   font-size: 1.1em;
   margin-bottom: 0;
   padding-bottom: 0;
-  font-style: oblique;
+  font-style: italic;
   font-weight: normal;
 }
 

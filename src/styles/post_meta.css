@@ -7,7 +7,7 @@
 }
 
 .date {
-  color: var(--text-dim);
+  color: var(--text-faded);
   padding-top: 0.1em;
   font-size: 90%;
 }
@@ -24,7 +24,6 @@
 }
 
 #subtitle {
-  font-family: "Linux Libertine", "Georgia", "Times", serif;
   margin-top: -8px;
   margin-bottom: 0.3em;
   font-size: 1.4em;
@@ -33,7 +32,7 @@
 
 .datesub {
   font-weight: normal;
-  color: var(--text-dim);
+  color: var(--text-faded);
 }
 
 #tags {
