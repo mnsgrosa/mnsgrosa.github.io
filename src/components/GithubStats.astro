@@ -1,0 +1,143 @@
+---
+/**
+ * GitHub stats snapshot for the portfolio page.
+ *
+ * Fetches aggregate counters from the GitHub REST API, so it reveals nothing
+ * about private repos or orgs you've created (unlike the public-events feed,
+ * which exposed org names). Rendered client-side; no third-party service.
+ *
+ * Props:
+ *  - username: GitHub username to fetch stats for.
+ */
+interface Props {
+  username: string;
+}
+
+const { username } = Astro.props;
+const userApi = `https://api.github.com/users/${username}`;
+const reposApi = `https://api.github.com/users/${username}/repos?per_page=100`;
+---
+
+<section class="gh-stats" data-user={userApi} data-repos={reposApi}>
+  <p id="gh-stats-status" class="gh-stats-status">Carregando…</p>
+  <ul id="gh-stats-list" class="gh-stats-list" hidden>
+    <li class="gh-stat" data-key="repos">
+      <span class="gh-stat-value" id="stat-repos">–</span>
+      <span class="gh-stat-label">Repositórios</span>
+    </li>
+    <li class="gh-stat" data-key="followers">
+      <span class="gh-stat-value" id="stat-followers">–</span>
+      <span class="gh-stat-label">Seguidores</span>
+    </li>
+    <li class="gh-stat" data-key="following">
+      <span class="gh-stat-value" id="stat-following">–</span>
+      <span class="gh-stat-label">Seguindo</span>
+    </li>
+    <li class="gh-stat" data-key="stars">
+      <span class="gh-stat-value" id="stat-stars">–</span>
+      <span class="gh-stat-label">Estrelas</span>
+    </li>
+  </ul>
+</section>
+
+<script>
+  const section = document.querySelector<HTMLElement>('.gh-stats');
+  if (section) {
+    const userApi = section.dataset.user ?? '';
+    const reposApi = section.dataset.repos ?? '';
+    const status = section.querySelector<HTMLElement>('#gh-stats-status');
+    const list = section.querySelector<HTMLElement>('#gh-stats-list');
+
+    // Format a number compactly, e.g. 1234 -> "1.2k".
+    function formatCount(n: number): string {
+      if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+      return String(n);
+    }
+
+    function setValue(key: string, value: number) {
+      const el = section.querySelector<HTMLElement>(`#stat-${key}`);
+      if (el) el.textContent = formatCount(value);
+    }
+
+    async function totalStars(username: string): Promise<number> {
+      // /users/:username/repos is paginated (100/page); sum stargazers_count
+      // across all pages of repos owned by the user (type=owner).
+      let page = 1;
+      let sum = 0;
+      let seen = 0;
+      for (;;) {
+        const res = await fetch(`${reposApi}&type=owner&page=${page}`, {
+          headers: { Accept: 'application/vnd.github+json' },
+        });
+        if (!res.ok) break;
+        const repos: Array<{ stargazers_count: number }> = await res.json();
+        if (!repos.length) break;
+        seen += repos.length;
+        sum += repos.reduce((acc, r) => acc + (r.stargazers_count || 0), 0);
+        if (seen >= 100 * page || repos.length < 100) break;
+        page += 1;
+      }
+      return sum;
+    }
+
+    async function loadStats() {
+      if (!status || !list || !userApi) return;
+      try {
+        const [userRes, stars] = await Promise.all([
+          fetch(userApi, { headers: { Accept: 'application/vnd.github+json' } }),
+          totalStars(username),
+        ]);
+        if (!userRes.ok) throw new Error(`HTTP ${userRes.status}`);
+        const user = await userRes.json();
+        setValue('repos', user.public_repos ?? 0);
+        setValue('followers', user.followers ?? 0);
+        setValue('following', user.following ?? 0);
+        setValue('stars', stars);
+        status.style.display = 'none';
+        list.hidden = false;
+      } catch (err) {
+        status.textContent = 'Não foi possível carregar as estatísticas.';
+        console.error('GitHub stats fetch failed:', err);
+      }
+    }
+
+    loadStats();
+  }
+</script>
+
+<style>
+  .gh-stats {
+    margin: 1rem 0;
+  }
+  .gh-stats-status {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .gh-stats-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+  }
+  .gh-stat {
+    border: 1px solid var(--border-general);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    background: var(--toc-background);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .gh-stat-value {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .gh-stat-label {
+    font-size: 0.85em;
+    color: var(--text-dim);
+  }
+</style>

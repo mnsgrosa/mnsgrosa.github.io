@@ -1,6 +1,10 @@
 ---
 /**
- * GitHub repo card embed via gh-card.dev.
+ * GitHub repo card embed via gh-card.dev (nwtgck/gh-card, self-hostable —
+ * not vercel).
+ *
+ * gh-card.dev always renders a light card and ignores theme params, so a CSS
+ * invert filter is applied to match this site's dark Catppuccin Mocha palette.
  *
  * Props:
  *  - repo: "owner/repo" (e.g. "facebook/react")
@@ -47,5 +51,7 @@ const [owner, name] = repo.split('/');
     border-radius: 8px;
     max-width: 100%;
     height: auto;
+    /* Invert the light gh-card.dev card to fit the dark site theme. */
+    filter: invert(0.9) hue-rotate(180deg);
   }
 </style>

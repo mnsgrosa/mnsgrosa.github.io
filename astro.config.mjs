@@ -3,7 +3,7 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://mnsgrosa.github.io",
+  site: "https://mnsgrosa.com.br",
   base: "/",
   integrations: [mdx()],
   markdown: {

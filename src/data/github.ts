@@ -10,7 +10,7 @@ export interface GithubConfig {
 export const github: GithubConfig = {
   username: 'mnsgrosa',
   repos: [
-    'mnsgrosa/mnsgrosa.github.io',
-    'mnsgrosa/some-project',
+    'mnsgrosa/llm_arxiv',
+    'mnsgrosa/finance_agent',
   ],
 };

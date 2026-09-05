@@ -104,8 +104,25 @@
   margin: 0;
 }
 
+/* Normalize the repo-card footprint so every gh-card.dev image (which has a
+   fixed 442px width but a content-dependent height) occupies the same box:
+   give the link a fixed aspect-ratio cell and contain the image inside it,
+   so cards align in the grid without cropping or distorting the SVG. */
+.repo-grid .gh-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 1;
+  width: 100%;
+}
+
 .repo-grid .gh-card,
 .repo-grid .gh-card img {
   display: block;
   width: 100%;
+}
+
+.repo-grid .gh-card img {
+  height: 100%;
+  object-fit: contain;
 }

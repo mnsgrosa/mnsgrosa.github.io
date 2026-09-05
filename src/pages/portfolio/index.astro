@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import GithubActivity from '../../components/GithubActivity.astro';
+import GithubStats from '../../components/GithubStats.astro';
 import GithubRepoCard from '../../components/widgets/GithubRepoCard.astro';
 import { experience } from '../../data/experience';
 import { github } from '../../data/github';
@@ -60,5 +60,5 @@ import { contact } from '../../data/contact';
     </div>
   </section>
 
-  <GithubActivity username={github.username} />
+  <GithubStats username={github.username} />
 </BaseLayout>
