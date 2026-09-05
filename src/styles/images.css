@@ -48,6 +48,17 @@ video {
   max-width: 100%;
 }
 
+/* Cover hero at the top of an article page (from frontmatter `image`). */
+.post-hero {
+  width: 100%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border-general);
+  margin: 0 0 1.2rem 0;
+}
+
 /* Image gallery. */
 .image-gallery, .image-gallery-img {
   list-style-type: none;

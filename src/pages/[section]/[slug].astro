@@ -45,6 +45,8 @@ const tags = parseTags(entry.data.tags);
 ---
 
 <BaseLayout title={entry.data.title}>
+  {entry.data.image && <img class="post-hero" src={entry.data.image} alt="" />}
+
   <div id="single-header">
     <h1>{entry.data.title}</h1>
     <div id="single-meta">
