@@ -3,11 +3,12 @@ title: "E se as LLMs escolhessem o que fazer?"
 pubDate: 2026-01-30
 description: "Padrão de rotas para LLMs"
 lang: 'pt'
+subject: ai-engineering
 ---
 
 # Faça a LLM escolher
 
-Primeiro, preciso dizer que este será meu segundo post em inglês. O primeiro se chama *stepback*, já que fui direto para servidores MCP sem construir uma boa base para o leitor, o que vou abordar neste post.
+Primeiro, preciso dizer que este será meu segundo post em inglês. O primeiro se chama [[posts/stepback|stepback]], já que fui direto para servidores MCP sem construir uma boa base para o leitor, o que vou abordar neste post.
 
 - Por que você deve quebrar tarefas para LLMs  
 - Como quebrar em tarefas menores  

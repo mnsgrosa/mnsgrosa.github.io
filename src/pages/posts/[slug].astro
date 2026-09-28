@@ -2,6 +2,8 @@
 // src/pages/posts/[slug].astro
 import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
+import ArticleNeighbors from '../../components/ArticleNeighbors.astro';
+import { readGraph } from '../../lib/content-index.mjs';
 
 // This function is required for dynamic routes in static mode.
 // It tells Astro which pages to generate at build time.
@@ -16,15 +18,20 @@ export async function getStaticPaths() {
 // Get the specific post data from the props passed by getStaticPaths
 const { post } = Astro.props;
 const { Content } = await post.render();
+const graph = readGraph();
+const currentId = `posts/${post.slug}`;
+const article = graph.articles.find(a => a.id === currentId);
+const subject = graph.subjects.find(s => s.id === article?.subject);
 ---
 
-<MainLayout title={post.data.title}>
-    <h1>{post.data.title}</h1>
-    <p>Published on: {post.data.pubDate.toLocaleDateString()}</p>
-    <hr>
-    
-    <!-- This component renders your Markdown content -->
-    <div class="post-content">
-        <Content />
+<MainLayout title={post.data.title} lang={post.data.lang}>
+    <header class="article-header">
+        <a class="index-link" href="/#explore">← Explore the map</a>
+        <h1>{post.data.title}</h1>
+        <p class="article-meta">{subject?.title ?? 'Outside the map'} · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString(post.data.lang, { timeZone: 'UTC' })}</time></p>
+    </header>
+    <div class="reader-layout">
+        <article class="post-content"><Content /></article>
+        {article && <ArticleNeighbors graph={graph} currentId={currentId} />}
     </div>
 </MainLayout>

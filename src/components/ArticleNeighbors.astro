@@ -1,0 +1,24 @@
+---
+import { neighborhood } from '../lib/knowledge.mjs';
+import Constellation from './Constellation.astro';
+const { graph, currentId } = Astro.props;
+const { incoming, outgoing } = neighborhood(graph, currentId);
+const ids = new Set([currentId, ...incoming.map(a => a.id), ...outgoing.map(a => a.id)]);
+const articles = graph.articles.filter(a => ids.has(a.id));
+const localGraph = {
+  articles,
+  subjects: graph.subjects.filter(s => articles.some(a => a.subject === s.id)).map(s => ({ ...s, count: articles.filter(a => a.subject === s.id).length })),
+  edges: graph.edges.filter(edge => (edge.source === currentId || edge.target === currentId) && ids.has(edge.source) && ids.has(edge.target)),
+};
+---
+<aside class="neighborhood" aria-labelledby="neighbors-title">
+  <h2 id="neighbors-title">Around this article</h2>
+  <Constellation graph={localGraph} currentId={currentId} compact />
+  <div class="neighbor-links">
+    <h3>Links from this article</h3>
+    {outgoing.length ? <ul>{outgoing.map(a => <li><a href={a.url} lang={a.lang}>{a.title}</a></li>)}</ul> : <p>No outgoing article links yet.</p>}
+    <h3>Articles linking here</h3>
+    {incoming.length ? <ul>{incoming.map(a => <li><a href={a.url} lang={a.lang}>{a.title}</a></li>)}</ul> : <p>No backlinks yet.</p>}
+    <a class="index-link" href="/#explore">Back to the map ↗</a>
+  </div>
+</aside>

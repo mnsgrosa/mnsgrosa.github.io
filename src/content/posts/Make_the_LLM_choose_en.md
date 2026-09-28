@@ -3,9 +3,10 @@ title: "What if the LLMs could choose?"
 pubDate: 2026-01-30
 description: "The routing pattern for LLMs"
 lang: 'en'
+subject: ai-engineering
 ---
 
-First i must say that this will be my second english post the first one is called stepback since i went heads first on MCP servers without making a good foundation for the reader, what i will dive into in this one
+First i must say that this will be my second english post the first one is called [[posts/stepback|stepback]] since i went heads first on MCP servers without making a good foundation for the reader, what i will dive into in this one
 
 - Why you should break tasks for LLMs
 - How to break it in smaller tasks

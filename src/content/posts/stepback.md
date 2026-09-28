@@ -3,6 +3,7 @@ title: "Dando um passo atrás"
 pubDate: 2026-01-29
 description: "Um post introdutório sobre agentes de IA, cobrindo LLMs, tokens, e o que define um bom agente."
 lang: 'pt'
+subject: ai-engineering
 ---
 
 # Dando um passo atrás

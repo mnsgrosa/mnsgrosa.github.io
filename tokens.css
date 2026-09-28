@@ -1,0 +1,57 @@
+/* Hallmark · macrostructure: Map / Diagram · tone: playful constellation · anchor hue: orange
+ * theme: Gruvbox Dark (user-selected) · nav: N3 adapted side-rail · footer: Ft2
+ * pre-emit critique: P4 H4 E4 S5 R5 V4; browser verification recorded separately. */
+:root {
+  --color-paper: oklch(27.68482% 0.000000 89.8756); /* Gruvbox #282828 */
+  --color-panel: oklch(31.08824% 0.003375 48.6190); /* Gruvbox #32302f */
+  --color-surface: oklch(34.40675% 0.006603 48.5229); /* Gruvbox #3c3836 */
+  --color-rule: oklch(41.09760% 0.011527 51.8658); /* Gruvbox #504945 */
+  --color-ink: oklch(89.41459% 0.056590 89.2405); /* Gruvbox #ebdbb2 */
+  --color-secondary: oklch(82.54901% 0.050676 85.1158); /* Gruvbox #d5c4a1 */
+  --color-muted: oklch(69.02596% 0.034629 76.3067); /* Gruvbox #a89984 */
+  --color-accent: oklch(73.10874% 0.182011 51.6932); /* Gruvbox #fe8019 */
+  --color-visited: oklch(70.54014% 0.097578 2.1895); /* Gruvbox #d3869b */
+  --color-focus: var(--color-accent);
+  --color-accent-ink: var(--color-paper);
+  --color-edge: var(--color-muted);
+  --color-clear: transparent;
+  --font-body: 'Inter Variable', sans-serif;
+  --font-display: 'JetBrains Mono Variable', monospace;
+  --font-mono: var(--font-display);
+  --space-2xs: .25rem;
+  --space-xs: .5rem;
+  --space-sm: .75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+  --text-sm: .8125rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.953rem;
+  --text-display: clamp(2.25rem, 4vw, 4rem);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in: cubic-bezier(.7, 0, .84, 0);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --rule-width: 1px;
+  /* Compatibility for existing routes; new UI uses semantic color roles. */
+  --ctp-base: var(--color-paper);
+  --ctp-mantle: var(--color-panel);
+  --ctp-crust: var(--color-paper);
+  --ctp-text: var(--color-ink);
+  --ctp-subtext1: var(--color-secondary);
+  --ctp-subtext0: var(--color-muted);
+  --ctp-surface0: var(--color-surface);
+  --ctp-surface1: var(--color-rule);
+  --ctp-surface2: var(--color-muted);
+  --ctp-mauve: var(--color-accent);
+  --ctp-lavender: var(--color-secondary);
+  --ctp-pink: var(--color-visited);
+  --ctp-sapphire: var(--color-secondary);
+}
