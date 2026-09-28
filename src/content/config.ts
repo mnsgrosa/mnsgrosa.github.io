@@ -11,10 +11,13 @@ const postsCollection = defineCollection({
     lang: z.enum(['pt', 'en']),
     subject: z.string().optional(),
     graph: z.boolean().default(true),
-    // Sticky cover shown beside the article; root-relative or absolute URL.
+    // Cover shown beside the article; root-relative or absolute URL. Omit it to
+    // take the default from src/data/defaults.json, or set false for no cover.
     banner: z
-      .string()
-      .regex(/^(\/|https?:\/\/)/, 'banner must start with / or http(s)://')
+      .union([
+        z.string().regex(/^(\/|https?:\/\/)/, 'banner must start with / or http(s)://'),
+        z.literal(false),
+      ])
       .optional(),
     bannerAlt: z.string().optional(),
   }),

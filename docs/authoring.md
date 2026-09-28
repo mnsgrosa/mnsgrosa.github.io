@@ -33,11 +33,17 @@ graph: true
 
 ## Cover image
 
-Two more frontmatter fields, both optional:
+**Every article gets a cover without asking for one.** The default is set once in `src/data/defaults.json`:
+
+```json
+{ "banner": "/images/article-banner.jpg", "bannerAlt": "" }
+```
+
+Change that file to change the cover for every article that has not chosen its own. Override it per post with two optional frontmatter fields, or turn it off with `banner: false`:
 
 ```yaml
 banner: "/images/my-cover.jpg"
-bannerAlt: ""
+bannerAlt: "Diagram of the routing loop"
 ```
 
 The file must live under `public/` because nothing at the project root is served. `banner` also accepts an absolute URL. Leave `bannerAlt` out, or set it to `""`, when the cover is decorative; set it when the image carries meaning the surrounding text does not.

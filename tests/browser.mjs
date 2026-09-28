@@ -66,7 +66,7 @@ try {
     await page.goto(`${origin}/posts/stepback/`);
     const banner = page.locator('.post-banner');
     assert.equal(await banner.count(), 1, `banner missing at ${width}`);
-    assert.equal(await page.locator('.post-banner img').getAttribute('src'), '/images/article-banner.jpg');
+    assert.equal(await page.locator('.post-banner img').getAttribute('src'), '/images/article-banner.jpg', 'cover comes from the shared default');
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Banner overflow at ${width}`);
     const content = await page.locator('.content').boundingBox();
     const prose = await page.locator('.post-content').boundingBox();
@@ -123,7 +123,7 @@ try {
       await page.screenshot({ path: `${artifacts}/banner-${width}.png`, fullPage: width === 375 });
     }
     await page.goto(`${origin}/posts/teste_1/`);
-    assert.equal(await page.locator('.post-banner').count(), 0, 'no banner without the field');
+    assert.equal(await page.locator('.post-banner').count(), 0, 'banner: false opts out of the default');
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(origin);

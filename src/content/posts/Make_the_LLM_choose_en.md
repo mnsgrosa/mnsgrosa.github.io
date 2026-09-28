@@ -1,7 +1,6 @@
 ---
 title: "What if the LLMs could choose?"
 pubDate: 2026-01-30
-banner: "/images/article-banner.jpg"
 description: "The routing pattern for LLMs"
 lang: 'en'
 subject: ai-engineering

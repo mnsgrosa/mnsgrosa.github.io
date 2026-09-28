@@ -1,7 +1,6 @@
 ---
 title: "E se as LLMs escolhessem o que fazer?"
 pubDate: 2026-01-30
-banner: "/images/article-banner.jpg"
 description: "Padrão de rotas para LLMs"
 lang: 'pt'
 subject: ai-engineering

@@ -57,8 +57,12 @@ last field is what places the article on the map:
 | --- | --- |
 | `subject` | The island id to join, from `src/data/subjects.json`. Omit it and the article is published normally but stays off the map. |
 | `graph: false` | Publishes and indexes nothing: keeps a draft or off-topic post out of the map. |
-| `banner` | Cover image, e.g. `"/images/article-banner.jpg"`. Omit it for no cover. |
-| `bannerAlt` | Alt text for the cover. Leave it out for a decorative image. |
+| `banner` | Cover image, e.g. `"/images/my-cover.jpg"`. Omit it to use the default; set `false` for no cover. |
+| `bannerAlt` | Alt text for the cover. Defaults to empty, i.e. decorative. |
+
+Every article gets a cover without declaring one: the default lives in
+`src/data/defaults.json`. Change that file to change the cover for all of them,
+or override it per article.
 
 The cover is a portrait image that follows the article as you scroll. On wide
 screens it becomes a column between the menu and the article, a thin gap from

@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
 import ArticleNeighbors from '../../components/ArticleNeighbors.astro';
 import { readGraph } from '../../lib/content-index.mjs';
+import defaults from '../../data/defaults.json';
 
 // This function is required for dynamic routes in static mode.
 // It tells Astro which pages to generate at build time.
@@ -22,13 +23,16 @@ const graph = readGraph();
 const currentId = `posts/${post.slug}`;
 const article = graph.articles.find(a => a.id === currentId);
 const subject = graph.subjects.find(s => s.id === article?.subject);
+// `banner: false` opts out; omitting the field takes the shared default.
+const banner = post.data.banner === false ? undefined : post.data.banner ?? defaults.banner;
+const bannerAlt = post.data.bannerAlt ?? defaults.bannerAlt ?? '';
 ---
 
-<MainLayout title={post.data.title} lang={post.data.lang} contentClass={post.data.banner ? 'content--banner' : undefined}>
-    <div class:list={['article-shell', { 'has-banner': !!post.data.banner }]}>
-        {post.data.banner && (
+<MainLayout title={post.data.title} lang={post.data.lang} contentClass={banner ? 'content--banner' : undefined}>
+    <div class:list={['article-shell', { 'has-banner': !!banner }]}>
+        {banner && (
             <figure class="post-banner">
-                <img src={post.data.banner} alt={post.data.bannerAlt ?? ''} width="427" height="1318" loading="eager" decoding="async" />
+                <img src={banner} alt={bannerAlt} width="427" height="1318" loading="eager" decoding="async" />
             </figure>
         )}
         <div class="article-body">
