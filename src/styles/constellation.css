@@ -169,6 +169,9 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
    grows by taking a larger size, not a longer line. Both values are tokens. */
 @media (min-width: 120rem) {
   .has-banner .post-content { font-size: var(--text-reading-wide); max-width: var(--measure-wide); }
+  /* Headings step up with the body, or the hierarchy flattens. */
+  .has-banner .post-content h2 { font-size: var(--text-2xl); }
+  .has-banner .post-content h3 { font-size: var(--text-xl); }
 }
 
 @media (prefers-reduced-motion: reduce) {

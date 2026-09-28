@@ -96,8 +96,12 @@ try {
           const rects = [...range.getClientRects()].filter(r => r.width > 50);
           return { charsPerLine: Math.round(p.textContent.length / rects.length), proseWidth: Math.round(document.querySelector('.post-content').getBoundingClientRect().width) };
         });
-        assert.ok(line.proseWidth >= 780, `reading block widened (${line.proseWidth}px)`);
-        assert.ok(line.charsPerLine <= 90, `line length still bounded (${line.charsPerLine} chars)`);
+        assert.ok(line.proseWidth >= 1100, `reading block widened (${line.proseWidth}px)`);
+        // The owner chose a longer line over a mid-page gap at ultrawide. 100
+        // characters is the stated ceiling for that trade, not a guideline.
+        assert.ok(line.charsPerLine <= 100, `line within the agreed ceiling (${line.charsPerLine} chars)`);
+        const midGap = hood.x - (prose.x + prose.width);
+        assert.ok(midGap <= 200, `gap between text and constellation stays bounded (${midGap}px)`);
       }
       const viewport = await page.evaluate(() => innerHeight);
       assert.ok(Math.abs(cover.height - (viewport - 64)) < 2, `cover fills the viewport height (${cover.height} vs ${viewport - 64})`);

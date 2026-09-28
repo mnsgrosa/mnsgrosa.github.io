@@ -49,6 +49,12 @@ Placement is responsive:
 
 The 1440px threshold is derived, not arbitrary: it is the point where the rail (200px), the gaps, the 260px cover, and a 68ch article beside a 280px neighbourhood all fit. Adding a cover also lifts the reading column's 1260px cap (`content--banner`) and bounds the article at 1180px so an ultrawide window does not stretch the reader. Change the cover's 260px width or the rail's 200px and the threshold moves with them.
 
+## Wide-screen reading
+
+From 1920px the article's reading block also grows: 22px text over an 80ch measure (`--text-reading-wide` and `--measure-wide` in `tokens.css`), with the article's own `h2`/`h3` stepping up so the hierarchy does not flatten. Growing the size rather than only the measure keeps the block filling the width without stretching the line: at 1920 the text fills its column, and at 2560 the gap before the constellation is about 180px instead of 510px.
+
+That trade is deliberate and has a ceiling. Filling the last of the gap at 2560 would mean roughly 108 characters per line, so the line is capped near 94 and the browser test fails above 100. If you want it wider still, raise `--measure-wide`; the character count rises with it.
+
 Size the asset before committing; there is no image pipeline. A tall portrait crop works best, roughly 3:4 or taller, 400–600px wide, under about 250KB. `public/images/article-banner.jpg` is the current placeholder and is safe to replace.
 
 ## Link articles
