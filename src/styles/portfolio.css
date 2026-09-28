@@ -49,7 +49,7 @@
 
 .experience-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 1rem;
   margin: 1rem 0 2rem;
 }
@@ -60,33 +60,36 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  aspect-ratio: 1 / 1;
-  min-height: 200px;
   background: var(--toc-background);
 }
 
 .experience-role {
   margin: 0;
   font-size: 1.05em;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .experience-company {
   margin: 0.15rem 0 0;
-  color: var(--link);
+  color: var(--text-dim);
   font-size: 0.95em;
 }
 
 .experience-period {
   margin: 0.15rem 0 0.5rem;
-  color: var(--text-dim);
+  color: var(--text-faded);
   font-size: 0.85em;
 }
 
-.experience-summary {
-  margin: 0.4rem 0 0.6rem;
+.experience-highlights {
+  margin: 0.45rem 0 0.7rem;
+  padding-left: 1.15rem;
   font-size: 0.9em;
   line-height: 1.45;
+}
+
+.experience-highlights li {
+  margin: 0.2rem 0;
 }
 
 .experience-card .tag-list {
@@ -95,7 +98,7 @@
 
 .repo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
   gap: 1rem;
   margin: 1rem 0 2rem;
 }

@@ -1,4 +1,9 @@
 ---
+// Web fonts are self-hosted via @fontsource-variable (no external font request).
+// `wght.css` is the weight-axis-only sheet: normal style, all subsets, each face
+// gated by `unicode-range`, so a pt-br reader downloads only latin / latin-ext.
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/main.css';
 import '../styles/menu.css';
 import '../styles/images.css';
@@ -43,7 +48,7 @@ const pageTitle = isHome
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <meta name="theme-color" content="#1e1e2e" />
+    <meta name="theme-color" content="#282828" />
 
     <meta name="description" content={description ?? pageTitle} />
 
@@ -51,10 +56,15 @@ const pageTitle = isHome
 
     <title>{pageTitle}</title>
 
-    <!-- Prevent flicker on page load (Catppuccin Mocha, dark only). -->
+    <!-- Prevent flicker on page load (Gruvbox Dark, dark only).
+         This is the ONE documented exception to "no literal colour outside :root":
+         the block has to be inlined in <head> so it paints before the bundled
+         stylesheet lands, which means it cannot reference a custom property that
+         the stylesheet defines. Keep it byte-identical to `--background` in
+         src/styles/main.css. -->
     <style>
       :root {
-        --background: #1e1e2e;
+        --background: #282828;
       }
       html {
         background-color: var(--background);

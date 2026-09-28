@@ -30,7 +30,8 @@ pre {
 }
 
 code {
-  font-family: "Source Code Pro", monospace;
+  /* JetBrains Mono is the display AND code face — see docs/design.md. */
+  font-family: var(--font-mono);
   color: var(--code);
 
   /* For Iosevka */

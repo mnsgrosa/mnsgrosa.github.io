@@ -39,7 +39,13 @@ import { contact } from '../../data/contact';
             <h3 class="experience-role">{job.role}</h3>
             <p class="experience-company">{job.company}</p>
             <p class="experience-period">{job.period}</p>
-            <p class="experience-summary">{job.summary}</p>
+            {
+              job.highlights && job.highlights.length > 0 && (
+                <ul class="experience-highlights">
+                  {job.highlights.map((h) => <li>{h}</li>)}
+                </ul>
+              )
+            }
             {
               job.stack && job.stack.length > 0 && (
                 <ul class="tag-list">

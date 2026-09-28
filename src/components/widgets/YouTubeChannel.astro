@@ -1,0 +1,134 @@
+---
+/**
+ * YouTube channel link card.
+ *
+ * A channel page (`youtube.com/@handle`) answers `x-frame-options: SAMEORIGIN`,
+ * so it cannot be embedded the way the single-video `YouTube` widget is — an
+ * iframe of it renders blank. The row is therefore a **link card**: the whole
+ * panel is one anchor that opens the channel in a new tab. The avatar is an
+ * image hosted on YouTube's CDN and handed in as a prop, so the repo fetches
+ * and commits nothing at build time.
+ *
+ * Props:
+ *  - url: channel URL (e.g. "https://www.youtube.com/@YouTube")
+ *  - name: channel name — also the link's accessible name
+ *  - avatar: channel avatar image URL (yt3.googleusercontent.com)
+ *  - title: optional heading rendered above the row
+ */
+interface Props {
+  url: string;
+  name: string;
+  avatar: string;
+  title?: string;
+}
+
+const { url, name, avatar, title } = Astro.props;
+---
+
+<div class="yt-channel">
+  {title && <h4>{title}</h4>}
+  <a class="yt-channel-row" href={url} target="_blank" rel="noopener noreferrer">
+    <img
+      class="yt-channel-avatar"
+      src={avatar}
+      alt=""
+      width="44"
+      height="44"
+      loading="lazy"
+    />
+    <span class="yt-channel-name">{name}</span>
+    <svg class="yt-channel-arrow" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M4.5 11.5 11.5 4.5" />
+      <path d="M5.6 4.5h5.9v5.9" />
+    </svg>
+  </a>
+</div>
+
+<style>
+  /* Hallmark · component: youtube-channel-link-card · genre: editorial · theme: project system
+   * (docs/design.md — Gruvbox Dark; no catalog theme, no macrostructure: component-scope)
+   * pre-emit critique: P5 H4 E4 S4 R5 V4 (Variety scored on the component: component-scope,
+   * so no macrostructure rotation applies)
+   * states: default · hover · focus-visible · active · visited — one focusable anchor; a
+   *   static link card has no disabled / loading / error / success surface to style.
+   * contrast: name --text on --card 9.57:1 · arrow --text-faded on --card 4.72:1 · tokens: pass
+   *   · icons: inline geometry, no icon set · mobile: nowrap + ellipsis, no overflow at 320px
+   */
+
+  .yt-channel {
+    margin: 1rem 0;
+  }
+  .yt-channel h4 {
+    margin: 0 0 0.4rem;
+  }
+
+  /* The whole row is a single focusable link; nothing inside it is separately
+     focusable (design.md: one focusable link per card). */
+  .yt-channel-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--card);
+    border: 1px solid var(--border-general);
+    border-radius: 8px;
+    color: var(--text);
+    /* The panel's hover signal is the hairline + the arrow, not a text
+       underline (same choice as `.home-cta` in home.css). */
+    text-decoration: none;
+    transition: border-color 0.15s ease;
+  }
+  .yt-channel-row:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+  .yt-channel-row:active {
+    color: var(--text);
+  }
+
+  .yt-channel-avatar {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    /* Zero the global `img { margin: 0.8em 0 }` from images.css: inside this
+       box the margin is not spacing, it pushes the avatar off the row's
+       optical centre. */
+    margin: 0;
+    border: 1px solid var(--border-general);
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .yt-channel-name {
+    flex: 1 1 auto;
+    /* Let the name shrink instead of forcing the row wider than its column. */
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 0.95em;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Inline geometry, not a colour: the box is 1em and the paint is
+     `currentColor` (design.md — "os ícones são geometria, não cor"). */
+  .yt-channel-arrow {
+    flex: none;
+    margin-left: auto;
+    width: 1em;
+    height: 1em;
+    fill: none;
+    color: var(--text-faded);
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: color 0.15s ease;
+  }
+  .yt-channel-row:hover .yt-channel-arrow,
+  .yt-channel-row:focus-visible .yt-channel-arrow {
+    color: var(--accent);
+  }
+</style>

@@ -13,7 +13,7 @@
   padding: 0.05rem 0.55rem;
   border: 1px solid var(--border-general);
   border-radius: 999px;
-  color: var(--accent-soft);
+  color: var(--tag-foreground);
   background: var(--surface);
   font-size: 0.78em;
   line-height: 1.5;

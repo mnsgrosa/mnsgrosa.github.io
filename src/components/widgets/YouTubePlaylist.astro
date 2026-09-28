@@ -1,0 +1,145 @@
+---
+/**
+ * YouTube playlist embed (official `videoseries` player).
+ *
+ * A playlist *page* cannot be iframed — `youtube.com/@handle/playlists` answers
+ * `x-frame-options: SAMEORIGIN`, so an iframe of it renders blank. The **embed**
+ * endpoint can: `youtube-nocookie.com/embed/videoseries?list=<id>` answers 200
+ * with no framing headers, and it brings YouTube's own queue sidebar, so the
+ * playlist id alone is the whole API for the player. No video ids, no scraping,
+ * and the queue stays YouTube's (we never re-draw it).
+ *
+ * The id used to come from YouTube Data API v3 `playlists.list`, which also fed
+ * a `N vídeos · canal` metadata line under the title. That path is **removed**:
+ * the widget now needs no API key, no `.env`, no repo secret, no build-time
+ * network call and no quota. The only thing the API bought was that metadata
+ * line, and it was not worth the credential. The header is now what the author
+ * writes in `title` — and with no `title` the widget renders the bare embed,
+ * exactly like the single-video `YouTube` widget. The author never pasted a
+ * playlist *id* either; they paste the link out of the address bar, so `url`
+ * accepts a full playlist link and extracts the id.
+ *
+ * Props:
+ *  - url: playlist link — `youtube.com/playlist?list=PL…`,
+ *    `watch?v=…&list=PL…`, with or without `&si=…` — or a bare `PL…` id
+ *  - title: optional heading above the embed; without it there is no header
+ */
+interface Props {
+  url: string;
+  title?: string;
+}
+
+const { url, title: titleProp } = Astro.props;
+
+// A YouTube playlist id is URL-safe base64-ish: letters, digits, `-` and `_`.
+const PLAYLIST_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+
+/**
+ * A link with no `list=` parameter, or with a value that is not a playlist id,
+ * is an authoring mistake — not a network condition. There is no header to fall
+ * back to any more, so failing loudly at build time beats shipping an empty
+ * player.
+ */
+function extractPlaylistId(source: string): string {
+  const value = source.trim();
+
+  // A bare id has no scheme, no path, no query — hand it straight back.
+  if (!value.includes('?') && !value.includes('/') && PLAYLIST_ID_PATTERN.test(value)) {
+    return value;
+  }
+
+  let parsed: URL;
+  try {
+    // `youtube.com/playlist?list=…` arrives without a scheme when it is copied
+    // from some places; give the parser one so both forms are accepted.
+    parsed = new URL(value.includes('://') ? value : `https://${value}`);
+  } catch {
+    throw new Error(
+      `[YouTubePlaylist] prop \`url\` is not a playlist link or a playlist id: ${JSON.stringify(source)}. ` +
+        'Pass e.g. "https://www.youtube.com/playlist?list=PLbpi6ZahtOH4tNID8Jkz0opMGjeMKob7D".'
+    );
+  }
+
+  const id = parsed.searchParams.get('list') ?? '';
+  if (!PLAYLIST_ID_PATTERN.test(id)) {
+    throw new Error(
+      `[YouTubePlaylist] prop \`url\` has no usable \`list=\` parameter: ${JSON.stringify(source)}. ` +
+        'Pass e.g. "https://www.youtube.com/playlist?list=PLbpi6ZahtOH4tNID8Jkz0opMGjeMKob7D".'
+    );
+  }
+
+  return id;
+}
+
+const playlistId = extractPlaylistId(url);
+---
+
+<div class="yt-playlist">
+  {titleProp && <h4 class="yt-playlist-title">{titleProp}</h4>}
+  <div class="yt-playlist-frame">
+    <iframe
+      class="yt-playlist-embed"
+      src={`https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}`}
+      title={titleProp ?? 'Playlist do YouTube'}
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+</div>
+
+<style>
+  /* Hallmark · component: youtube-playlist-embed · genre: editorial · theme: project system
+   * (docs/design.md — Gruvbox Dark; no catalog theme, no macrostructure: component-scope)
+   * pre-emit critique: P4 H5 E5 S4 R5 V4 (Variety scored on the component: component-scope,
+   * so no macrostructure rotation applies)
+   * states: untitled (bare embed — the default render) · author-titled (the `title` prop adds
+   *   the heading) · keyboard focus on the embedded player. The widget authors no button,
+   *   input or link, so disabled / loading / error / success live inside YouTube's own frame,
+   *   not ours; a malformed `url` is an authoring error and fails the build, it never renders.
+   * contrast: title --text on paper 10.75:1 · tokens: pass · icons: none · motion: none, so
+   *   nothing for prefers-reduced-motion to collapse · mobile: the 16/9 frame is width-bound,
+   *   no overflow at 320px
+   */
+
+  .yt-playlist {
+    margin: 1rem 0;
+  }
+
+  .yt-playlist-title {
+    margin: 0 0 0.6rem;
+    /* Author-supplied text of unknown length: a title with one long unbreakable
+       token must wrap, not widen the column at 320px. */
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  /* Iframe chrome: the sibling `YouTube.astro` recipe verbatim — hairline
+     `bg2`, radius 8px, 16/9, `overflow: hidden`. The player inside is YouTube's
+     own UI; its fonts and colours are not ours to tokenise. */
+  .yt-playlist-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--border-general);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* The widget's only focusable element is the embedded player. The ring goes on
+     the frame, not the iframe: `overflow: hidden` on the frame would clip a ring
+     painted inside it. design.md — a 2px static ring in `--accent`, never
+     animated. `:has()` degrades to no ring, never to a broken one. */
+  .yt-playlist-frame:has(.yt-playlist-embed:focus-visible) {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .yt-playlist-embed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>

@@ -159,15 +159,23 @@ declare module 'astro:content' {
   collection: "diversos";
   data: InferEntrySchema<"diversos">
 } & { render(): Render[".mdx"] };
+"zz-probe.mdx": {
+	id: "zz-probe.mdx";
+  slug: "zz-probe";
+  body: string;
+  collection: "diversos";
+  data: InferEntrySchema<"diversos">
+} & { render(): Render[".mdx"] };
 };
-"estudos": Record<string, {
-  id: string;
-  slug: string;
+"estudos": {
+"por-onde-comecar.mdx": {
+	id: "por-onde-comecar.mdx";
+  slug: "por-onde-comecar";
   body: string;
   collection: "estudos";
-  data: InferEntrySchema<"estudos">;
-  render(): Render[".md"];
-}>;
+  data: InferEntrySchema<"estudos">
+} & { render(): Render[".mdx"] };
+};
 "experience": {
 "cv.md": {
 	id: "cv.md";
@@ -185,36 +193,14 @@ declare module 'astro:content' {
   data: InferEntrySchema<"portfolio">;
   render(): Render[".md"];
 }>;
-"posts": {
-"Make_the_LLM_choose_PT.md": {
-	id: "Make_the_LLM_choose_PT.md";
-  slug: "make_the_llm_choose_pt";
+"posts": Record<string, {
+  id: string;
+  slug: string;
   body: string;
   collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
-"Make_the_LLM_choose_en.md": {
-	id: "Make_the_LLM_choose_en.md";
-  slug: "make_the_llm_choose_en";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
-"stepback.md": {
-	id: "stepback.md";
-  slug: "stepback";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
-"teste_1.md": {
-	id: "teste_1.md";
-  slug: "teste_1";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
-};
+  data: InferEntrySchema<"posts">;
+  render(): Render[".md"];
+}>;
 
 	};
 

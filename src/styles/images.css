@@ -48,15 +48,38 @@ video {
   max-width: 100%;
 }
 
-/* Cover hero at the top of an article page (from frontmatter `image`). */
+/* Cover hero at the top of an article page (from frontmatter `image`). It is a
+   SIBLING BEFORE `.article` in `[slug].astro`, so `width: 100%` here means the
+   full shell (body content box), which is wider than the 58ch prose column.
+   A fixed 21:9 at 320px would be a ~123px sliver, so the narrow-screen ratio is
+   a taller 3:2 (320px -> ~288x192) and the landscape 21:9 kicks in once the
+   shell itself is constrained (>=760px).
+   `object-fit: cover` keeps a portrait source filling the width and cropping the
+   height — the intended read. `max-height` is the cap that stops a very wide or
+   very tall viewport from turning the banner into a screen-filling band; when it
+   clamps, the image just crops further.
+   `box-sizing: border-box` is local and deliberate: there is no global border-box
+   on this site, and without it the 2x1px hairline would be added on TOP of
+   `width: 100%`, pushing the banner 1px past the shell's content edge on each
+   side and off the nav's and the prose column's axis. With it, the banner's
+   border box is exactly the shell's content box. */
 .post-hero {
+  box-sizing: border-box;
+  display: block;
   width: 100%;
   height: auto;
-  max-height: 60vh;
+  aspect-ratio: 3 / 2;
+  max-height: 42vh;
   object-fit: cover;
   border-radius: 12px;
   border: 1px solid var(--border-general);
   margin: 0 0 1.2rem 0;
+}
+
+@media screen and (min-width: 760px) {
+  .post-hero {
+    aspect-ratio: 21 / 9;
+  }
 }
 
 /* Image gallery. */
@@ -77,8 +100,11 @@ video {
   margin: 0 0 2.6rem 0;
 }
 
+/* `min(…, 100%)` keeps a gallery item from forcing the page wider than the
+   viewport on small screens. */
 .image-gallery > li, .image-gallery-img > li {
-  flex-basis: 440px;
+  flex-basis: min(440px, 100%);
+  min-width: 0;
 }
 
 .image-gallery li img,
@@ -93,5 +119,6 @@ video {
 }
 
 .three-image-gallery > li {
-  flex-basis: 290px;
+  flex-basis: min(290px, 100%);
+  min-width: 0;
 }

@@ -38,6 +38,7 @@ const estudosCollection = defineCollection({
     subtitle: z.string().optional(),
     description: z.string().optional(),
     toc: z.boolean().optional(),
+    tags: z.string().optional(),
     image: z.string().optional(),
   }),
 });

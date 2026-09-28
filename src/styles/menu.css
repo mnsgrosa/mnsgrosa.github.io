@@ -11,6 +11,9 @@
 }
 
 .brand {
+  /* Mono-forward logotype: display face, same 700 as headings but at 1.15em vs
+     h1's 2em, so it reads lighter than a post title. */
+  font-family: var(--font-display);
   font-weight: bold;
   font-size: 1.15em;
   color: var(--text);
@@ -35,6 +38,8 @@
   font-size: 0.92em;
   text-decoration: none;
   border-radius: 5px;
+  /* A nav label never breaks across two lines. */
+  white-space: nowrap;
 }
 
 .header-contact a:hover {
@@ -61,6 +66,7 @@
   text-decoration: none;
   border-radius: 5px;
   color: var(--text-dim);
+  white-space: nowrap;
 }
 
 .menu a:last-child {
@@ -74,4 +80,21 @@
 .menu a:hover {
   text-decoration: underline;
   color: var(--accent);
+}
+
+/* Narrow phones: tighten the brand/nav groups instead of letting them collide.
+   Links themselves are `nowrap`, so the header never breaks a label in two. */
+@media screen and (max-width: 480px) {
+  .site-header {
+    justify-content: center;
+    gap: 0.35rem 0.9rem;
+  }
+
+  .header-contact {
+    gap: 0.1rem 0.7rem;
+  }
+
+  .menu a {
+    margin-right: 0.7em;
+  }
 }

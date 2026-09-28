@@ -82,15 +82,38 @@
   color: var(--background);
 }
 
-/* Card grid */
+/* Hallmark · component: post-card · genre: editorial · theme: project system
+ * (docs/design.md — Gruvbox Dark; no catalog theme, no macrostructure: component-scope)
+ * pre-emit critique: P4 H4 E4 S4 R5 V5 (Variety scored on the card: component-scope,
+ * so no macrostructure rotation applies)
+ * states: default · hover · focus-visible · active · visited (`.post-card-title a`)
+ *   — the card is a static content element: no disabled / loading / error / success
+ *   surface exists to style.
+ * contrast: pass (40-41) · tokens: pass (48) · icons: pass (30) ·
+ *   mobile: pass (34, 49) · gate 50: partial, documented exception at >=1150px
+ */
+
+/* Card grid. One full-width column by default; from 1150px up, fixed-size tracks
+   of `--card-width` packed auto-fill, aligned to the start, so the unused space
+   collects at the right of the last track instead of stretching every card.
+   `min(<token>, 100%)` (not a bare `<token>`) keeps a narrow container from
+   overflowing. `minmax(0, 1fr)` below 1150px is the Hallmark 50 form: a lone
+   fixed 340px card in the 768-1149px band would leave ~200px of dead space. */
 .post-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: 1fr;
   gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media screen and (min-width: 1150px) {
+  .post-grid {
+    grid-template-columns: repeat(auto-fill, min(var(--card-width), 100%));
+    justify-content: start;
+  }
 }
 
 /* Each cell stretches to its row's height and lets the card fill it, so every
@@ -99,37 +122,44 @@
   display: flex;
 }
 
-/* Post card — no box, content blends straight into the page background. */
+/* Post card — a tinted panel whose cover BLEEDS to its edges. The panel is a
+   hairline, not a shadow: a drop shadow on a dark surface reads as a glow.
+   The panel carries no padding of its own: the cover's band is the card's top
+   edge, not a picture in a picture. All the inset the text half needs lives on
+   `.post-card-body` (see below). `overflow` stays `visible` on purpose — a
+   hidden overflow here would clip the title link's focus ring. */
 .post-card {
   display: flex;
   flex-direction: column;
   flex: 1;
   width: 100%;
   min-width: 0;
-  background: transparent;
+  border: 1px solid var(--border-general);
+  border-radius: 12px;
+  background: var(--card);
 }
 
+/* The cover band sits flush against the panel's inner top/left/right edges, so
+   its top corners are rounded to the panel's INNER curve — outer 12px minus the
+   1px hairline = 11px — otherwise square corners would poke outside it. The
+   bottom corners stay square: the text half continues below.
+   `overflow: hidden` here is also what keeps the hover `scale(1.05)` clipped. */
 .post-card-media {
-  position: relative;
   display: block;
   aspect-ratio: 16 / 10;
-  border-radius: 12px;
+  border-radius: 11px 11px 0 0;
   overflow: hidden;
-}
-
-/* Soft dark edge at the bottom so the image sits naturally on the page bg. */
-.post-card-media::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 62%, color-mix(in srgb, var(--background) 45%, transparent) 100%);
-  pointer-events: none;
 }
 
 .post-card-image {
   display: block;
   width: 100%;
   height: 100%;
+  /* Zero the global `img { margin: 0.8em 0 }` from images.css. The cover is
+     `height: 100%`, so that 12.8px margin does not read as spacing — it pushes
+     the image down inside the media box (a bare band of --card above it) and
+     clips the same amount off its bottom. */
+  margin: 0;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -138,21 +168,50 @@
   transform: scale(1.05);
 }
 
+/* The text half carries the panel's inset now that `.post-card` has none: 1rem
+   on the sides and at the bottom, matching the padding the panel used to have.
+   Top is 0.9rem — the gap under the cover band. */
 .post-card-body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 0.9rem 0.15rem 0;
+  padding: 1rem;
 }
 
+/* Card WITH a cover: the media above already supplies the top edge, so the body
+   only adds the small gap under the image. A card WITHOUT a cover keeps the
+   plain 1rem inset on all four sides (the `+` never matches). */
+.post-card-media + .post-card-body {
+  padding-top: 0.9rem;
+}
+
+/* Meta row: calendar icon + date, an em-dash, clock icon + reading time. The
+   icons are geometry only — `stroke: currentColor` in CSS so the row's colour
+   stays a token. */
 .post-card-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.4rem;
   margin: 0 0 0.5rem;
   color: var(--text-faded);
   font-size: 0.8em;
   letter-spacing: 0.02em;
+}
+
+.post-card-icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.post-card-sep {
+  color: var(--text-faded);
 }
 
 .post-card-meta .date {
@@ -161,12 +220,14 @@
   font-size: 1em;
 }
 
+/* The title is the largest thing in the card, so the eye lands on it before the
+   excerpt. Two-line clamp, roman mono (inherited 700 from the h1-h6 rule). */
 .post-card-title {
-  margin: 0 0 0.45rem;
-  font-size: 1.08em;
-  font-weight: 600;
-  line-height: 1.35;
+  margin: 0 0 0.5rem;
+  font-size: 1.35em;
+  line-height: 1.3;
   letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -185,18 +246,20 @@
   margin: 0 0 1rem;
   color: var(--text-dim);
   font-size: 0.9em;
-  line-height: 1.5;
+  line-height: 1.55;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+/* The by-line is intentionally absent; the chip row is the only thing down here,
+   and it is left-aligned with the rest of the card. */
 .post-card-footer {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.5rem;
   margin-top: auto;
   padding-top: 0.5rem;
@@ -206,15 +269,7 @@
   margin: 0;
 }
 
-/* Article tags blend with the card/background (no chip box). */
+/* Chips keep the site-wide boxed `.tag-chip` box (bg1 on the bg0_s panel). */
 .post-card .tag-list {
   gap: 0.5rem;
-}
-
-.post-card .tag-chip {
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  color: var(--accent-soft);
 }

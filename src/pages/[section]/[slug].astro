@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GithubRepoCard from '../../components/widgets/GithubRepoCard.astro';
 import YouTube from '../../components/widgets/YouTube.astro';
+import YouTubeChannel from '../../components/widgets/YouTubeChannel.astro';
+import YouTubePlaylist from '../../components/widgets/YouTubePlaylist.astro';
 import Spotify from '../../components/widgets/Spotify.astro';
 import { listSections } from '../../data/sections';
 import { safeGetCollection, formatDate, parseTags } from '../../lib/content';
@@ -10,6 +12,8 @@ import { safeGetCollection, formatDate, parseTags } from '../../lib/content';
 const mdxComponents = {
   GithubRepoCard,
   YouTube,
+  YouTubeChannel,
+  YouTubePlaylist,
   Spotify,
 };
 
@@ -45,38 +49,48 @@ const tags = parseTags(entry.data.tags);
 ---
 
 <BaseLayout title={entry.data.title}>
-  {entry.data.image && <img class="post-hero" src={entry.data.image} alt="" />}
-
-  <div id="single-header">
-    <h1>{entry.data.title}</h1>
-    <div id="single-meta">
-      {entry.data.subtitle && <p id="subtitle">{entry.data.subtitle}</p>}
-      {entry.data.date && <span class="datesub">{formatDate(entry.data.date)}</span>}
-      {
-        tags.length > 0 && (
-          <ul class="tag-list" id="tags">
-            {tags.map((tag) => <li class="tag-chip">{tag}</li>)}
-          </ul>
-        )
-      }
-    </div>
-  </div>
-
   {
-    toc.length > 0 && (
-      <aside class="toc" id="tableOfContentContainer">
-        <nav id="TableOfContents">
-          <ul>
-            {toc.map((heading) => (
-              <li style={`margin-left: ${(heading.depth - 2) * 1}rem;`}>
-                <a href={`#${heading.slug}`}>{heading.text}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
-    )
+    /* The hero is a full-shell banner, so it is a SIBLING BEFORE `.article`
+       (the slot's root is `<body>`, whose content box is the shell) rather than
+       its first child. `.article` and `main` share the 58ch column at
+       >=1150px (`main.css`), which is deliberately left alone — the banner is
+       wider than the prose measure, the title and meta sit below it inside the
+       column. */
+    entry.data.image && <img class="post-hero" src={entry.data.image} alt="" />
   }
 
-  <main><Content components={mdxComponents} /></main>
+  <div class="article">
+    <div id="single-header">
+      <h1>{entry.data.title}</h1>
+      <div id="single-meta">
+        {entry.data.subtitle && <p id="subtitle">{entry.data.subtitle}</p>}
+        {entry.data.date && <span class="datesub">{formatDate(entry.data.date)}</span>}
+        {
+          tags.length > 0 && (
+            <ul class="tag-list" id="tags">
+              {tags.map((tag) => <li class="tag-chip">{tag}</li>)}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+
+    {
+      toc.length > 0 && (
+        <aside class="toc" id="tableOfContentContainer">
+          <nav id="TableOfContents">
+            <ul>
+              {toc.map((heading) => (
+                <li style={`margin-left: ${(heading.depth - 2) * 1}rem;`}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+      )
+    }
+
+    <main><Content components={mdxComponents} /></main>
+  </div>
 </BaseLayout>
