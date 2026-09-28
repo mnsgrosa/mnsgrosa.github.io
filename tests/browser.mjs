@@ -55,6 +55,72 @@ try {
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Reader overflow at ${width}`);
     await page.screenshot({ path: `${artifacts}/article-${width}.png`, fullPage: true });
   }
+  // Sticky banner: a column between the rail and the article that holds its
+  // place while the article scrolls, and a plain band below the desktop layout.
+  // The cover never displaces the reading column: at every width the article
+  // keeps the content box's left edge, whether the cover is a band above it or
+  // a sticky layer in the gutter. The 1440 case below is the regression test
+  // for the article having been pushed right.
+  for (const width of [375, 1440, 2560]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${origin}/posts/stepback/`);
+    const banner = page.locator('.post-banner');
+    assert.equal(await banner.count(), 1, `banner missing at ${width}`);
+    assert.equal(await page.locator('.post-banner img').getAttribute('src'), '/images/article-banner.jpg');
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Banner overflow at ${width}`);
+    const content = await page.locator('.content').boundingBox();
+    const prose = await page.locator('.post-content').boundingBox();
+    const column = await banner.boundingBox();
+    if (width >= 1440) {
+      // Three columns: menu | thin gap | portrait cover | thin gap | article.
+      const rail = await page.locator('.site-rail').boundingBox();
+      const cover = await page.locator('.post-banner img').boundingBox();
+      const menuGap = cover.x - (rail.x + rail.width);
+      const articleGap = prose.x - (cover.x + cover.width);
+      assert.ok(menuGap > 0 && menuGap <= 48, `thin gap between menu and cover (${menuGap})`);
+      assert.ok(articleGap > 0 && articleGap <= 48, `thin gap between cover and article (${articleGap})`);
+      assert.ok(prose.x > content.x, 'article follows the cover');
+      assert.ok(cover.height > cover.width * 1.5, 'cover column is portrait');
+      assert.equal(await banner.evaluate(el => getComputedStyle(el).position), 'sticky', 'cover column is sticky');
+      // No dead space trailing the wide layout: the constellation runs to the
+      // right edge of the content box.
+      const hood = await page.locator('.neighborhood').boundingBox();
+      const slack = content.x + content.width - (hood.x + hood.width);
+      assert.ok(slack <= 2, `wide layout reaches the right edge (slack=${slack})`);
+      // The reading block grows on ultrawide without lengthening the line.
+      if (width >= 1920) {
+        const line = await page.evaluate(() => {
+          const p = document.querySelector('.post-content p');
+          const range = document.createRange();
+          range.selectNodeContents(p);
+          const rects = [...range.getClientRects()].filter(r => r.width > 50);
+          return { charsPerLine: Math.round(p.textContent.length / rects.length), proseWidth: Math.round(document.querySelector('.post-content').getBoundingClientRect().width) };
+        });
+        assert.ok(line.proseWidth >= 780, `reading block widened (${line.proseWidth}px)`);
+        assert.ok(line.charsPerLine <= 90, `line length still bounded (${line.charsPerLine} chars)`);
+      }
+      const viewport = await page.evaluate(() => innerHeight);
+      assert.ok(Math.abs(cover.height - (viewport - 64)) < 2, `cover fills the viewport height (${cover.height} vs ${viewport - 64})`);
+      assert.equal(await page.locator('.post-banner img').evaluate(el => getComputedStyle(el).objectFit), 'cover');
+      await page.evaluate(() => scrollTo(0, 1600));
+      await page.waitForTimeout(50);
+      const stuck = await page.locator('.post-banner img').boundingBox();
+      const header = await page.locator('.article-header h1').boundingBox();
+      assert.ok(header.y < 0, 'article scrolled past the cover');
+      assert.ok(stuck.y >= 0 && stuck.y < 200, `cover followed the scroll (y=${stuck.y})`);
+      await page.evaluate(() => scrollTo(0, 0));
+      await page.screenshot({ path: `${artifacts}/banner-${width}.png` });
+    } else {
+      const position = await banner.evaluate(el => getComputedStyle(el).position);
+      assert.notEqual(position, 'sticky', 'cover is not sticky below the three-column width');
+      assert.ok(Math.abs(prose.x - content.x) < 2, `article stays at the content edge (${prose.x} vs ${content.x})`);
+      assert.ok(column.y < prose.y, 'cover card sits above the article');
+      assert.ok(column.height <= 0.61 * (await page.evaluate(() => innerHeight)), 'cover card is capped in height');
+      await page.screenshot({ path: `${artifacts}/banner-${width}.png`, fullPage: width === 375 });
+    }
+    await page.goto(`${origin}/posts/teste_1/`);
+    assert.equal(await page.locator('.post-banner').count(), 0, 'no banner without the field');
+  }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(origin);
   await page.locator('knowledge-map[data-ready="true"]').waitFor();

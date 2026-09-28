@@ -43,6 +43,7 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .site-footer { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: baseline; border-top: 1px solid var(--color-rule); padding-top: var(--space-lg); margin-top: var(--space-3xl); font-size: var(--text-sm); color: var(--color-muted); }
 .site-footer a { white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
 .about-intro { max-width: 800px; margin-bottom: var(--space-2xl); }
+/* Sticky panes unstick below the desktop layout; the banner becomes a band. */
 .about-intro h1 { margin: var(--space-xs) 0 var(--space-lg); }
 .about-intro .about-lead { font-size: var(--text-lg); max-width: 58ch; }
 .about-details { margin-top: var(--space-lg); }
@@ -104,11 +105,15 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .index-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: var(--space-lg); white-space: nowrap; }
 .home-secondary { display: flex; flex-wrap: wrap; gap: var(--space-lg); border-top: 1px solid var(--color-rule); margin-top: var(--space-2xl); padding-top: var(--space-lg); }
 .home-secondary a { min-height: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
+.article-shell { position: relative; min-width: 0; }
+.article-body { min-width: 0; }
+.post-banner { margin: 0 0 var(--space-lg); }
+.post-banner img { display: block; width: min(100%, 360px); aspect-ratio: 4 / 5; max-height: 60dvh; object-fit: cover; object-position: center; border: 1px solid var(--color-rule); border-radius: var(--radius-md); }
 .article-header { max-width: 70ch; margin-bottom: var(--space-xl); }
 .article-header h1 { font-size: clamp(1.9rem, 3vw, 3rem); letter-spacing: -.045em; }
 .article-meta { font-size: var(--text-sm); color: var(--color-muted); }
 .reader-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
-.post-content { min-width: 0; max-width: 68ch; }
+.post-content { min-width: 0; max-width: var(--measure); font-size: var(--text-reading); }
 .post-content h1 { font-size: var(--text-2xl); }
 .post-content h2 { margin-top: var(--space-xl); font-size: var(--text-xl); }
 .post-content h3 { margin-top: var(--space-lg); }
@@ -122,6 +127,7 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .compact .topic-index { display: none; }
 .compact .pan-controls { display: none; }
 .compact .map-legend { display: none; }
+.neighbor-links { max-width: var(--measure); }
 .neighbor-links h3 { font-size: var(--text-base); margin-top: var(--space-lg); }
 .neighbor-links ul { list-style: none; padding: 0; }
 .neighbor-links li { margin-block: var(--space-sm); }
@@ -134,6 +140,7 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 }
 @media (min-width: 70rem) {
   body { display: grid; grid-template-columns: 200px minmax(0, 1fr); }
+
   .site-rail { position: sticky; top: 0; align-self: start; height: 100dvh; padding: var(--space-xl) var(--space-lg); border-right: 1px solid var(--color-rule); border-bottom: 0; }
   .rail-brand { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
   .rail-brand img { width: 56px; height: 56px; }
@@ -141,6 +148,29 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
   .reader-layout { grid-template-columns: minmax(0, 1fr) minmax(280px, .55fr); }
   .neighborhood { position: sticky; top: var(--space-lg); align-self: start; max-height: calc(100dvh - 3rem); overflow: auto; padding: var(--space-xs); }
 }
+/* Wide screens only: the cover becomes the portrait column that sits between
+   the menu and the article, a thin gap from each, and holds position while the
+   article scrolls. The article starts directly after it. Below this width
+   there is no room for three columns, so the cover stays a card above the
+   article. 90rem is where the cover plus a two-column reader still fits: the
+   rail (200px), its gaps, the cover (260px) and a 68ch article beside a
+   neighbourhood. */
+@media (min-width: 90rem) {
+  .content--banner { max-width: none; margin-inline: 0; }
+  .article-shell.has-banner { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: var(--space-lg); align-items: start; }
+  .has-banner .post-banner { margin: 0; position: sticky; top: var(--space-lg); align-self: start; }
+  .has-banner .post-banner img { width: 100%; aspect-ratio: auto; height: calc(100dvh - 4rem); max-height: none; }
+  /* The prose keeps its measure; the constellation takes every remaining pixel
+     so the wide layout ends at the right edge instead of trailing off. */
+
+}
+
+/* Ultrawide: the three-column shell has width to spare, so the reading block
+   grows by taking a larger size, not a longer line. Both values are tokens. */
+@media (min-width: 120rem) {
+  .has-banner .post-content { font-size: var(--text-reading-wide); max-width: var(--measure-wide); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar.astro';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/constellation.css';
-const { title, lang = 'en' } = Astro.props;
+const { title, lang = 'en', contentClass } = Astro.props;
 ---
 <!doctype html>
 <html lang={lang}>
@@ -16,7 +16,7 @@ const { title, lang = 'en' } = Astro.props;
     <a class="skip-link" href="#main">Skip to content</a>
     <Sidebar />
     <main class="site-main" id="main">
-      <div class="content">
+      <div class:list={['content', contentClass]}>
         <slot />
         <footer class="site-footer">
           <span>Matheus Rosa</span>

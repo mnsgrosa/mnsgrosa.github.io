@@ -11,6 +11,12 @@ const postsCollection = defineCollection({
     lang: z.enum(['pt', 'en']),
     subject: z.string().optional(),
     graph: z.boolean().default(true),
+    // Sticky cover shown beside the article; root-relative or absolute URL.
+    banner: z
+      .string()
+      .regex(/^(\/|https?:\/\/)/, 'banner must start with / or http(s)://')
+      .optional(),
+    bannerAlt: z.string().optional(),
   }),
 });
 

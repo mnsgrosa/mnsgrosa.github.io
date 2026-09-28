@@ -57,12 +57,21 @@ last field is what places the article on the map:
 | --- | --- |
 | `subject` | The island id to join, from `src/data/subjects.json`. Omit it and the article is published normally but stays off the map. |
 | `graph: false` | Publishes and indexes nothing: keeps a draft or off-topic post out of the map. |
+| `banner` | Cover image, e.g. `"/images/article-banner.jpg"`. Omit it for no cover. |
+| `bannerAlt` | Alt text for the cover. Leave it out for a decorative image. |
+
+The cover is a portrait image that follows the article as you scroll. On wide
+screens it becomes a column between the menu and the article, a thin gap from
+each, and the article starts directly after it. Below that width it becomes a
+portrait card above the article. Put the file in `public/images/` and reference
+it with a leading slash.
 
 Inside the body, standard Markdown works: headings, lists, tables, fenced code
 blocks, blockquotes, images. `.mdx` files additionally allow components.
 
 Images go in `public/images/` and are referenced root-relative, so a file at
-`public/images/chart.png` is written `![Chart](/images/chart.png)`.
+`public/images/chart.png` is written `![Chart](/images/chart.png)`. Only files
+under `public/` are served: a file left at the project root is never published.
 
 ## Put an article on the map
 

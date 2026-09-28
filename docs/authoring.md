@@ -31,6 +31,26 @@ graph: true
 
 **`graph: false`** publishes and indexes nothing, for drafts and off-topic posts. `teste_1` uses this. Setting both a valid `subject` and `graph: false` is pointless; the exclusion wins.
 
+## Cover image
+
+Two more frontmatter fields, both optional:
+
+```yaml
+banner: "/images/my-cover.jpg"
+bannerAlt: ""
+```
+
+The file must live under `public/` because nothing at the project root is served. `banner` also accepts an absolute URL. Leave `bannerAlt` out, or set it to `""`, when the cover is decorative; set it when the image carries meaning the surrounding text does not.
+
+Placement is responsive:
+
+- **Wide screens (1440px and up).** Three columns: the menu, a thin gap, the portrait cover, a thin gap, then the article. The cover is 260px wide, runs the height of the viewport, and holds position while the article scrolls past it. The article begins directly after the cover, so its position on the page depends on whether a cover exists.
+- **Narrower screens.** Three columns will not fit, so the cover becomes a portrait card, at most 360px wide, above the article, and the article keeps the reading column's normal position.
+
+The 1440px threshold is derived, not arbitrary: it is the point where the rail (200px), the gaps, the 260px cover, and a 68ch article beside a 280px neighbourhood all fit. Adding a cover also lifts the reading column's 1260px cap (`content--banner`) and bounds the article at 1180px so an ultrawide window does not stretch the reader. Change the cover's 260px width or the rail's 200px and the threshold moves with them.
+
+Size the asset before committing; there is no image pipeline. A tall portrait crop works best, roughly 3:4 or taller, 400–600px wide, under about 250KB. `public/images/article-banner.jpg` is the current placeholder and is safe to replace.
+
 ## Link articles
 
 Write `[[posts/slug]]` to link to an article. Use `[[posts/slug|label]]` to override the visible text; the default label is the target's title. Both forms render as ordinary anchors to the canonical URL, and the same resolution produces the graph arrows and the backlinks, so rendered links and drawn edges can never disagree.
