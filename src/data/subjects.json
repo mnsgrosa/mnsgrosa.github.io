@@ -3,5 +3,10 @@
     "id": "ai-engineering",
     "title": "AI Engineering",
     "description": "LLMs, agents, tools, and routing."
+  },
+  {
+    "id": "primeiros-passos",
+    "title": "Primeiros passos",
+    "description": "Notes on learning and getting started."
   }
 ]

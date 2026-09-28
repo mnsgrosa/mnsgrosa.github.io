@@ -4,88 +4,91 @@ title: "Experience"
 
 ## Experience
 
-### Oncase — Recife, Brasil  
-**Data Engineer** · Sep. 2025 – Dec. 2025
+### Maggu — Remote  
+**Data AI Engineer** · Apr. 2026 – Aug. 2026
 
-- **Document data extraction**  
-  Enabled more reliable and accurate document understanding for the client’s product by improving how text is extracted from real-world documents, allowing the solution to adapt to data variability and continuously improve over time.  
-  _Implemented using PaddlePaddleOCR._
+- **LLM evaluation**  
+  Improved medicine recommendation accuracy from 62% to 94% by replacing a naive LLM judge with two adversarial agents backed by a human-made dataset in MLflow on Databricks.
 
-- **Stack used**  
-  Delivered the above solutions using a scalable orchestration and processing stack.  
-  _Airflow orchestrating AWS ECS tasks on a daily schedule, with PaddlePaddleOCR for document text extraction._
+- **Observability and latency**  
+  Tracked LLM costs, latency, accuracy, and output routing in Databricks MLflow. Reworked caching and RAG to cut time to first token from 1.5 to 0.7 seconds.
+
+- **Data infrastructure and performance**  
+  Provisioned reproducible Databricks pipelines with Terraform. Reduced PostgreSQL upload time from 2 hours to 15 minutes with batching and eight upload threads; cut Databricks compute spend from $3.21 to $0.80 per hourly DBU by optimizing PySpark partitioning, joins, and small files.
+
+_Stack: Databricks, PySpark, Delta Lake, MLflow, Terraform, Agno, GitHub Actions._
+
+---
+
+### Capgemini — Recife, Brazil (Hybrid)  
+**Data AI Engineer · temporary contract** · Jan. 2026 – Apr. 2026
+
+- **Agent evaluation**  
+  Built an evaluation suite checking tool choice, arguments, and call order in agent workflows, catching four regressions before they reached the client.
+
+- **Team enablement and client delivery**  
+  Ran workshops on agent design and LLM-as-a-judge for a new team and two Vivo managers. Handled technical client communication and mentored two data managers on agent evaluation.
+
+_Stack: Python, LLM evaluation, agent frameworks, tool-calling validation, RAG, Agile/Scrum._
+
+---
+
+### Triggo.ai — Remote  
+**Data AI Engineer · temporary contract** · Dec. 2025 – Jan. 2026
+
+- **LLM output control**  
+  Used self-consistency and tree-of-thoughts prompting to keep tone consistent. Tuned Anthropic and OpenAI API calls for JSON-formatted, length-constrained outputs.
+
+_Stack: Python, Bruno, DocumentDB._
+
+---
+
+### Oncase — Recife, Brazil (Hybrid)  
+**Data Engineer · temporary contract** · Aug. 2025 – Nov. 2025
+
+- **Computer vision inference**  
+  Maintained a Flask image-processing API with S3 uploads for a computer vision inference pipeline.
+
+- **Orchestration**  
+  Maintained Airflow DAGs using a Gitflow branch pattern to keep broken DAGs out of production. Hosted Airflow on EC2 for continuous inference and training jobs.
+
+_Stack: Python, Flask, PaddleOCR, Airflow, AWS, Terraform._
 
 ---
 
 ### Acaso — Recife, Brazil  
-**Data Scientist** · Jan. 2025 – Aug. 2025
+**Machine Learning Engineer** · Jan. 2025 – Jun. 2025
 
-- **Reliable data ingestion pipelines**  
-  Reduced time spent on data ingestion issues and increased focus on model development by building stable, automated database pipelines for structured data.  
-  _Implemented PostgreSQL ingestion handlers in Python using Psycopg2._
+- **Document ingestion and RAG**  
+  Automated document ingestion in Airflow, giving the team back roughly 20% of its week. Built a RAG pipeline with Docling for PDF parsing, LangChain for orchestration, and PostgreSQL with pgvector for storage.
 
-- **Retrieval-augmented generation systems**  
-  Enabled accurate and context-aware information retrieval from large document collections, improving the quality of LLM responses for internal and client-facing use cases.  
-  _Built RAG pipelines with LangChain and PostgreSQL VectorDB, generating embeddings from PDFs processed via Docling._
+- **Cloud ingestion and prototypes**  
+  Cut manual data preparation by 60% by automating S3 ingestion with Python and Boto3. Shipped generative AI proofs of concept in Streamlit and FastAPI for client validation.
 
-- **Rapid LLM prototyping**  
-  Accelerated client feedback cycles by delivering interactive LLM-based prototypes early, allowing validation of use cases while preserving data privacy and database consistency.  
-  _Developed LLM-based POCs using Streamlit and FastAPI._
-
-- **Automated document ingestion**  
-  Ensured timely and reliable data availability by automating document ingestion workflows, enabling teams to start each day with fresh, processed data ready for use.  
-  _Scheduled ingestion pipelines using Apache Airflow. Saving about 6 hours weekly from working hours._
-
-- **Cloud storage integration**  
-  Reduced manual data handling and operational overhead by enabling seamless file ingestion and management, saving approximately 60% of the time previously spent on manual data preparation.  
-  _Built AWS S3 integrations using Python and Boto3, supporting CLI and Streamlit-based execution._
+_Stack: Python, LangChain, PostgreSQL/pgvector, Docling, Apache Airflow, AWS S3, Boto3, FastAPI, Streamlit._
 
 ---
 
 ### Di2win — Recife, Brazil  
-**Data Scientist** · Jun. 2024 – Jan. 2025
+**Machine Learning Engineer** · Apr. 2024 – Jan. 2025
 
-- **Production ML data pipelines**  
-  Enabled reliable machine learning in production by converting raw data into high-quality, versioned features that support training, validation, and inference across the full ML lifecycle.  
-  _Built end-to-end ingestion, cleaning, and feature engineering workflows._
+- **Energy forecasting**  
+  Cut energy consumption by 20% with LSTM and regularized-regression forecasts tuned in Optuna, outperforming a SARIMA baseline.
 
-- **Model deployment and optimization**  
-  Improved operational efficiency by deploying and continuously optimizing machine learning models tied to business KPIs, enabling strategic reordering of operations and reducing energy consumption by approximately 20%.  
-  _Deployed regularized regression and LSTM time-series models, optimized with Optuna._
+- **ML delivery**  
+  Replaced manual retraining with event-driven Airflow pipelines triggered by data refresh and drift. Added GitHub Actions and Pytest coverage for model behavior and input data; isolated training and retraining from live projects in containers.
 
-- **Automated training and retraining pipelines**  
-  Accelerated experimentation and reduced manual overhead by automating training, retraining, and data refresh workflows, allowing models to adapt to new data or events without manual intervention.  
-  _Implemented event-driven and scheduled pipelines using Apache Airflow._
-
-- **ML reliability and production readiness**  
-  Increased production stability and model trust by enforcing automated testing, validation, and deployment checks, resulting in fewer production incidents and safer releases.  
-  _Implemented CI/CD pipelines with GitHub Actions and model/data tests using Pytest._
-
-- **ML platform and delivery strategy**  
-  Enabled fast and safe model delivery while protecting Di2win’s intellectual property by designing an ML platform that supports frequent retraining, continuous deployment, and parallel experimentation without disrupting active projects.  
-  _Designed a scalable, isolated ML stack for rapid iteration._
+_Stack: Python, PyTorch, Optuna, Apache Airflow, Docker, GitHub Actions, Pytest, FastAPI._
 
 ---
 
-### Valorian — Recife, Brazil  
+### Valorian — Recife, Brazil (Remote)  
 **Data Scientist** · Apr. 2023 – Apr. 2024
 
-- **Flexible data management**  
-  Supported rapid product iteration by designing a data management approach that allows continuous processing and frequent changes without disrupting the system, giving the client freedom to refine and validate their MVP. Saving 30% of its budget adapting to the new format asked.  
-  _Backed by a flexible data storage design._
+- **Cloud and data automation**  
+  Reduced hosting costs by 25% through containerization and reserved instances. Automated end-to-end ingestion and transformation, eliminating 30 hours of manual work each month.
 
-- **Automated data processing workflows**  
-  Reduced operational effort and improved reliability by automating end-to-end data ingestion and transformation, enabling the product to scale and evolve smoothly while saving approximately 30 hours of manual work per month.  
-  _Automated using scheduled workflows and containerized tasks and reserved instances on AWS, saving about 20% to 25% per month on budget._
+- **Production optimization**  
+  Improved wheat flour production efficiency by 12% with XGBoost models tuned in Optuna.
 
-- **Interactive dashboards**  
-  Developed dashboards using Dash Plotly for clients so they understand the storytelling behind the data they've provided.
-
-- **Machine learning models optimized with Optuna**  
-  Optimized XGBoost models, improving cost efficiency in wheat flour production by 12% by identifying the production orders that yield the greatest benefit.
-
-## Highlights
-
-- Impact-driven work
-- Strong collaboration
-- Continuous learning
+_Stack: Python, XGBoost, Optuna, Docker, AWS EC2/S3, Dash/Plotly._

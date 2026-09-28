@@ -152,9 +152,58 @@ declare module 'astro:content' {
 
 	type ContentEntryMap = {
 		"experiences": {
+"acaso.md": {
+	id: "acaso.md";
+  slug: "acaso";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
+"capgemini.md": {
+	id: "capgemini.md";
+  slug: "capgemini";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
+"di2win.md": {
+	id: "di2win.md";
+  slug: "di2win";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
+"maggu.md": {
+	id: "maggu.md";
+  slug: "maggu";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
+"oncase.md": {
+	id: "oncase.md";
+  slug: "oncase";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
 "tech-corp.md": {
 	id: "tech-corp.md";
   slug: "tech-corp";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
+"triggo-ai.md": {
+	id: "triggo-ai.md";
+  slug: "triggo-ai";
+  body: string;
+  collection: "experiences";
+  data: InferEntrySchema<"experiences">
+} & { render(): Render[".md"] };
+"valorian.md": {
+	id: "valorian.md";
+  slug: "valorian";
   body: string;
   collection: "experiences";
   data: InferEntrySchema<"experiences">
@@ -191,6 +240,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
+"como_comecaria.mdx": {
+	id: "como_comecaria.mdx";
+  slug: "como_comecaria";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "stepback.md": {
 	id: "stepback.md";
   slug: "stepback";
