@@ -1,0 +1,65 @@
+---
+import { layoutGraph } from '../lib/knowledge.mjs';
+const { graph, currentId = '', compact = false } = Astro.props;
+const layout = layoutGraph(graph);
+const current = graph.articles.find(article => article.id === currentId);
+const key = currentId || 'world';
+---
+<knowledge-map class:list={['knowledge-map', { compact }]} data-key={key} data-current={currentId}>
+  <script type="application/json" data-graph set:html={JSON.stringify(layout).replace(/</g, '\\u003c')} />
+  <div class="explorer-layout">
+    <div class="map-panel">
+      <div class="map-toolbar" aria-label="Map controls" hidden>
+        <div class="zoom-controls">
+          <button type="button" data-action="out" aria-label="Zoom out">−</button>
+          <output data-zoom aria-label="Zoom level">100%</output>
+          <button type="button" data-action="in" aria-label="Zoom in">+</button>
+          <button type="button" data-action="reset">Reset</button>
+        </div>
+        <div class="pan-controls" aria-label="Pan map">
+          <button type="button" data-action="left" aria-label="Pan left">←</button>
+          <button type="button" data-action="up" aria-label="Pan up">↑</button>
+          <button type="button" data-action="down" aria-label="Pan down">↓</button>
+          <button type="button" data-action="right" aria-label="Pan right">→</button>
+        </div>
+      </div>
+      <div class="map-viewport" hidden>
+        <svg class="world-svg" aria-label={compact ? 'Article neighborhood' : 'Article constellation'}>
+          <g data-camera></g>
+        </svg>
+      </div>
+      <p class="map-fallback">The topic index works without the interactive map. Open an article below.</p>
+      <p class="map-hint" hidden>Drag to explore. Use + and − to zoom.</p>
+      <p class="map-status" role="status" aria-live="polite">{current ? `Reading: ${current.title}` : 'Choose an island to find an article.'}</p>
+      <div class="map-legend" hidden><span>◎ Subject</span><span>○ Article</span><span>Solid: link · Dotted: membership</span></div>
+    </div>
+    <div class="topic-index">
+      <h3>{compact ? 'In this neighborhood' : 'Choose a topic'}</h3>
+      {!layout.subjects.length && <p>No subjects yet. <a href="/posts/">Browse all posts</a>.</p>}
+      {layout.subjects.map(subject => (
+        <section class="topic-section" data-subject-section={subject.id}>
+          <h4>
+            <button type="button" class="topic-toggle" data-subject={subject.id} aria-expanded="true" aria-controls={`${key.replaceAll('/', '-')}-${subject.id}`} disabled>
+              <span>{subject.title}</span><span class="topic-count">{subject.count}</span>
+            </button>
+          </h4>
+          {subject.description && <p class="topic-description">{subject.description}</p>}
+          <ul class="topic-articles" id={`${key.replaceAll('/', '-')}-${subject.id}`}>
+            {layout.articles.filter(article => article.subject === subject.id).map(article => (
+              <li>
+                <a href={article.url} aria-current={article.id === currentId ? 'page' : undefined} lang={article.lang}>
+                  <span>{article.title}</span><span class="article-language">{article.lang?.toUpperCase()}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          {subject.count === 0 && <p>No articles in this island yet.</p>}
+        </section>
+      ))}
+      {!compact && <a class="index-link" href="/posts/">All posts ↗</a>}
+    </div>
+  </div>
+</knowledge-map>
+<script>
+  import '../scripts/constellation';
+</script>
