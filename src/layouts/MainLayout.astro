@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar.astro';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/constellation.css';
-const { title, lang = 'en', contentClass } = Astro.props;
+const { title, lang = 'en', contentClass, home = false } = Astro.props;
 ---
 <!doctype html>
 <html lang={lang}>
@@ -12,16 +12,27 @@ const { title, lang = 'en', contentClass } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · Matheus Rosa</title>
   </head>
-  <body>
+  <body class:list={{ 'home-page': home }}>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Sidebar />
+    {home ? (
+      <header class="home-header">
+        <a class="home-wordmark" href="#main" aria-label="Matheus Rosa, home">mr<span aria-hidden="true">.</span></a>
+        <a href="#experience">View experience <span aria-hidden="true">↓</span></a>
+      </header>
+    ) : <Sidebar />}
     <main class="site-main" id="main">
       <div class:list={['content', contentClass]}>
         <slot />
-        <footer class="site-footer">
-          <span>Matheus Rosa</span>
-          <a href="/#explore">Explore the map</a>
-          <a href="/posts/">All posts</a>
+        <footer class:list={['site-footer', { 'home-footer': home }]}>
+          {home ? (
+            <>
+              <div><p class="footer-name">Matheus Rosa</p><p>Data, models and the systems between them.</p></div>
+              <a href="mailto:matheusnsampaio@gmail.com">Get in touch ↗</a>
+              <a href="#main">Back to top ↑</a>
+            </>
+          ) : (
+            <><span>Matheus Rosa</span><a href="/#explore">Explore the map</a><a href="/posts/">All posts</a></>
+          )}
         </footer>
       </div>
     </main>

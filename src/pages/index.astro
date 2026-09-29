@@ -1,30 +1,63 @@
 ---
 import { getEntry } from 'astro:content';
 import MainLayout from '../layouts/MainLayout.astro';
+import KnowledgeOverview from '../components/KnowledgeOverview.astro';
+import SceneNavigator from '../components/SceneNavigator.astro';
 import Constellation from '../components/Constellation.astro';
 import { readGraph } from '../lib/content-index.mjs';
-const homePage = await getEntry('pages', 'home');
-const { Content } = await homePage!.render();
+const experience = await getEntry('pages', 'experience');
+const { Content: Experience } = await experience!.render();
 const graph = readGraph();
 ---
-<MainLayout title="About & map">
-  <section class="about-intro" aria-labelledby="about-title">
+<MainLayout title="AI/ML Engineer & knowledge map" home>
+  <SceneNavigator>
+  <section class="scene-panel" data-scene="knowledge" aria-label="Introduction and knowledge">
+  <section class="home-intro" aria-labelledby="about-title">
     <h1 id="about-title">Matheus Rosa</h1>
-    <p class="about-lead">Data engineering, data science, and AI. These are my notes, connected one article at a time.</p>
-    <details class="about-details">
-      <summary>About my work</summary>
-      <Content />
-    </details>
+    <div class="home-intro-bottom">
+      <p>AI/ML Engineer. I build the systems around models:<br class="desktop-break" /> data pipelines, evaluation, APIs and infrastructure.</p>
+      <a class="contact-cta" href="mailto:matheusnsampaio@gmail.com">Get in touch <span aria-hidden="true">↗</span></a>
+    </div>
+    <p class="home-location">Recife, Brazil · Open to remote work across US/EU time zones</p>
   </section>
-  <section id="explore" aria-labelledby="explore-title">
+
+  <KnowledgeOverview />
+  </section>
+
+  <section id="explore" class="home-section scene-panel" data-scene="articles" aria-labelledby="explore-title">
     <div class="section-intro">
-      <h2 id="explore-title">Follow a thread.</h2>
-      <p>Open a subject, find an article, and see where it leads. Each dot is a place to start.</p>
+      <h2 id="explore-title">Follow an idea.</h2>
+      <p>Notes on data and AI, connected by what they reference. Open a subject to explore its articles.</p>
     </div>
     <Constellation graph={graph} />
   </section>
-  <div class="home-secondary">
-    <a href="/experience/">Experience ↗</a>
-    <a href="/projects/">Projects ↗</a>
-  </div>
+
+  <section id="profile" class="home-section home-profile scene-panel" data-scene="about" aria-labelledby="profile-title">
+    <h2 id="profile-title">From a model to a working system.</h2>
+    <div class="profile-columns">
+      <div>
+        <p>I’m an AI/ML Engineer based in Recife, Brazil, with a B.Sc. in Computer Science from UFPE. My work spans data engineering, machine learning and generative AI.</p>
+        <p>I focus on the production systems around models: reliable pipelines, evaluation, observability and infrastructure. I enjoy taking a problem from data modeling to APIs and deployment.</p>
+      </div>
+      <aside class="recruiter-note" aria-label="For recruiters">
+        <h3>Working together</h3>
+        <p>Open to remote work across US/EU time zones. English: C1.</p>
+        <div class="profile-links">
+          <a href="https://linkedin.com/in/mnsgr">LinkedIn ↗</a>
+          <a href="mailto:matheusnsampaio@gmail.com">Email me ↗</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="home-section home-experience scene-panel" data-scene="experience" aria-labelledby="experience">
+    <Experience />
+  </section>
+
+  <section id="projects" class="home-section home-projects scene-panel" data-scene="projects" aria-labelledby="projects-title">
+    <h2 id="projects-title">Projects & code</h2>
+    <p>The project catalogue is being updated. In the meantime, browse my repositories on GitHub.</p>
+    <a class="project-destination" href="https://github.com/mnsgrosa">Browse GitHub <span aria-hidden="true">↗</span></a>
+  </section>
+  </SceneNavigator>
 </MainLayout>

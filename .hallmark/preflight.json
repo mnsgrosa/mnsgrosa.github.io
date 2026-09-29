@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-29",
+  "framework": {
+    "value": "Astro 4",
+    "source": "package.json:19"
+  },
+  "fonts": {
+    "value": [
+      "Inter Variable",
+      "JetBrains Mono Variable"
+    ],
+    "source": "package.json:17-18; tokens.css:23-25"
+  },
+  "palette": {
+    "value": "Gruvbox Dark, OKLCH semantic tokens",
+    "source": "tokens.css:5-22"
+  },
+  "spacing": {
+    "value": "Named 4-point scale",
+    "source": "tokens.css:26-34"
+  },
+  "motion": {
+    "value": "No motion library; existing CSS and SVG interactions",
+    "source": "package.json:14-28; src/scripts/constellation.ts"
+  },
+  "preserve": [
+    "fonts",
+    "palette",
+    "spacing",
+    "canonical routes",
+    "article graph invariants"
+  ]
+}

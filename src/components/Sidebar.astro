@@ -1,9 +1,9 @@
 ---
 const links = [
-  { href: '/', label: 'About & map' },
-  { href: '/posts/', label: 'Articles' },
-  { href: '/experience/', label: 'Experience' },
-  { href: '/projects/', label: 'Projects' },
+  { href: '/', label: 'Home', route: '/' },
+  { href: '/#explore', label: 'Articles', route: '/posts/' },
+  { href: '/#experience', label: 'Experience', route: '/experience/' },
+  { href: '/#projects', label: 'Projects', route: '/projects/' },
 ];
 const path = Astro.url.pathname;
 ---
@@ -16,7 +16,7 @@ const path = Astro.url.pathname;
   <nav aria-label="Main navigation">
     <ul>
       {links.map(link => (
-        <li><a href={link.href} aria-current={(link.href === '/' ? path === '/' : path.startsWith(link.href)) ? 'page' : undefined}>{link.label}</a></li>
+        <li><a href={link.href} aria-current={(link.route === '/' ? path === '/' : path.startsWith(link.route)) ? 'page' : undefined}>{link.label}</a></li>
       ))}
     </ul>
   </nav>

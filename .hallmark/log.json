@@ -1,0 +1,24 @@
+[
+  {
+    "date": "2026-09-29",
+    "scope": "app",
+    "macrostructure": "Map / Diagram",
+    "theme": "Gruvbox Dark",
+    "enrichment": "none; functional knowledge diagram",
+    "nav": "N9 home / N3 reader",
+    "footer": "Ft1 home",
+    "brief": "Single scrolling portfolio for technical readers and recruiters",
+    "rotation": "Owner requested retaining constellation and visual identity; home switches from sidebar to edge header and adds a separate eight-area diagram."
+  },
+  {
+    "date": "2026-09-29",
+    "scope": "app",
+    "macrostructure": "Map / Diagram",
+    "theme": "Gruvbox Dark",
+    "enrichment": "none; functional knowledge diagram",
+    "nav": "N9 home / N3 reader",
+    "footer": "Ft1 home",
+    "brief": "Single scrolling portfolio for technical readers and recruiters",
+    "rotation": "Owner asked for a vertical, smoother transition instead of a rotating carousel: the home scenes now glide on one vertical track (no 3D, no perspective), with inner scrolling per scene and explicit previous/next, mode and link controls."
+  }
+]

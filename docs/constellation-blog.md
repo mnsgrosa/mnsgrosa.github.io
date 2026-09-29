@@ -48,6 +48,24 @@ Hallmark macrostructure: **Map / Diagram**, preceded by the requested About intr
 
 The About section should introduce the author without consuming an obligatory full viewport. The explorer follows in normal document flow rather than taking over the whole page.
 
+#### Home scenes
+
+On a roomy pointer desktop with motion enabled, the home sections are five
+scenes (knowledge, article map, about, experience, projects) in one vertical
+track that glides between them under `src/scripts/scene-navigation.ts`: wheel,
+arrow keys, the header links, the `scene-links` row and the previous/next buttons
+all move it, and the controls stay visible so the movement is never the only way
+out. It is a plain vertical glide — no rotation and no perspective — and the
+document itself does not scroll while it is active.
+
+This is an enhancement, never the source of truth: the server-rendered page is a
+complete scrolling document, and small screens, coarse pointers, short viewports,
+`prefers-reduced-motion: reduce` or JavaScript disabled all keep that document
+untouched, including `#explore`-style deep links. Non-active scenes are `inert`
+and `aria-hidden`; a scene taller than the viewport scrolls inside itself first
+and only glides onward at its boundary; `Use page scroll` turns the glide off for
+the session.
+
 ### Explorer
 
 At overview scale, show named subject nodes rather than every article at once. A short instruction explains that a subject can be opened. Visible controls provide zoom in, zoom out, and reset view.

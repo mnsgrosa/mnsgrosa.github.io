@@ -1,0 +1,29 @@
+---
+const destinations = [
+  { href: '#knowledge', label: 'Knowledge' },
+  { href: '#explore', label: 'Articles' },
+  { href: '#profile', label: 'About' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#projects', label: 'Projects' },
+];
+---
+<scene-navigator>
+  <div class="scene-viewport">
+    <div class="scene-ring"><slot /></div>
+  </div>
+  <nav class="home-shortcuts scene-links" aria-label="On this page">
+    {destinations.map(destination => <a href={destination.href}>{destination.label}</a>)}
+  </nav>
+  <div class="scene-controls" hidden>
+    <p class="scene-hint">Scroll to move between scenes · <span aria-hidden="true">← →</span><span class="sr-only">Left and right arrow keys</span></p>
+    <div class="scene-travel" role="group" aria-label="Scene navigation">
+      <button type="button" data-previous aria-label="Previous scene">←</button>
+      <output class="scene-status" aria-live="polite" aria-atomic="true">1 / 5 · Knowledge</output>
+      <button type="button" data-next aria-label="Next scene">→</button>
+    </div>
+    <button type="button" class="scene-mode" data-mode>Use page scroll</button>
+  </div>
+</scene-navigator>
+<script>
+  import '../scripts/scene-navigation';
+</script>

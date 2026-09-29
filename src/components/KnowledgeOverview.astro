@@ -1,0 +1,47 @@
+---
+// Practice-area relationships only. Article edges still come exclusively from
+// the content resolver. Dots and paths share coordinates in each layout.
+const areas = [
+  { name: 'MLOps', note: 'Delivery & monitoring', x: 43, y: 49, mx: 25, my: 39, label: 'left' },
+  { name: 'AWS', note: 'Cloud infrastructure', x: 16, y: 23, mx: 20, my: 10, label: 'above' },
+  { name: 'GCP', note: 'Cloud infrastructure', x: 16, y: 77, mx: 16, my: 72, label: 'below' },
+  { name: 'Databricks', note: 'Data & ML platforms', x: 43, y: 14, mx: 68, my: 10, label: 'above' },
+  { name: 'Langchain', note: 'LLM orchestration', x: 73, y: 23, mx: 77, my: 39, label: 'above' },
+  { name: 'FastAPI', note: 'Model-serving APIs', x: 64, y: 69, mx: 58, my: 64, label: 'below' },
+  { name: 'NLP', note: 'Language & retrieval', x: 88, y: 49, mx: 29, my: 92, label: 'above' },
+  { name: 'Computer Vision', note: 'Images & inference', x: 86, y: 83, mx: 76, my: 91, label: 'below' },
+];
+const connections = [[1, 0], [2, 0], [3, 0], [0, 5], [3, 4], [5, 4], [4, 6], [5, 7]];
+function curve(from: number, to: number, mobile: boolean) {
+  const a = areas[from], b = areas[to];
+  const x1 = mobile ? a.mx : a.x, y1 = mobile ? a.my : a.y;
+  const x2 = mobile ? b.mx : b.x, y2 = mobile ? b.my : b.y;
+  const bend = mobile ? .08 : .12;
+  return `M ${x1} ${y1} Q ${(x1 + x2) / 2 + (y2 - y1) * bend} ${(y1 + y2) / 2 - (x2 - x1) * bend} ${x2} ${y2}`;
+}
+---
+<section id="knowledge" class="knowledge-overview" aria-labelledby="knowledge-heading">
+  <h2 id="knowledge-heading" class="knowledge-heading">A connected practice.</h2>
+  <figure class="practice-figure">
+    <div class="practice-map">
+      {[false, true].map(mobile => (
+        <svg class:list={['practice-lines', mobile ? 'practice-lines--narrow' : 'practice-lines--wide']} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          {connections.map(([from, to]) => <path data-from={from} data-to={to} d={curve(from, to, mobile)} />)}
+        </svg>
+      ))}
+      <ul class="knowledge-nodes" aria-label="Knowledge areas">
+        {areas.map((area, index) => (
+          <li class="knowledge-node" data-area={index} data-label={area.label} style={`--node-x:${area.x}%;--node-y:${area.y}%;--mobile-x:${area.mx}%;--mobile-y:${area.my}%`}>
+            <span class:list={['knowledge-dot', { 'knowledge-dot--hub': index === 0 || index === 5 }]} aria-hidden="true"></span>
+            <span class="knowledge-copy">
+              <span class="knowledge-label">{area.name}</span>
+              <span class="knowledge-note">{area.note}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <figcaption>Connected areas of practice. Explore the published notes in the article map.</figcaption>
+  </figure>
+  <a class="knowledge-next" href="#explore">Explore the articles <span aria-hidden="true">→</span></a>
+</section>
