@@ -1,19 +1,56 @@
 ---
-title: "Como eu estudo"
+title: "Primeiros passos"
 pubDate: 2026-09-28
-description: "Deixo este post como um pontape inicial para postar mais sobre meus estudos"
+description: "Primeiros passos"
 lang: 'pt'
-subject: "primeiros-passos"
+subject: ai-engineering
 ---
 
-# Como eu estudo
+# Primeiros passos
 
-Eu estudo seguindo o que aprendi em 2018~2019 estudando para o vestibular para o ITA e me e muito util
-ate os dias de hoje, durante o vestibular nao havia tempo para dominar toda a teoria entao eu aceitei
-que sou um resolvedor de problemas, eu sigo o seguinte passo a passo.
+Quando comecei a estudar para o ITA, em 2018–2019, senti algo parecido com o que está acontecendo em tecnologia. Não só é o mesmo sentimento, como tenho enfrentado a situação com o mesmo algoritmo.
 
-- 1. Leio uma pequena parte da teoria
-- 2. Vou resolver uma questao
-- 3. Caso eu trave irei para a etapa 1 e tento novamente caso nao repito para o proximo topico/trecho
+- 1. Vejo a teoria inicial
+- 2. Vou praticar
+- 3. Se travei volto ao 1 ponto caso contrario termino
 
-## E como tem sido isso nos ultimos anos de tecnologia?
+Isso se mostrou tão produtivo que, enquanto estudo sobre harnesses de LLMs usando o harness Pi cru e criando do zero, cheguei a
+um resultado bem interessante para acabar com o apodrecimento de contexto e otimizar o que os agentes veem. Repito isso agora em meus
+posts, começando com uma leve teoria e passando à prática.
+
+## O que eu fiz
+
+Enquanto estava tunando o [Pi](https://pi.dev), lembrei que, se um contexto é passado, crio uma tendência para o modelo utilizar o que está
+dentro, não apenas conceitualmente, mas também pelas palavras em si. Então, decidi separar em três partes:
+
+- Orquestrador
+- Generalista (Product Manager/Product Owner)
+- Especialista (programador)
+
+Cada um tem um conhecimento limitado do que o outro faz, sabe ou está fazendo. Isso se deve ao fato de o generalista não precisar saber
+codar 100%, mas, sim, conhecer as regras de negócio. O especialista também deve conhecer bem essas regras, mas se aprofundar muito mais
+no código. Eles irão interagir, mas nunca em um loop infinito. O orquestrador é quem irá produzir os especialistas e generalistas e
+coordená-los.
+
+## E o que entrego com isso?
+
+Com isso, consegui pôr em prática o algoritmo descrito no início e formalizá-lo em uma skill que tenho utilizado. Nesse caso,
+consegui realizar rapidamente o que queria, e ela tem feito parte do meu uso diário. A entrega foi a skill que nomeei `inverted-classroom`,
+em homenagem à metodologia da sala de aula invertida, que exploro em [[posts/make_the_llm_choose_pt|outro post]].
+
+<a href="https://github.com/mnsgrosa/inverted-classroom" className="repository-card" aria-label="Repositório inverted-classroom por mnsgrosa no GitHub">
+  <svg className="repository-card__octocat" viewBox="0 0 16 16" aria-hidden="true">
+    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-.95-2.7-.95-.36-.92-.89-1.16-.89-1.16-.73-.5.06-.49.06-.49.8.06 1.22.82 1.22.82.71 1.21 1.87.86 2.33.66.07-.52.28-.86.51-1.06-1.78-.2-3.65-.89-3.65-3.96 0-.88.31-1.6.82-2.17-.08-.2-.36-1.03.08-2.14 0 0 .67-.21 2.2.83A7.65 7.65 0 0 1 8 4.99c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.83 2.2-.83.44 1.11.16 1.94.08 2.14.51.57.82 1.29.82 2.17 0 3.08-1.87 3.76-3.66 3.96.29.25.55.74.55 1.5v2.01c0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+  </svg>
+  <img className="repository-card__avatar" src="https://github.com/mnsgrosa.png?size=96" alt="" width="48" height="48" loading="lazy" />
+  <span className="repository-card__details">
+    <strong>inverted-classroom</strong>
+    <span>mnsgrosa</span>
+  </span>
+</a>
+
+## Como começar a usar a skill
+
+Para começar, peça ao assistente que crie ou conduza um curso sobre o tema desejado. Informe seu objetivo, o que já sabe, o tempo disponível, a profundidade desejada e a pasta onde os materiais podem ser criados. A skill confirma essas informações antes 
+de montar o curso. Durante o curso, tente responder e resolver os exercícios antes de consultar as explicações; o tutor acompanha seu raciocínio, registra dúvidas e ajusta as próximas atividades. Consulte `.agents/skills/inverted-classroom/SKILL.md` para 
+ver as instruções completas.

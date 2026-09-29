@@ -233,13 +233,6 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".md"] };
-"Make_the_LLM_choose_en.md": {
-	id: "Make_the_LLM_choose_en.md";
-  slug: "make_the_llm_choose_en";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
 "como_comecaria.mdx": {
 	id: "como_comecaria.mdx";
   slug: "como_comecaria";

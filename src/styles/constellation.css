@@ -118,6 +118,13 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .post-content h2 { margin-top: var(--space-xl); font-size: var(--text-xl); }
 .post-content h3 { margin-top: var(--space-lg); }
 .post-content a { overflow-wrap: anywhere; }
+.post-content a.repository-card { display: flex; align-items: center; gap: var(--space-md); position: relative; width: min(100%, 28rem); min-height: 88px; padding: var(--space-md) var(--space-md) var(--space-md) 3.75rem; border: 1px solid var(--color-rule); border-radius: var(--radius-md); background: var(--color-panel); color: var(--color-ink); text-decoration: none; transition: border-color var(--dur-short) var(--ease-out), background var(--dur-short) var(--ease-out); }
+.post-content a.repository-card:hover { border-color: var(--color-accent); background: var(--color-surface); }
+.repository-card__octocat { position: absolute; top: var(--space-md); left: var(--space-md); width: 1.5rem; height: 1.5rem; color: var(--color-ink); }
+.repository-card__avatar { display: block; flex: 0 0 48px; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.repository-card__details { display: flex; min-width: 0; flex-direction: column; gap: .125rem; }
+.repository-card__details strong { overflow-wrap: anywhere; }
+.repository-card__details > span { color: var(--color-muted); font-size: var(--text-sm); }
 .post-content table { display: block; max-width: 100%; overflow: auto; }
 .post-content img { height: auto; }
 .neighborhood { min-width: 0; }
