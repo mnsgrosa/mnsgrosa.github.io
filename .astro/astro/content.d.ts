@@ -240,6 +240,13 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
+"rag-to-production.mdx": {
+	id: "rag-to-production.mdx";
+  slug: "rag-to-production";
+  body: string;
+  collection: "posts";
+  data: InferEntrySchema<"posts">
+} & { render(): Render[".mdx"] };
 "stepback.md": {
 	id: "stepback.md";
   slug: "stepback";
