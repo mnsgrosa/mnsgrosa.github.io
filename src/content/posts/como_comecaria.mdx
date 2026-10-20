@@ -12,54 +12,60 @@ subject: ai-engineering
 
 </nav>
 
-Quando comecei a estudar para o ITA, em 2018–2019, adotei um ciclo que ainda funciona para mim: estudar o suficiente para começar, praticar e voltar à teoria quando encontro uma dificuldade. Quero aplicar esse mesmo processo ao desenvolvimento de aplicações com LLMs.
+Quando comecei a estudar para o ITA, em 2018–2019, adotei um ciclo que uso até hoje: aprender o suficiente para começar, praticar, e voltar à teoria quando algo trava. Funciona porque a teoria deixa de ser abstrata. Ela chega na hora em que você precisa dela. Quero aplicar esse mesmo processo ao desenvolvimento de aplicações com LLMs.
 
-Este roteiro começa em **RAG — geração aumentada por recuperação — e termina na operação de um serviço em Kubernetes**. A proposta é evoluir uma única aplicação: recuperar informação, medir a qualidade das respostas, criar uma API, observar falhas e automatizar a entrega. Fundamentos de LLMs e treinamento do zero ficam fora deste percurso.
+Este roteiro começa com **RAG, geração aumentada por recuperação, e termina com um serviço rodando em Kubernetes**. A ideia em uma frase: em vez de confiar só no que o modelo decorou, você entrega os documentos certos junto com a pergunta. A partir daí é uma aplicação só evoluindo: recuperar informação, medir a qualidade das respostas, criar uma API, investigar falhas e automatizar a entrega. Fundamentos de LLM e treinamento do zero ficam de fora.
 
-*Roteiro revisado em 20 de outubro de 2026. Os projetos e critérios de avanço abaixo são minha síntese para orientar os estudos, não requisitos oficiais dos cursos.*
+*Roteiro revisado em 20 de outubro de 2026. Os projetos e critérios de avanço abaixo são a minha síntese para orientar os estudos, não requisitos oficiais dos cursos.*
 
 ## Como seguir o percurso
 
-Escolha um acervo que você conheça: documentação técnica pública, notas de estudo ou uma base de suporte sem dados sensíveis. Use esse mesmo acervo nos três projetos finais para comparar a evolução dos resultados.
+Escolha um acervo que você já conhece: documentação técnica pública, suas notas de estudo, ou uma base de suporte sem dados sensíveis. Use o mesmo acervo nos três projetos finais. Assim você compara a evolução dos resultados sem trocar o terreno debaixo dos pés.
 
-O ponto de partida é saber trabalhar com Python, Git, HTTP/JSON, SQL básico e Docker. Kubernetes entra durante o roteiro. Uma API de modelo hospedado é suficiente para as primeiras etapas.
+Para começar, basta Python, Git, HTTP/JSON, SQL básico e Docker. Kubernetes entra no meio do caminho. Um modelo via API já resolve as primeiras etapas, então não precisa de GPU na sua mesa tão cedo.
+
+O percurso tem quatro fases:
 
 1. **Construir:** ingestão → recuperação → respostas com fontes.
 2. **Medir:** avaliação → melhorias de recuperação → API → rastreamento.
 3. **Operar:** atualização dos dados → Kubernetes → serviço de inferência.
 4. **Entregar:** monitoramento → escala → GitOps → recuperação de falhas.
 
+As fases se sobrepõem. Não estranhe voltar para uma delas quando um teste de carga expuser um problema na recuperação.
+
 ## 1. Construir uma base RAG reproduzível
 
-Comece com um fluxo explícito: carregar documentos, limpar o texto, dividir em trechos, gerar embeddings, indexar e recuperar contexto para responder. Preserve identificadores, origem e versão dos documentos. PostgreSQL com pgvector pode ser a opção principal; FAISS serve como exercício de comparação.
+Comece com um fluxo explícito, sem mágica: carregar documentos, limpar o texto, dividir em trechos, gerar embeddings, indexar e recuperar contexto para responder. Guarde identificadores, origem e versão dos documentos desde o primeiro dia. PostgreSQL com pgvector serve como base principal; FAISS vale como exercício de comparação.
 
-**Prática:** crie comandos para indexar um pequeno acervo e fazer perguntas. Registre os trechos recuperados e devolva respostas com referências verificáveis. Quando a base não contiver a resposta, o sistema deve reconhecer essa limitação.
+**Na prática:** escreva comandos para indexar um acervo pequeno e fazer perguntas. Registre os trechos recuperados e devolva respostas com referências que você consiga abrir e conferir. Quando a resposta não estiver no acervo, o sistema precisa dizer isso, e não inventar.
 
-**Avance quando:** conseguir reconstruir o índice a partir de uma instalação limpa, explicar cinco respostas do início ao fim e demonstrar perguntas sem resposta no acervo.
+**Siga quando:** você conseguir reconstruir o índice a partir de uma instalação limpa, explicar cinco respostas de ponta a ponta e mostrar perguntas que o acervo não responde.
 
 Recursos: [trilha LLM Engineer de Maxime Labonne](https://github.com/mlabonne/llm-course#-the-llm-engineer) e [RAG e busca vetorial no LLM Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp#syllabus).
 
 ## 2. Avaliar antes de sofisticar a recuperação
 
-Monte perguntas com documentos relevantes conhecidos. Separe o conjunto de desenvolvimento da avaliação final. Inclua questões sem resposta, ambíguas e tentativas de acessar conteúdo não permitido.
+A tentação aqui é grande: pular direto para busca híbrida e reranking porque parece mais avançado. Segure a mão por uma etapa. Sem conjunto de avaliação, você não sabe se melhorou o sistema ou apenas o trocou.
 
-Meça recuperação e geração separadamente. Hit Rate e MRR ajudam a avaliar a busca; correção, apoio nas fontes e precisão das citações ajudam a avaliar as respostas. Um avaliador baseado em LLM precisa de uma rubrica e de comparação com revisão humana.
+Monte perguntas cujos documentos relevantes você já conhece. Separe o conjunto de desenvolvimento da avaliação final, senão você acaba ajustando o sistema para o teste. Inclua perguntas sem resposta, perguntas ambíguas e tentativas de acessar conteúdo que não deveria estar disponível.
 
-Depois, compare a busca inicial com busca híbrida e reranking. Experimente tamanho dos trechos e orçamento de contexto, alterando uma variável por vez. Query rewriting, HyDE e recuperação por SQL ou grafos podem esperar por problemas que justifiquem essa complexidade.
+Meça recuperação e geração separadamente, porque o erro pode morar em qualquer um dos dois lados e você precisa saber de quem é a culpa. Hit Rate e MRR avaliam a busca; correção, apoio nas fontes e precisão das citações avaliam as respostas. Um avaliador baseado em LLM só é útil com rubrica e com comparação contra revisão humana.
 
-**Avance quando:** tiver um relatório comparável entre configurações, com erros por pergunta, qualidade, latência e custo. Registre por que escolheu a configuração final.
+Depois, compare a busca inicial com busca híbrida e reranking. Mexa no tamanho dos trechos e no orçamento de contexto, uma variável por vez. Se mudar duas coisas juntas e o resultado melhorar, você não vai saber qual delas funcionou. Query rewriting, HyDE e recuperação por SQL ou grafos podem esperar o problema que justifique essa complexidade.
+
+**Siga quando:** existir um relatório comparável entre configurações, com erros por pergunta, qualidade, latência e custo. Escreva também o motivo da configuração final.
 
 Recursos: [avaliação no Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp/tree/main/04-evaluation), [Ragas](https://docs.ragas.io/en/stable/) e [RAG em produção com LlamaIndex](https://developers.llamaindex.ai/python/framework/optimizing/production_rag/).
 
 ## 3. Criar uma aplicação observável
 
-Exponha o pipeline por uma API. Defina formatos de entrada e saída, autenticação, limites, timeouts, tentativas limitadas e cancelamento. Separe a ingestão do atendimento às perguntas.
+Exponha o pipeline por uma API. Defina formatos de entrada e saída, autenticação, limites, timeouts, tentativas limitadas e cancelamento. Separe a ingestão do atendimento às perguntas, porque os dois ritmos são bem diferentes: um roda em lote, o outro precisa responder em segundos.
 
-Instrumente **API → recuperação → reranking → geração → resposta**. Um identificador deve relacionar logs, spans, fontes, versões e feedback. Acompanhe latência, erros, tokens e custo por resposta bem-sucedida, controlando quais dados entram na telemetria.
+Instrumente o caminho inteiro: API → recuperação → reranking → geração → resposta. Um identificador de requisição deve amarrar logs, spans, fontes, versões e feedback. Acompanhe latência, erros, tokens e custo por resposta bem-sucedida, e decida com cuidado quais dados entram na telemetria.
 
-**Projeto final 1 — assistente de conhecimento observável:** entregue API ou interface, ambiente Docker Compose, avaliação reproduzível e painel de acompanhamento. Demonstre uma falha de recuperação e um timeout, identificando a causa pelos sinais coletados.
+**Projeto final 1, assistente de conhecimento observável:** entregue API ou interface, ambiente Docker Compose, avaliação reproduzível e painel de acompanhamento. Depois provoque uma falha de recuperação e um timeout, e mostre como identificou a causa nos sinais coletados.
 
-**Critério de avanço:** defina metas de qualidade e orçamento de latência/custo antes do teste final. Como referência inicial, experimente Hit Rate@5 de 0,85 nas perguntas respondíveis e pelo menos 90% de citações válidas; registre contagens, revisão humana e limitações.
+**Para avançar:** defina metas de qualidade e orçamento de latência/custo antes do teste final. Como referência inicial, tente Hit Rate@5 de 0,85 nas perguntas respondíveis e pelo menos 90% de citações válidas. Reporte contagens, revisão humana e limitações, inclusive o que não funcionou.
 
 Recursos: [projeto do Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp#capstone-project), [FastAPI](https://fastapi.tiangolo.com/), [Langfuse](https://langfuse.com/docs/observability/overview) e [sinais do OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/).
 
@@ -67,10 +73,10 @@ Recursos: [projeto do Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp#ca
 
 Depois do primeiro projeto, duas frentes podem avançar em paralelo.
 
-- **Dados:** automatize ingestão, reprocessamento e publicação do índice. Teste atualizações, exclusões, revogação de acesso, falhas parciais e restauração de backup. Uma execução repetida não deve duplicar conteúdo.
+- **Dados:** automatize ingestão, reprocessamento e publicação do índice. Teste atualizações, exclusões, revogação de acesso, falhas parciais e restauração de backup. Rodar duas vezes não pode duplicar conteúdo.
 - **Plataforma:** aprenda Pods, Deployments, Services, Jobs, Secrets, PVCs, probes e limites de recursos. Use KIND para implantar a aplicação e diagnosticar problemas de configuração, rede e disponibilidade.
 
-**Avance quando:** puder substituir um Pod sem perder os dados necessários, impedir que uma instância indisponível receba tráfego e restaurar uma versão anterior do índice.
+**Siga quando:** você conseguir substituir um Pod sem perder os dados necessários, impedir que uma instância indisponível receba tráfego e restaurar uma versão anterior do índice.
 
 Recursos: [orquestração no Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp#syllabus), [Kestra](https://kestra.io/docs), [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) e [Lab 00 do School of DevOps](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-00-cluster-setup.md).
 
@@ -78,25 +84,25 @@ Recursos: [orquestração no Zoomcamp](https://github.com/DataTalksClub/llm-zoom
 
 Conecte a aplicação a um modelo servido com vLLM, mantendo a recuperação independente do backend de inferência. Aprenda a versionar pesos, validar artefatos e esperar o carregamento do modelo antes de liberar tráfego. Compare distribuição por OCI com download de armazenamento de objetos via initContainer.
 
-Experimente três formas de servir o mesmo modelo:
+Vale servir o mesmo modelo de três formas, nem que seja para sentir a diferença:
 
 - **Deployment com vLLM:** ponto de partida com poucos componentes.
 - **vLLM Router:** distribuição entre réplicas e investigação de afinidade de sessão/cache.
 - **KServe:** recursos declarativos para modelos e runtimes reutilizáveis.
 
-Use Prometheus e Grafana para relacionar fila, cache e throughput com tempo até o primeiro token e latência percebida. Compare réplicas fixas com autoscaling. HPA e KEDA devem responder a sinais adequados à carga, considerando tempo de inicialização e limites de capacidade.
+Use Prometheus e Grafana para ligar fila, cache e throughput ao tempo até o primeiro token e à latência percebida. Compare réplicas fixas com autoscaling. Mas cuidado: o modelo leva tempo para subir e a capacidade tem teto, então HPA e KEDA precisam reagir a sinais que façam sentido para a carga.
 
-**Projeto final 2 — plataforma de serving reproduzível:** reconstrua o ambiente, execute testes de carga, provoque a perda de um Pod e demonstre diagnóstico e recuperação. Escolha uma arquitetura com base nas medições.
+**Projeto final 2, plataforma de serving reproduzível:** reconstrua o ambiente, execute testes de carga, provoque a perda de um Pod e demonstre diagnóstico e recuperação. Escolha a arquitetura com base nas medições, não no que parece mais moderno.
 
-Recursos: [labs de packaging, serving, observabilidade e escala](https://github.com/schoolofdevops/302-llmops/tree/main/course-content/docs/labs), [métricas do vLLM](https://docs.vllm.ai/en/latest/design/metrics/) e [KServe](https://kserve.github.io/website/). Os exercícios em CPU ensinam a operação; seus números de desempenho não representam uma implantação em GPU.
+Recursos: [labs de packaging, serving, observabilidade e escala](https://github.com/schoolofdevops/302-llmops/tree/main/course-content/docs/labs), [métricas do vLLM](https://docs.vllm.ai/en/latest/design/metrics/) e [KServe](https://kserve.github.io/website/). Os exercícios em CPU ensinam a operação; os números de desempenho deles não representam uma implantação em GPU.
 
 ## 6. Automatizar a entrega e praticar incidentes
 
 Versione uma entrega completa: imagem da aplicação, modelo, prompt, índice e relatório de avaliação. Use CI para validar mudanças, Argo Workflows para executar pipelines e Argo CD para reconciliar a versão declarada no Git.
 
-O fluxo que quero implementar é **mudança → avaliação → artefatos imutáveis → promoção → observação → rollback quando necessário**. O Lab 12 do School of DevOps ensina a orquestração, mas explicita a ausência de uma barreira de qualidade e contém etapas demonstrativas que precisam de scripts reais. Neste roteiro, uma avaliação reprovada deve bloquear a promoção.
+O fluxo que quero implementar é **mudança → avaliação → artefatos imutáveis → promoção → observação → rollback quando necessário**. O Lab 12 do School of DevOps ensina a orquestração, mas assume abertamente que não existe barreira de qualidade e traz etapas demonstrativas que precisam de scripts reais. Neste roteiro, uma avaliação reprovada bloqueia a promoção. Sem exceção.
 
-**Projeto final 3 — operação durante um incidente:** simule atualização do acervo, indisponibilidade do modelo, pico de tráfego, perda do índice e violação de acesso. Registre impacto, detecção, diagnóstico, recuperação e o teste de regressão criado depois.
+**Projeto final 3, operação durante um incidente:** simule atualização do acervo, indisponibilidade do modelo, pico de tráfego, perda do índice e violação de acesso. Registre impacto, detecção, diagnóstico, recuperação e o teste de regressão que você criou depois.
 
 **Conclua quando:** conseguir promover e reverter uma versão real, restaurar dados e apresentar arquitetura, resultados de qualidade/capacidade/custo, objetivos de serviço e procedimentos de operação.
 
@@ -104,8 +110,8 @@ Recursos: [GitOps com Argo CD](https://github.com/schoolofdevops/302-llmops/blob
 
 ## Aprofundamentos opcionais
 
-Fine-tuning entra quando a análise de erros justificar adaptar o comportamento do modelo. Use dados revisados, avaliação independente e comparação com o modelo original. O resultado deve passar pelo mesmo processo de entrega. [O laboratório de LoRA](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-02-finetuning.md) oferece um ponto de partida.
+Fine-tuning entra quando a análise de erros justificar adaptar o comportamento do modelo. Se a recuperação resolve o problema, não complique. Quando fizer sentido, use dados revisados, avaliação independente e comparação com o modelo original, e passe o resultado pelo mesmo processo de entrega. [O laboratório de LoRA](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-02-finetuning.md) oferece um ponto de partida.
 
-GPU scheduling, GPU Operator e otimização de inferência são outra trilha possível, depois de medir os limites do serviço. O [roadmap de infraestrutura de IA](https://github.com/hacrex/devops-ai-engineer-roadmap/blob/main/ROADMAP.md) ajuda a organizar esse aprofundamento.
+GPU scheduling, GPU Operator e otimização de inferência são outra trilha possível, e fazem mais sentido depois de medir os limites do serviço. O [roadmap de infraestrutura de IA](https://github.com/hacrex/devops-ai-engineer-roadmap/blob/main/ROADMAP.md) ajuda a organizar esse aprofundamento.
 
-Meu critério para continuar é conseguir mostrar o que construí, explicar o resultado e reproduzir a evidência. Esse ciclo de prática e revisão também aparece na abordagem de aprendizado que discuto em [[posts/make_the_llm_choose_pt|E se as LLMs escolhessem o que fazer?]].
+Meu critério para continuar é simples: conseguir mostrar o que construí, explicar o resultado e reproduzir a evidência. Esse ciclo de prática e revisão também aparece na abordagem de aprendizado que discuto em [[posts/make_the_llm_choose_pt|E se as LLMs escolhessem o que fazer?]].
