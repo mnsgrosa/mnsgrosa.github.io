@@ -43,7 +43,7 @@ export async function verifyScenes(browser, origin, artifacts, errors) {
     assert.equal(await page.locator('.scene-panel[data-scene="knowledge"]').getAttribute('aria-hidden'), 'true');
     assert.equal(await page.locator('.scene-panel[data-scene="articles"]').getAttribute('aria-hidden'), null);
     if (await page.locator('.topic-toggle').getAttribute('aria-expanded') === 'false') await page.locator('.topic-toggle').click();
-    assert.equal(await page.locator('.article-node').count(), 3);
+    assert.equal(await page.locator('.article-node').count(), 1);
     const transform = await page.locator('[data-camera]').getAttribute('transform');
     await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
     assert.notEqual(await page.locator('[data-camera]').getAttribute('transform'), transform);
@@ -94,7 +94,7 @@ export async function verifyScenes(browser, origin, artifacts, errors) {
     await deep.locator('knowledge-map[data-ready="true"]').waitFor();
     await settleOn(deep, 1);
     assert.equal(await deep.locator('[data-camera]').getAttribute('transform'), beforeArticle, 'Back restores graph view and scene together');
-    assert.equal(await deep.locator('.article-node').count(), 3);
+    assert.equal(await deep.locator('.article-node').count(), 1);
     await deep.close();
 
     // Scene shortcuts are real links: they push history, and Back walks the
@@ -140,7 +140,7 @@ export async function verifyScenes(browser, origin, artifacts, errors) {
     const plain = await noJS.newPage();
     await plain.goto(origin);
     assert.equal(await plain.locator('.scene-panel[inert]').count(), 0);
-    assert.equal(await plain.locator('.topic-articles a:visible').count(), 3);
+    assert.equal(await plain.locator('.topic-articles a:visible').count(), 1);
     assert.ok(await plain.evaluate(() => document.documentElement.scrollHeight > innerHeight));
     await plain.locator('.scene-links a[href="#experience"]').click();
     assert.ok(await plain.evaluate(() => scrollY > 0));

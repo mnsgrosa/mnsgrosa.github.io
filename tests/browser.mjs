@@ -62,10 +62,10 @@ try {
     const topic = page.locator('.topic-toggle');
     assert.equal(await topic.count(), 1);
     await topic.click();
-    assert.equal(await page.locator('.article-node').count(), 3);
-    assert.equal(await page.locator('.topic-articles a:visible').count(), 3);
+    assert.equal(await page.locator('.article-node').count(), 1);
+    assert.deepEqual(await page.locator('.topic-articles a:visible').evaluateAll(links => links.map(link => link.getAttribute('href'))), ['/posts/como_comecaria/']);
     assert.equal(await topic.getAttribute('aria-expanded'), 'true');
-    assert.equal(await page.locator('.graph-edge').count(), 4);
+    assert.equal(await page.locator('.graph-edge').count(), 0);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Home overflow at ${width}`);
     const wrapped = await page.locator('.site-rail nav a, .home-header a, .home-shortcuts a, .contact-cta, .map-toolbar button, .site-footer a').evaluateAll(elements => elements.filter(el => {
       const range = document.createRange(); range.selectNodeContents(el);
@@ -75,10 +75,10 @@ try {
     }).map(el => el.textContent));
     assert.deepEqual(wrapped, [], `Wrapped controls at ${width}`);
     await page.screenshot({ path: `${artifacts}/home-${width}.png`, fullPage: true });
-    await page.goto(`${origin}/posts/make_the_llm_choose_pt/`);
+    await page.goto(`${origin}/posts/como_comecaria/`);
     await page.locator('knowledge-map[data-ready="true"]').waitFor();
-    assert.equal(await page.locator('.neighbor-links ul a').count(), 2);
-    assert.equal(await page.locator('.article-node').count(), 3);
+    assert.equal(await page.locator('.neighbor-links ul a').count(), 0);
+    assert.equal(await page.locator('.article-node').count(), 1);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Reader overflow at ${width}`);
     await page.screenshot({ path: `${artifacts}/article-${width}.png`, fullPage: true });
     await page.goto(`${origin}/posts/como_comecaria/`);
@@ -104,7 +104,7 @@ try {
   // for the article having been pushed right.
   for (const width of [375, 1440, 2560]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto(`${origin}/posts/make_the_llm_choose_pt/`);
+    await page.goto(`${origin}/posts/como_comecaria/`);
     const banner = page.locator('.post-banner');
     assert.equal(await banner.count(), 1, `banner missing at ${width}`);
     assert.equal(await page.locator('.post-banner img').getAttribute('src'), '/images/article-banner.jpg', 'cover comes from the shared default');
@@ -211,7 +211,7 @@ try {
   assert.ok(await page.locator('#experience').evaluate(el => Math.abs(el.getBoundingClientRect().top) < 100));
   await page.locator('[data-node-subject]').focus();
   await page.keyboard.press('Enter');
-  assert.equal(await page.locator('.article-node').count(), 3);
+  assert.equal(await page.locator('.article-node').count(), 1);
   await page.keyboard.press('Space');
   assert.equal(await page.locator('.article-node').count(), 0);
   await page.locator('.topic-toggle').click();
@@ -227,13 +227,13 @@ try {
   await page.mouse.down(); await page.mouse.move(area.x + 80, area.y + 60); await page.mouse.up();
   const dragged = await page.locator('[data-camera]').getAttribute('transform');
   assert.notEqual(zoomed, dragged);
-  await page.locator('.topic-articles a').filter({ hasText: 'E se as LLMs' }).click();
+  await page.locator('.topic-articles a').filter({ hasText: 'De RAG à produção' }).click();
   await page.locator('knowledge-map[data-ready="true"]').waitFor();
-  assert.equal(await page.locator('.post-content a[href="/posts/stepback/"]').count(), 1);
+  assert.equal(await page.locator('.post-content a[href="/posts/make_the_llm_choose_pt/"]').count(), 1);
   await page.goBack();
   await page.locator('knowledge-map[data-ready="true"]').waitFor();
   assert.equal(await page.locator('[data-camera]').getAttribute('transform'), dragged, 'Back restores map viewport');
-  assert.equal(await page.locator('.article-node').count(), 3);
+  assert.equal(await page.locator('.article-node').count(), 1);
   await page.getByRole('button', { name: 'Reset', exact: true }).click();
   assert.notEqual(await page.locator('[data-camera]').getAttribute('transform'), dragged);
   for (let i = 0; i < 20; i++) {
@@ -260,7 +260,7 @@ try {
   assert.ok(await fallback.locator('#experience').isVisible());
   await fallback.locator('.home-header a[href="#experience"]').click();
   assert.equal(new URL(fallback.url()).hash, '#experience');
-  assert.equal(await fallback.locator('.topic-articles a:visible').count(), 3);
+  assert.equal(await fallback.locator('.topic-articles a:visible').count(), 1);
   await fallback.locator('.topic-articles a').first().click();
   assert.ok(await fallback.locator('.post-content').isVisible());
   assert.ok(await fallback.locator('.neighbor-links a').count() >= 1);

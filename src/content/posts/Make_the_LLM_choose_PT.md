@@ -4,6 +4,7 @@ pubDate: 2026-01-30
 description: "Padrão de rotas para LLMs"
 lang: 'pt'
 subject: ai-engineering
+graph: false
 ---
 
 # Faça a LLM escolher
