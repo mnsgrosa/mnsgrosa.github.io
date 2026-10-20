@@ -1,0 +1,111 @@
+---
+title: "From RAG to production: my LLMOps learning roadmap"
+pubDate: 2026-09-28
+description: "A practical roadmap for building, evaluating, observing, and operating RAG applications, from the first index to Kubernetes."
+lang: "en"
+subject: ai-engineering
+---
+
+<nav className="post-language-switch" aria-label="Article language" lang="pt">
+
+[[posts/como_comecaria|Ler em português →]]
+
+</nav>
+
+When I started studying for ITA in 2018–2019, I adopted a cycle that still works for me: learn enough to begin, practice, and return to the theory when I get stuck. I want to apply that same process to developing LLM applications.
+
+This roadmap starts with **retrieval-augmented generation, or RAG, and ends with operating a service on Kubernetes**. The idea is to evolve one application: retrieve information, measure answer quality, build an API, investigate failures, and automate delivery. LLM fundamentals and training from scratch are outside this learning path.
+
+*Roadmap revised on October 20, 2026. The projects and progression criteria below are my synthesis for guiding study, rather than official course requirements.*
+
+## How to follow the path
+
+Choose a corpus you understand: public technical documentation, study notes, or a support knowledge base without sensitive information. Keep it across all three capstones so you can compare how the results evolve.
+
+The starting requirements are Python, Git, HTTP/JSON, basic SQL, and Docker. Kubernetes comes later. A hosted model API is sufficient for the first stages.
+
+1. **Build:** ingestion → retrieval → answers with sources.
+2. **Measure:** evaluation → retrieval improvements → API → tracing.
+3. **Operate:** data updates → Kubernetes → inference service.
+4. **Deliver:** monitoring → scaling → GitOps → failure recovery.
+
+## 1. Build a reproducible RAG baseline
+
+Start with an explicit pipeline: load documents, clean text, create chunks, generate embeddings, index, and retrieve context for answers. Preserve document identifiers, provenance, and versions. PostgreSQL with pgvector can be the primary store; FAISS makes a useful comparison exercise.
+
+**Practice:** create commands to index a small corpus and ask questions. Record retrieved chunks and return answers with verifiable citations. When the corpus does not contain an answer, the application should acknowledge that limitation.
+
+**Move forward when:** you can rebuild the index from a clean installation, explain five answers end to end, and demonstrate questions the corpus cannot answer.
+
+Resources: [Maxime Labonne’s LLM Engineer track](https://github.com/mlabonne/llm-course#-the-llm-engineer) and [RAG and vector search in LLM Zoomcamp](https://github.com/DataTalksClub/llm-zoomcamp#syllabus).
+
+## 2. Evaluate before making retrieval more complex
+
+Create questions with known relevant documents. Separate development questions from the final evaluation set. Include unanswerable and ambiguous questions, as well as attempts to access restricted content.
+
+Measure retrieval and generation separately. Hit Rate and MRR help evaluate search; correctness, grounding, and citation accuracy help evaluate answers. An LLM judge needs a rubric and comparison against human review.
+
+Then compare the baseline with hybrid search and reranking. Experiment with chunk size and context budgets, changing one variable at a time. Query rewriting, HyDE, and SQL or graph retrieval can wait for problems that justify their complexity.
+
+**Move forward when:** you have a comparable report across configurations, including per-question failures, quality, latency, and cost. Record why you selected the final configuration.
+
+Resources: [Zoomcamp’s evaluation module](https://github.com/DataTalksClub/llm-zoomcamp/tree/main/04-evaluation), [Ragas](https://docs.ragas.io/en/stable/), and [production RAG with LlamaIndex](https://developers.llamaindex.ai/python/framework/optimizing/production_rag/).
+
+## 3. Build an observable application
+
+Expose the pipeline through an API. Define request and response schemas, authentication, limits, timeouts, bounded retries, and cancellation. Separate ingestion from answering requests.
+
+Instrument **API → retrieval → reranking → generation → response**. A request identifier should connect logs, spans, sources, versions, and feedback. Track latency, errors, tokens, and cost per successful answer, while controlling what data enters telemetry.
+
+**Capstone 1 — observable knowledge assistant:** deliver an API or interface, a Docker Compose environment, reproducible evaluation, and a monitoring dashboard. Demonstrate a retrieval failure and a timeout, identifying their causes through the collected signals.
+
+**Progression gate:** set quality targets and latency/cost budgets before the final test. As an initial reference, try Hit Rate@5 of 0.85 on answerable questions and at least 90% valid citations; report counts, human review, and limitations.
+
+Resources: [Zoomcamp’s capstone](https://github.com/DataTalksClub/llm-zoomcamp#capstone-project), [FastAPI](https://fastapi.tiangolo.com/), [Langfuse](https://langfuse.com/docs/observability/overview), and [OpenTelemetry signals](https://opentelemetry.io/docs/concepts/signals/).
+
+## 4. Operate the data and learn Kubernetes
+
+After the first capstone, two tracks can progress in parallel.
+
+- **Data:** automate ingestion, reprocessing, and index publication. Test updates, deletion, access revocation, partial failures, and backup restoration. Repeating a run should not duplicate content.
+- **Platform:** learn Pods, Deployments, Services, Jobs, Secrets, PVCs, probes, and resource limits. Use KIND to deploy the application and investigate configuration, networking, and availability problems.
+
+**Move forward when:** you can replace a Pod without losing required data, prevent an unavailable instance from receiving traffic, and restore a previous index version.
+
+Resources: [Zoomcamp orchestration](https://github.com/DataTalksClub/llm-zoomcamp#syllabus), [Kestra](https://kestra.io/docs), [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/), and [School of DevOps Lab 00](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-00-cluster-setup.md).
+
+## 5. Serve models, observe capacity, and scale
+
+Connect the application to a model served with vLLM while keeping retrieval independent of the inference backend. Learn to version model weights, validate artifacts, and wait for model loading before accepting traffic. Compare OCI distribution with object-storage downloads through an initContainer.
+
+Try serving the same model in three ways:
+
+- **Plain vLLM Deployment:** a starting point with few components.
+- **vLLM Router:** distribution across replicas and investigation of session/cache affinity.
+- **KServe:** declarative model resources and reusable serving runtimes.
+
+Use Prometheus and Grafana to relate queues, cache pressure, and throughput to time to first token and user-facing latency. Compare fixed replicas with autoscaling. HPA and KEDA should react to signals appropriate for the workload, accounting for startup time and capacity limits.
+
+**Capstone 2 — reproducible serving platform:** rebuild the environment, run load tests, deliberately lose a Pod, and demonstrate diagnosis and recovery. Choose an architecture using the measurements.
+
+Resources: [packaging, serving, observability, and scaling labs](https://github.com/schoolofdevops/302-llmops/tree/main/course-content/docs/labs), [vLLM metrics](https://docs.vllm.ai/en/latest/design/metrics/), and [KServe](https://kserve.github.io/website/). CPU exercises teach deployment mechanics; their performance numbers do not represent a GPU deployment.
+
+## 6. Automate delivery and practice incidents
+
+Version a complete release: application image, model, prompt, index, and evaluation report. Use CI to validate changes, Argo Workflows to execute pipelines, and Argo CD to reconcile the version declared in Git.
+
+The flow I want to implement is **change → evaluation → immutable artifacts → promotion → observation → rollback when needed**. School of DevOps Lab 12 teaches orchestration, but explicitly omits a quality gate and includes demonstration steps that need real scripts. In this roadmap, failed evaluation must block promotion.
+
+**Capstone 3 — operating through an incident:** simulate a corpus update, model unavailability, traffic burst, index loss, and an access-boundary violation. Record impact, detection, diagnosis, recovery, and the regression test added afterward.
+
+**Finish when:** you can promote and roll back a real version, restore data, and present the architecture, quality/capacity/cost results, service objectives, and operating procedures.
+
+Resources: [GitOps with Argo CD](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-11-gitops-argocd.md) and [the Argo Workflows pipeline](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-12-argo-workflows.md).
+
+## Optional deeper study
+
+Fine-tuning becomes relevant when failure analysis justifies adapting model behavior. Use reviewed data, independent evaluation, and comparison against the original model. The result must pass through the same delivery process. [The LoRA lab](https://github.com/schoolofdevops/302-llmops/blob/main/course-content/docs/labs/lab-02-finetuning.md) provides a starting point.
+
+GPU scheduling, GPU Operator, and inference optimization form another possible track after measuring the service’s limits. The [AI infrastructure roadmap](https://github.com/hacrex/devops-ai-engineer-roadmap/blob/main/ROADMAP.md) helps organize this deeper study.
+
+My criterion for moving forward is being able to show what I built, explain the result, and reproduce the evidence. That practice-and-review cycle also appears in the learning approach I discuss in [[posts/make_the_llm_choose_pt|What if LLMs chose what to do? (Portuguese)]].

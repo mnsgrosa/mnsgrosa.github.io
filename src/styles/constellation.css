@@ -119,6 +119,10 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .post-content h2 { margin-top: var(--space-xl); font-size: var(--text-xl); }
 .post-content h3 { margin-top: var(--space-lg); }
 .post-content a { overflow-wrap: anywhere; }
+.post-language-switch { margin-bottom: var(--space-lg); }
+.post-language-switch p { margin: 0; }
+.post-language-switch a { display: inline-flex; align-items: center; min-height: 44px; padding: var(--space-xs) var(--space-md); border: var(--rule-width) solid var(--color-accent); border-radius: var(--radius-sm); background: var(--color-panel); font-size: var(--text-sm); text-decoration: none; }
+.post-language-switch a:hover { background: var(--color-surface); }
 .post-content a.repository-card { display: flex; align-items: center; gap: var(--space-md); position: relative; width: min(100%, 28rem); min-height: 88px; padding: var(--space-md) var(--space-md) var(--space-md) 3.75rem; border: 1px solid var(--color-rule); border-radius: var(--radius-md); background: var(--color-panel); color: var(--color-ink); text-decoration: none; transition: border-color var(--dur-short) var(--ease-out), background var(--dur-short) var(--ease-out); }
 .post-content a.repository-card:hover { border-color: var(--color-accent); background: var(--color-surface); }
 .repository-card__octocat { position: absolute; top: var(--space-md); left: var(--space-md); width: 1.5rem; height: 1.5rem; color: var(--color-ink); }

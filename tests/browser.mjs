@@ -26,7 +26,7 @@ try {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
   assert.ok(ready, `Preview not ready: ${log}`);
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}) });
   // The original document/reader checks exercise the accessible linear view.
   // verifyScenes separately checks normal-motion desktop rotation.
   const page = await browser.newPage({ reducedMotion: 'reduce' });
@@ -62,10 +62,10 @@ try {
     const topic = page.locator('.topic-toggle');
     assert.equal(await topic.count(), 1);
     await topic.click();
-    assert.equal(await page.locator('.article-node').count(), 2);
-    assert.equal(await page.locator('.topic-articles a:visible').count(), 2);
+    assert.equal(await page.locator('.article-node').count(), 3);
+    assert.equal(await page.locator('.topic-articles a:visible').count(), 3);
     assert.equal(await topic.getAttribute('aria-expanded'), 'true');
-    assert.equal(await page.locator('.graph-edge').count(), 1);
+    assert.equal(await page.locator('.graph-edge').count(), 4);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Home overflow at ${width}`);
     const wrapped = await page.locator('.site-rail nav a, .home-header a, .home-shortcuts a, .contact-cta, .map-toolbar button, .site-footer a').evaluateAll(elements => elements.filter(el => {
       const range = document.createRange(); range.selectNodeContents(el);
@@ -77,10 +77,24 @@ try {
     await page.screenshot({ path: `${artifacts}/home-${width}.png`, fullPage: true });
     await page.goto(`${origin}/posts/make_the_llm_choose_pt/`);
     await page.locator('knowledge-map[data-ready="true"]').waitFor();
-    assert.equal(await page.locator('.neighbor-links ul a').count(), 1);
-    assert.equal(await page.locator('.article-node').count(), 2);
+    assert.equal(await page.locator('.neighbor-links ul a').count(), 2);
+    assert.equal(await page.locator('.article-node').count(), 3);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Reader overflow at ${width}`);
     await page.screenshot({ path: `${artifacts}/article-${width}.png`, fullPage: true });
+    await page.goto(`${origin}/posts/como_comecaria/`);
+    assert.equal(await page.locator('html').getAttribute('lang'), 'pt');
+    const languageLink = page.locator('.post-language-switch a');
+    assert.equal(await languageLink.getAttribute('href'), '/posts/rag-to-production/');
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Portuguese roadmap overflow at ${width}`);
+    await languageLink.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForURL('**/posts/rag-to-production/');
+    assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+    assert.match(await page.locator('h1').textContent(), /From RAG to production/);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `English roadmap overflow at ${width}`);
+    await page.screenshot({ path: `${artifacts}/roadmap-${width}.png`, fullPage: true });
+    await page.locator('.post-language-switch a').click();
+    await page.waitForURL('**/posts/como_comecaria/');
   }
   // Sticky banner: a column between the rail and the article that holds its
   // place while the article scrolls, and a plain band below the desktop layout.
@@ -197,7 +211,7 @@ try {
   assert.ok(await page.locator('#experience').evaluate(el => Math.abs(el.getBoundingClientRect().top) < 100));
   await page.locator('[data-node-subject]').focus();
   await page.keyboard.press('Enter');
-  assert.equal(await page.locator('.article-node').count(), 2);
+  assert.equal(await page.locator('.article-node').count(), 3);
   await page.keyboard.press('Space');
   assert.equal(await page.locator('.article-node').count(), 0);
   await page.locator('.topic-toggle').click();
@@ -219,7 +233,7 @@ try {
   await page.goBack();
   await page.locator('knowledge-map[data-ready="true"]').waitFor();
   assert.equal(await page.locator('[data-camera]').getAttribute('transform'), dragged, 'Back restores map viewport');
-  assert.equal(await page.locator('.article-node').count(), 2);
+  assert.equal(await page.locator('.article-node').count(), 3);
   await page.getByRole('button', { name: 'Reset', exact: true }).click();
   assert.notEqual(await page.locator('[data-camera]').getAttribute('transform'), dragged);
   for (let i = 0; i < 20; i++) {
@@ -246,10 +260,15 @@ try {
   assert.ok(await fallback.locator('#experience').isVisible());
   await fallback.locator('.home-header a[href="#experience"]').click();
   assert.equal(new URL(fallback.url()).hash, '#experience');
-  assert.equal(await fallback.locator('.topic-articles a:visible').count(), 2);
+  assert.equal(await fallback.locator('.topic-articles a:visible').count(), 3);
   await fallback.locator('.topic-articles a').first().click();
   assert.ok(await fallback.locator('.post-content').isVisible());
   assert.ok(await fallback.locator('.neighbor-links a').count() >= 1);
+  await fallback.goto(`${origin}/posts/como_comecaria/`);
+  await fallback.locator('.post-language-switch a').click();
+  await fallback.waitForURL('**/posts/rag-to-production/');
+  await fallback.locator('.post-language-switch a').click();
+  await fallback.waitForURL('**/posts/como_comecaria/');
   await noJS.close();
   await page.goto(`${origin}/posts/stepback/`);
   assert.equal(await page.locator('knowledge-map').count(), 0, 'excluded article remains published without a neighborhood');
