@@ -40,6 +40,19 @@ test('an unreachable API falls back instead of throwing', async () => {
   assert.equal((await githubRepo(key)).stars, fallback);
 });
 
+// The timeout is the path a hanging API takes, and it only exists if the fetch
+// actually carries a signal: assert the wiring, then reject the way an abort
+// does, without paying five real seconds on every test run.
+test('the request carries a timeout signal, and an aborted request falls back', async () => {
+  let signal;
+  stubFetch((_url, options) => {
+    signal = options?.signal;
+    return Promise.reject(new DOMException('The operation was aborted due to timeout', 'TimeoutError'));
+  });
+  assert.equal((await githubRepo(key)).stars, fallback);
+  assert.ok(signal instanceof AbortSignal, 'the fetch must carry an abort signal, or nothing can time out');
+});
+
 test('a payload without a usable count falls back', async () => {
   for (const stargazers_count of [undefined, null, '12', -1, 4.5]) {
     resetGithubRepoCache();
