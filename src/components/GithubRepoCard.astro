@@ -1,0 +1,32 @@
+---
+/**
+ * A repository card: one anchor holding the owner's avatar, the handle, the
+ * repository name and its star count, so the whole card is the target and
+ * nothing is hover-only. Static HTML, no client script.
+ *
+ * The star count is fetched once per build from `api.github.com`, cached at
+ * module scope in `src/lib/github-repo.mjs`, and falls back to the data file's
+ * `starsFallback` when the request fails or is rate limited — a lookup failure
+ * never fails the build. The count is pluralised in the article's language, so
+ * the card takes `lang` (`pt` → `1 estrela` / `N estrelas`, `en` → `1 star` /
+ * `N stars`).
+ */
+import { githubRepo, starLabel } from '../lib/github-repo.mjs';
+
+const { lang = 'en', repo: key = 'inverted-classroom' } = Astro.props;
+const repository = await githubRepo(key);
+const stars = starLabel(repository.stars, lang);
+---
+<a class="repository-card" href={repository.url} rel="noopener">
+  <img class="repository-card__avatar" src={repository.avatarUrl} alt="" width="48" height="48" loading="lazy" decoding="async" />
+  <span class="repository-card__details">
+    <span class="repository-card__handle">{repository.handle}</span>
+    <span class="repository-card__line">
+      <strong class="repository-card__name">{repository.name}</strong>
+      <span class="repository-card__stars">
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.8 9.53 6.1 14.09 6.22 10.47 9 11.76 13.38 8 10.8 4.24 13.38 5.53 9 1.91 6.22 6.47 6.1Z" fill="currentColor" /></svg>
+        {stars}
+      </span>
+    </span>
+  </span>
+</a>

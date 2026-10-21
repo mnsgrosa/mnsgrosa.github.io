@@ -8,6 +8,8 @@ graph: true
 translationKey: rag-to-production
 ---
 
+import GithubRepoCard from '../../components/GithubRepoCard.astro';
+
 When I started studying for ITA in 2018–2019, I picked up a cycle I still use: learn just enough to start, practice, and go back to the theory when something gets stuck. It works because the theory stops being abstract. It shows up exactly when you need it. I want to apply that same process to building LLM applications.
 
 This roadmap starts with **retrieval-augmented generation, or RAG, and ends with a service running on Kubernetes**. The short version: instead of trusting only what the model memorized, you hand it the right documents along with the question. From there it is one application evolving: retrieve information, measure answer quality, build an API, chase down failures, automate delivery. LLM fundamentals and training from scratch stay out of scope.
@@ -28,6 +30,10 @@ The path has four phases:
 4. **Deliver:** monitoring → scaling → GitOps → failure recovery.
 
 The phases overlap. Do not be surprised to walk back to an earlier one when a load test exposes a retrieval problem.
+
+<GithubRepoCard lang="en" />
+
+My study loop became an open skill I actually use: the card above goes to the repository. The logic is an inverted classroom. You try to answer and practice first, and the theory arrives afterward, at the point where the error showed up. That is why every section below separates practice from resources: run the practice before opening the links.
 
 ## 1. Build a reproducible RAG baseline
 

@@ -7,6 +7,8 @@ subject: ai-engineering
 translationKey: rag-to-production
 ---
 
+import GithubRepoCard from '../../components/GithubRepoCard.astro';
+
 Quando comecei a estudar para o ITA, em 2018–2019, adotei um ciclo que uso até hoje: aprender o suficiente para começar, praticar, e voltar à teoria quando algo trava. Funciona porque a teoria deixa de ser abstrata. Ela chega na hora em que você precisa dela. Quero aplicar esse mesmo processo ao desenvolvimento de aplicações com LLMs.
 
 Este roteiro começa com **RAG, geração aumentada por recuperação, e termina com um serviço rodando em Kubernetes**. A ideia em uma frase: em vez de confiar só no que o modelo decorou, você entrega os documentos certos junto com a pergunta. A partir daí é uma aplicação só evoluindo: recuperar informação, medir a qualidade das respostas, criar uma API, investigar falhas e automatizar a entrega. Fundamentos de LLM e treinamento do zero ficam de fora.
@@ -27,6 +29,10 @@ O percurso tem quatro fases:
 4. **Entregar:** monitoramento → escala → GitOps → recuperação de falhas.
 
 As fases se sobrepõem. Não estranhe voltar para uma delas quando um teste de carga expuser um problema na recuperação.
+
+<GithubRepoCard lang="pt" />
+
+Meu ciclo de estudo virou uma skill aberta que eu realmente uso: o card acima leva ao repositório. A lógica é a de uma sala de aula invertida. Você tenta responder e praticar primeiro, e a teoria entra depois, no ponto que o erro revelou. É por isso que cada seção abaixo separa prática e recursos: faça a prática antes de abrir os links.
 
 ## 1. Construir uma base RAG reproduzível
 
