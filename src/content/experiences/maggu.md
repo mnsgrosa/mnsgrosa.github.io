@@ -1,6 +1,6 @@
 ---
 company: "Maggu"
-role: "Data AI Engineer"
+role: "AI Engineer"
 startDate: 2026-04-01
 endDate: 2026-08-01
 location: "Remote"

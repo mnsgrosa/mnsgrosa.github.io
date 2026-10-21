@@ -1,6 +1,6 @@
 ---
 company: "Capgemini"
-role: "Data AI Engineer (temporary contract)"
+role: "AI Engineer (temporary contract)"
 startDate: 2026-01-01
 endDate: 2026-04-01
 location: "Recife, Brazil (Hybrid)"

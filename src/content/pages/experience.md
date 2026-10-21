@@ -5,7 +5,7 @@ title: "Experience"
 ## Experience
 
 ### Maggu — Remote  
-**Data AI Engineer** · Apr. 2026 – Aug. 2026
+**AI Engineer** · Apr. 2026 – Aug. 2026
 
 - **LLM evaluation**  
   Improved medicine recommendation accuracy from 62% to 94% by replacing a naive LLM judge with two adversarial agents backed by a human-made dataset in MLflow on Databricks.
@@ -21,7 +21,7 @@ _Stack: Databricks, PySpark, Delta Lake, MLflow, Terraform, Agno, GitHub Actions
 ---
 
 ### Capgemini — Recife, Brazil (Hybrid)  
-**Data AI Engineer · temporary contract** · Jan. 2026 – Apr. 2026
+**AI Engineer · temporary contract** · Jan. 2026 – Apr. 2026
 
 - **Agent evaluation**  
   Built an evaluation suite checking tool choice, arguments, and call order in agent workflows, catching four regressions before they reached the client.
@@ -34,7 +34,7 @@ _Stack: Python, LLM evaluation, agent frameworks, tool-calling validation, RAG, 
 ---
 
 ### Triggo.ai — Remote  
-**Data AI Engineer · temporary contract** · Dec. 2025 – Jan. 2026
+**AI Engineer · temporary contract** · Dec. 2025 – Jan. 2026
 
 - **LLM output control**  
   Used self-consistency and tree-of-thoughts prompting to keep tone consistent. Tuned Anthropic and OpenAI API calls for JSON-formatted, length-constrained outputs.

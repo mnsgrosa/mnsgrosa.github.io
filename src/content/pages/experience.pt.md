@@ -12,7 +12,7 @@ lang: pt
 <h2 id="experience">Experiência</h2>
 
 ### Maggu — Remoto  
-**Engenheiro de IA de Dados** · abr. 2026 – ago. 2026
+**Engenheiro de IA** · abr. 2026 – ago. 2026
 
 - **Avaliação de LLM**  
   Subi a precisão da recomendação de medicamentos de 62% para 94% trocando um juiz LLM ingênuo por dois agentes adversariais apoiados num dataset feito à mão no MLflow, sobre Databricks.
@@ -28,7 +28,7 @@ _Tecnologias: Databricks, PySpark, Delta Lake, MLflow, Terraform, Agno, GitHub A
 ---
 
 ### Capgemini — Recife, Brasil (Híbrido)  
-**Engenheiro de IA de Dados · contrato temporário** · jan. 2026 – abr. 2026
+**Engenheiro de IA · contrato temporário** · jan. 2026 – abr. 2026
 
 - **Avaliação de agentes**  
   Montei uma suíte de avaliação que confere escolha de ferramenta, argumentos e ordem das chamadas nos fluxos de agentes, pegando quatro regressões antes de chegarem ao cliente.
@@ -41,7 +41,7 @@ _Tecnologias: Python, avaliação de LLM, frameworks de agentes, validação de 
 ---
 
 ### Triggo.ai — Remoto  
-**Engenheiro de IA de Dados · contrato temporário** · dez. 2025 – jan. 2026
+**Engenheiro de IA · contrato temporário** · dez. 2025 – jan. 2026
 
 - **Controle da saída do LLM**  
   Usei self-consistency e tree-of-thoughts no prompt para manter o tom consistente. Ajustei as chamadas das APIs da Anthropic e da OpenAI para saídas em JSON, com limite de tamanho.
