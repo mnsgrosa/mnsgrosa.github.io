@@ -6,7 +6,7 @@ import gruvbox from './src/lib/shiki-gruvbox-dark.mjs';
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://mnsgrosa.github.io",
+  site: "https://www.mnsgrosa.com.br",
   base: "/",
   // Both languages are real routes: `/` is English, `/pt/` is Portuguese.
   i18n: {

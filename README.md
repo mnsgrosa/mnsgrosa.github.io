@@ -5,7 +5,7 @@ section plus an interactive map where each island is a subject and each dot is a
 article, linked to the articles it references.
 
 Built with Astro, published to GitHub Pages by `.github/workflows/astro.yml` on
-every push to `main`, at https://mnsgrosa.github.io.
+every push to `main`, at https://www.mnsgrosa.com.br.
 
 ## Run it locally
 

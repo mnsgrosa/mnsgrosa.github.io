@@ -2,7 +2,7 @@ import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { verifyScenes } from './scene-browser.mjs';
 
 const probe = createServer();
@@ -10,6 +10,10 @@ await new Promise(resolve => probe.listen(0, '127.0.0.1', resolve));
 const port = probe.address().port;
 await new Promise(resolve => probe.close(resolve));
 const origin = `http://127.0.0.1:${port}`;
+// The public origin every absolute URL in the build is derived from. Read from
+// the one place that declares it, so a domain change cannot leave the suite
+// asserting the old host.
+const SITE = /site:\s*['"]([^'"]+)['"]/.exec(await readFile(new URL('../astro.config.mjs', import.meta.url), 'utf8'))[1].replace(/\/$/, '');
 const artifacts = '/tmp/constellation-browser';
 await mkdir(artifacts, { recursive: true });
 const server = spawn(process.execPath, ['node_modules/astro/astro.js', 'preview', '--host', '127.0.0.1', '--port', String(port)], { stdio: ['ignore', 'pipe', 'pipe'] });
@@ -164,8 +168,8 @@ try {
   await page.setViewportSize({ width: 1440, height: 1000 });
   // Article pairing: one hreflang link to the sibling, canonical to itself.
   await page.goto(`${origin}/posts/como_comecaria/`);
-  assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['en', 'https://mnsgrosa.github.io/posts/rag-to-production/']]);
-  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://mnsgrosa.github.io/posts/como_comecaria/');
+  assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['en', `${SITE}/posts/rag-to-production/`]]);
+  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), `${SITE}/posts/como_comecaria/`);
   assert.equal(await page.locator('.post-language-switch a').getAttribute('hreflang'), 'en');
   assert.equal(await page.locator('.post-language-switch a').getAttribute('lang'), 'en');
   // Link previews. MainLayout owns these tags, so a home route and an article
@@ -182,7 +186,7 @@ try {
       }
       return tags;
     });
-    assert.ok(/^https:\/\/mnsgrosa\.github\.io\/og\//.test(meta['og:image'] ?? ''), `og:image is an absolute card URL at ${route}: ${meta['og:image']}`);
+    assert.ok(meta['og:image'] === `${SITE}${new URL(meta['og:image']).pathname}` && /^\/og\//.test(new URL(meta['og:image']).pathname), `og:image is an absolute card URL on ${SITE} at ${route}: ${meta['og:image']}`);
     assert.ok((meta['og:image:alt'] ?? '').trim().length > 0, `og:image:alt is set at ${route}`);
     assert.equal(meta['twitter:image'], meta['og:image'], `twitter:image matches og:image at ${route}`);
     assert.equal(meta['og:type'], route === '/' ? 'website' : 'article', `og:type at ${route}`);
@@ -192,9 +196,9 @@ try {
     assert.match(card.headers()['content-type'] ?? '', /^image\/png/, `the card for ${route} is a PNG`);
   }
   await page.goto(`${origin}/posts/rag-to-production/`);
-  assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['pt', 'https://mnsgrosa.github.io/posts/como_comecaria/']]);
-  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://mnsgrosa.github.io/posts/rag-to-production/');
-  assert.equal(new URL(await page.locator('.post-share a').getAttribute('href')).searchParams.get('url'), 'https://mnsgrosa.github.io/posts/rag-to-production/', 'share points at the article itself, never at its translation');
+  assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['pt', `${SITE}/posts/como_comecaria/`]]);
+  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), `${SITE}/posts/rag-to-production/`);
+  assert.equal(new URL(await page.locator('.post-share a').getAttribute('href')).searchParams.get('url'), `${SITE}/posts/rag-to-production/`, 'share points at the article itself, never at its translation');
   // The share link opens its own tab and leaves the reader where they were.
   // LinkedIn is stubbed, so the suite never touches the network; the assertion
   // is about where the click lands, not what LinkedIn renders.
@@ -206,7 +210,7 @@ try {
   const [clicked] = await Promise.all([page.waitForEvent('popup'), shareLink.click()]);
   await clicked.waitForLoadState('domcontentloaded');
   assert.equal(page.url(), articleUrl, 'a click on share keeps the article open');
-  assert.equal(new URL(clicked.url()).searchParams.get('url'), 'https://mnsgrosa.github.io/posts/como_comecaria/');
+  assert.equal(new URL(clicked.url()).searchParams.get('url'), `${SITE}/posts/como_comecaria/`);
   await clicked.close();
   await shareLink.focus();
   const [pressed] = await Promise.all([page.waitForEvent('popup'), page.keyboard.press('Enter')]);
