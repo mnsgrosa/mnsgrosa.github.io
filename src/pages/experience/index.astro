@@ -1,12 +1,16 @@
 ---
 import { getEntry } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { useTranslations } from '../../i18n/ui.mjs';
 
+const t = useTranslations('en');
+// English reads the base entry. `experience.pt` is Portuguese-only, so `/`
+// never renders it and no fallback is needed in this direction.
 const experiencePage = await getEntry('pages', 'experience');
 const { Content } = await experiencePage.render();
 
 ---
 
-<MainLayout title="Experience">
+<MainLayout title={t('nav.experience')}>
   <Content />
 </MainLayout>

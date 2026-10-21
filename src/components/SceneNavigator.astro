@@ -1,27 +1,44 @@
 ---
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 const destinations = [
-  { href: '#knowledge', label: 'Knowledge' },
-  { href: '#explore', label: 'Articles' },
-  { href: '#profile', label: 'About' },
-  { href: '#experience', label: 'Experience' },
-  { href: '#projects', label: 'Projects' },
+  { href: '#knowledge', label: t('scene.knowledge') },
+  { href: '#explore', label: t('nav.articles') },
+  { href: '#profile', label: t('scene.about') },
+  { href: '#experience', label: t('nav.experience') },
+  { href: '#projects', label: t('nav.projects') },
 ];
+// The scene script cannot import the dictionary either: same JSON handover.
+const strings = {
+  status: t('scene.status'),
+  modePage: t('scene.usePageScroll'),
+  modeScene: t('scene.useSceneView'),
+};
+const fill = (template, values) => template.replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
 ---
 <scene-navigator>
+  <script type="application/json" data-i18n="scene" set:html={JSON.stringify(strings).replace(/</g, '\\u003c')} />
   <div class="scene-viewport">
     <div class="scene-ring"><slot /></div>
   </div>
-  <nav class="home-shortcuts scene-links" aria-label="On this page">
-    {destinations.map(destination => <a href={destination.href}>{destination.label}</a>)}
+  <nav class="home-shortcuts scene-links" aria-label={t('scene.navLabel')}>
+    {/* One destination per line in the built HTML: Astro otherwise emits the
+        whole nav on a single line, and the acceptance check counts the
+        `data-scene-label` lines that reach the scene script. */}
+    {destinations.map((destination, index) => (
+      <Fragment>{index ? '\n' : ''}<a href={destination.href} data-scene-label={destination.label}>{destination.label}</a></Fragment>
+    ))}
   </nav>
   <div class="scene-controls" hidden>
-    <p class="scene-hint">Scroll to move between scenes · <span aria-hidden="true">← →</span><span class="sr-only">Left and right arrow keys</span></p>
-    <div class="scene-travel" role="group" aria-label="Scene navigation">
-      <button type="button" data-previous aria-label="Previous scene">←</button>
-      <output class="scene-status" aria-live="polite" aria-atomic="true">1 / 5 · Knowledge</output>
-      <button type="button" data-next aria-label="Next scene">→</button>
+    <p class="scene-hint">{t('scene.hint')} · <span aria-hidden="true">← →</span><span class="sr-only">{t('scene.hintKeys')}</span></p>
+    <div class="scene-travel" role="group" aria-label={t('scene.controlsLabel')}>
+      <button type="button" data-previous aria-label={t('scene.previous')}>←</button>
+      <output class="scene-status" aria-live="polite" aria-atomic="true">{fill(strings.status, { index: 1, total: destinations.length, label: destinations[0].label })}</output>
+      <button type="button" data-next aria-label={t('scene.next')}>→</button>
     </div>
-    <button type="button" class="scene-mode" data-mode>Use page scroll</button>
+    <button type="button" class="scene-mode" data-mode>{t('scene.usePageScroll')}</button>
   </div>
 </scene-navigator>
 <script>

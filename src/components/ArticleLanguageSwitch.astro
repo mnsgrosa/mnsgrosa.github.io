@@ -1,0 +1,22 @@
+---
+/**
+ * The article's language switch: one link to the article's translation, labelled
+ * in the *destination* language so `lang` on the anchor matches the words.
+ *
+ * The pair comes from frontmatter `translationKey` (see `pairArticles`), the
+ * same source the layout uses for `hreflang`, so the link and the metadata
+ * cannot disagree. An article without a sibling renders nothing at all.
+ */
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { pair, lang = 'en' } = Astro.props;
+const other = lang === 'pt' ? 'en' : 'pt';
+const sibling = pair?.[other];
+const t = useTranslations(lang);
+const target = useTranslations(other);
+---
+{sibling && (
+  <nav class="post-language-switch" aria-label={t('article.switchLabel')}>
+    <a href={sibling.url} hreflang={other} lang={other}>{target('article.read')}</a>
+  </nav>
+)}

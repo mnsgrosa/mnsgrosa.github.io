@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { slug as githubSlug } from 'github-slugger';
-import { buildGraph } from './knowledge.mjs';
+import { buildGraph, pairArticles } from './knowledge.mjs';
 
 // Astro relocates server chunks into dist during builds. Resolve authored files
 // from the project working directory, not the bundled module's import.meta.url.
@@ -24,10 +24,16 @@ export function readArticles() {
     if (typeof slug !== 'string' || !slug || /[?#\\]/.test(slug) || slug.startsWith('/') || slug.endsWith('/') || slug.split('/').some(p => p === '..' || p === '.')) {
       throw new Error(`${file}: invalid article slug`);
     }
-    return { id: `posts/${slug}`, title: data.title, url: `/posts/${slug}/`, subject: data.subject, graph: data.graph, lang: data.lang, description: data.description, body: content, file };
+    return { id: `posts/${slug}`, title: data.title, url: `/posts/${slug}/`, subject: data.subject, graph: data.graph, lang: data.lang, translationKey: data.translationKey, description: data.description, body: content, file };
   });
 }
 
-export function readGraph() {
-  return buildGraph(readArticles(), JSON.parse(readFileSync(registry, 'utf8')));
+/** The graph of one language: `/` reads `en`, `/pt/` reads `pt`. */
+export function readGraph(lang = 'en') {
+  return buildGraph(readArticles(), JSON.parse(readFileSync(registry, 'utf8')), lang);
+}
+
+/** Article translations, keyed by frontmatter `translationKey`. */
+export function readArticlePairs() {
+  return pairArticles(readArticles());
 }

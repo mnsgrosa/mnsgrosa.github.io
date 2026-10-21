@@ -1,0 +1,42 @@
+---
+/**
+ * The language switch: two static links, no JavaScript. Both languages are real
+ * routes, so switching is navigation, not state.
+ *
+ * On a site route the active link points at the current URL and the other one
+ * at its sibling. On an article route there is no `/pt/posts/<slug>/` twin — the
+ * article's language lives in its frontmatter — so the other language points at
+ * that language's article catalogue; pairing the articles themselves is the
+ * job of the article's own switch (stage 4).
+ */
+import { catalogPath, isArticlePath, localePath, switchLocalePath } from '../i18n/paths.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { lang = 'en', class: className } = Astro.props;
+const t = useTranslations(lang);
+const pathname = Astro.url.pathname;
+const article = isArticlePath(pathname);
+const other = lang === 'pt' ? 'en' : 'pt';
+const currentHref = article ? pathname : localePath(lang, pathname);
+const otherHref = article ? catalogPath(other) : switchLocalePath(pathname);
+const links = [
+  { code: 'EN', name: 'en', label: t('lang.toEnglish'), href: lang === 'en' ? currentHref : otherHref },
+  { code: 'PT', name: 'pt', label: t('lang.toPortuguese'), href: lang === 'pt' ? currentHref : otherHref },
+];
+---
+
+<nav class:list={['lang-switch', className]} aria-label={t('lang.switchLabel')}>
+  <ul>
+    {links.map(link => (
+      <li>
+        <a
+          href={link.href}
+          hreflang={link.name}
+          lang={link.name}
+          aria-label={link.label}
+          aria-current={lang === link.name ? 'page' : undefined}
+        >{link.code}</a>
+      </li>
+    ))}
+  </ul>
+</nav>

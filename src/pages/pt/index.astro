@@ -1,0 +1,11 @@
+---
+// Portuguese home. Same scene as `/`, rendered under `/pt/`.
+import MainLayout from '../../layouts/MainLayout.astro';
+import HomeScene from '../../components/HomeScene.astro';
+import { useTranslations } from '../../i18n/ui.mjs';
+
+const t = useTranslations('pt');
+---
+<MainLayout title={t('site.title')} home lang="pt">
+  <HomeScene lang="pt" />
+</MainLayout>

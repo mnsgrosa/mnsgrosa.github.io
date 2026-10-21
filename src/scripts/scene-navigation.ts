@@ -1,10 +1,21 @@
 // Progressive enhancement: the server-rendered page is always a complete
 // document. Only a roomy, motion-enabled desktop gets the rotating camera.
+/** The strings this component rendered for its language; no UI copy lives here. */
+type Strings = { status: string; modePage: string; modeScene: string };
+/** Fills `{name}` placeholders so the dictionary owns the word order. */
+function fill(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name] ?? ''));
+}
 class SceneNavigator extends HTMLElement {
   cleanup?: () => void;
+  strings!: Strings;
 
   connectedCallback() {
     if (this.cleanup) return;
+    // Scene labels ride on the links as `data-scene-label`; the two mode labels
+    // and the status template arrive as JSON.
+    this.strings = JSON.parse(this.querySelector('[data-i18n="scene"]')?.textContent || '{}') as Strings;
+    const strings = this.strings;
     const panels = [...this.querySelectorAll<HTMLElement>('.scene-panel')];
     const links = [...this.querySelectorAll<HTMLAnchorElement>('.scene-links a')];
     const ring = this.querySelector<HTMLElement>('.scene-ring')!;
@@ -70,7 +81,7 @@ class SceneNavigator extends HTMLElement {
       });
       previous.disabled = index === 0;
       next.disabled = index === panels.length - 1;
-      status.textContent = `${index + 1} / ${panels.length} · ${links[index].textContent}`;
+      status.textContent = fill(strings.status, { index: index + 1, total: panels.length, label: links[index].dataset.sceneLabel || links[index].textContent!.trim() });
       if (historyMode !== 'none' && location.hash !== links[index].hash) {
         // Keep the article map's history state; both enhancements share it.
         history[historyMode === 'push' ? 'pushState' : 'replaceState'](history.state, '', links[index].hash);
@@ -88,7 +99,7 @@ class SceneNavigator extends HTMLElement {
         delete panel.dataset.active;
       });
       links.forEach(link => link.removeAttribute('aria-current'));
-      mode.textContent = 'Use scene view';
+      mode.textContent = strings.modeScene;
       if (restorePosition) panels[index].scrollIntoView({ block: 'start', behavior: 'instant' });
     };
     const syncMode = () => {
@@ -111,7 +122,7 @@ class SceneNavigator extends HTMLElement {
       this.style.setProperty('--scene-y', `${index * 100}%`);
       show(index, 'none', false, false);
       requestAnimationFrame(() => requestAnimationFrame(() => delete this.dataset.instant));
-      mode.textContent = 'Use page scroll';
+      mode.textContent = strings.modePage;
       window.scrollTo({ top: 0, behavior: 'instant' });
     };
     const followHash = () => {

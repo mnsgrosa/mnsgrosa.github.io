@@ -63,7 +63,7 @@ try {
     assert.equal(await topic.count(), 1);
     await topic.click();
     assert.equal(await page.locator('.article-node').count(), 1);
-    assert.deepEqual(await page.locator('.topic-articles a:visible').evaluateAll(links => links.map(link => link.getAttribute('href'))), ['/posts/como_comecaria/']);
+    assert.deepEqual(await page.locator('.topic-articles a:visible').evaluateAll(links => links.map(link => link.getAttribute('href'))), ['/posts/rag-to-production/']);
     assert.equal(await topic.getAttribute('aria-expanded'), 'true');
     assert.equal(await page.locator('.graph-edge').count(), 0);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Home overflow at ${width}`);
@@ -80,6 +80,25 @@ try {
     assert.equal(await page.locator('.neighbor-links ul a').count(), 0);
     assert.equal(await page.locator('.article-node').count(), 1);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Reader overflow at ${width}`);
+    // Share: one static anchor to LinkedIn carrying the article's own canonical
+    // URL, not `window.location` — the two must never disagree.
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+    const share = page.locator('.post-share a');
+    assert.equal(await share.count(), 1, `share link at ${width}`);
+    assert.equal(await share.getAttribute('target'), '_blank');
+    assert.equal(await share.getAttribute('rel'), 'noreferrer');
+    const shareTarget = new URL(await share.getAttribute('href'));
+    assert.equal(shareTarget.origin + shareTarget.pathname, 'https://www.linkedin.com/sharing/share-offsite/');
+    assert.deepEqual([...shareTarget.searchParams.keys()], ['url'], 'only `url` reaches LinkedIn');
+    assert.equal(shareTarget.searchParams.get('url'), canonical, `share carries the canonical URL at ${width}`);
+    assert.equal(await page.locator('.post-share').getAttribute('lang'), 'pt', 'share label follows the article language');
+    assert.match(await share.textContent(), /^Compartilhar\s*↗$/);
+    assert.equal(await page.locator('.post-share').getAttribute('aria-label'), 'Compartilhar no LinkedIn');
+    assert.deepEqual(await page.locator('.article-actions a').evaluateAll(elements => elements.filter(el => {
+      const range = document.createRange(); range.selectNodeContents(el);
+      const rects = [...range.getClientRects()].filter(rect => rect.width > 0 && rect.height > 0);
+      return rects.length > 1 && Math.max(...rects.map(r => r.top)) >= Math.min(...rects.map(r => r.bottom));
+    }).map(el => el.textContent)), [], `Article action labels stay on one line at ${width}`);
     await page.screenshot({ path: `${artifacts}/article-${width}.png`, fullPage: true });
     await page.goto(`${origin}/posts/como_comecaria/`);
     assert.equal(await page.locator('html').getAttribute('lang'), 'pt');
@@ -91,11 +110,88 @@ try {
     await page.waitForURL('**/posts/rag-to-production/');
     assert.equal(await page.locator('html').getAttribute('lang'), 'en');
     assert.match(await page.locator('h1').textContent(), /From RAG to production/);
+    assert.match(await page.locator('.post-share a').textContent(), /^Share this post\s*↗$/, 'share label follows the article, not the route');
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `English roadmap overflow at ${width}`);
     await page.screenshot({ path: `${artifacts}/roadmap-${width}.png`, fullPage: true });
     await page.locator('.post-language-switch a').click();
     await page.waitForURL('**/posts/como_comecaria/');
   }
+  // Portuguese routes: their own map, catalogue and chrome. This is permanent
+  // coverage — `/pt/` used to be exercised only through one Portuguese article.
+  const englishChrome = ['Skip to content', 'Choose a topic', 'Explore the map', 'All posts', 'Article constellation', 'Drag to explore', 'Back to top'];
+  for (const width of [320, 375, 414, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(`${origin}/pt/`);
+    await page.locator('knowledge-map[data-ready="true"]').waitFor();
+    assert.equal(await page.locator('html').getAttribute('lang'), 'pt', `Portuguese document language at ${width}`);
+    const body = await page.locator('body').textContent();
+    for (const phrase of englishChrome) assert.equal(body.includes(phrase), false, `Portuguese page leaks English chrome: ${phrase}`);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Portuguese home overflow at ${width}`);
+    assert.deepEqual(await page.locator('.topic-articles a').evaluateAll(links => links.map(link => link.getAttribute('href'))), ['/posts/como_comecaria/'], 'Portuguese map lists only Portuguese articles');
+    assert.equal(await page.locator('.topic-toggle span').first().textContent(), 'Engenharia de IA');
+    assert.equal(await page.locator('.knowledge-label').first().textContent(), 'MLOps');
+    await page.screenshot({ path: `${artifacts}/pt-home-${width}.png`, fullPage: true });
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(`${origin}/pt/`);
+  await page.locator('knowledge-map[data-ready="true"]').waitFor();
+  await page.locator('.topic-toggle').click();
+  assert.deepEqual(await page.locator('.topic-articles a:visible').evaluateAll(links => links.map(link => link.getAttribute('href'))), ['/posts/como_comecaria/']);
+  assert.equal(await page.locator('.article-node').count(), 1);
+  assert.equal(await page.locator('.graph-edge').count(), 0, 'a single-language map has no cross-language arrows');
+  await page.screenshot({ path: `${artifacts}/pt-map-1440.png`, fullPage: true });
+  // Route switch: `/pt/` ↔ `/` through the header language links.
+  await page.locator('.home-header .lang-switch a[hreflang="en"]').click();
+  await page.waitForURL(`${origin}/`);
+  assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+  await page.locator('.home-header .lang-switch a[hreflang="pt"]').click();
+  await page.waitForURL(`${origin}/pt/`);
+  assert.equal(await page.locator('html').getAttribute('lang'), 'pt');
+  // Catalogues: one language each, plus a cross-link in both directions.
+  await page.goto(`${origin}/pt/posts/`);
+  assert.equal(await page.locator('.catalog-switch a').getAttribute('href'), '/posts/');
+  assert.equal(await page.locator('.catalog-switch a').getAttribute('hreflang'), 'en');
+  assert.deepEqual(await page.locator('.post-card').evaluateAll(cards => [...new Set(cards.map(card => card.dataset.lang))]), ['pt']);
+  assert.equal(await page.locator('.filter-btn').count(), 0, 'the language filters are gone');
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Portuguese catalogue overflow');
+  await page.locator('.catalog-switch a').click();
+  await page.waitForURL(`${origin}/posts/`);
+  assert.equal(await page.locator('.catalog-switch a').getAttribute('href'), '/pt/posts/');
+  assert.deepEqual(await page.locator('.post-card').evaluateAll(cards => [...new Set(cards.map(card => card.dataset.lang))]), ['en']);
+  await page.setViewportSize({ width: 320, height: 900 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'English catalogue overflow at 320');
+  await page.screenshot({ path: `${artifacts}/catalog-en-320.png`, fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  // Article pairing: one hreflang link to the sibling, canonical to itself.
+  await page.goto(`${origin}/posts/como_comecaria/`);
+  assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['en', 'https://mnsgrosa.github.io/posts/rag-to-production/']]);
+  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://mnsgrosa.github.io/posts/como_comecaria/');
+  assert.equal(await page.locator('.post-language-switch a').getAttribute('hreflang'), 'en');
+  assert.equal(await page.locator('.post-language-switch a').getAttribute('lang'), 'en');
+  await page.goto(`${origin}/posts/rag-to-production/`);
+  assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['pt', 'https://mnsgrosa.github.io/posts/como_comecaria/']]);
+  assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://mnsgrosa.github.io/posts/rag-to-production/');
+  assert.equal(new URL(await page.locator('.post-share a').getAttribute('href')).searchParams.get('url'), 'https://mnsgrosa.github.io/posts/rag-to-production/', 'share points at the article itself, never at its translation');
+  // The share link opens its own tab and leaves the reader where they were.
+  // LinkedIn is stubbed, so the suite never touches the network; the assertion
+  // is about where the click lands, not what LinkedIn renders.
+  await page.context().route('**://www.linkedin.com/**', route => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>LinkedIn</title>' }));
+  await page.goto(`${origin}/posts/como_comecaria/`);
+  const articleUrl = page.url();
+  const shareLink = page.locator('.post-share a');
+  assert.equal(await shareLink.getAttribute('aria-label'), 'Compartilhar (abre em nova aba)', 'the new tab is announced, not only drawn');
+  const [clicked] = await Promise.all([page.waitForEvent('popup'), shareLink.click()]);
+  await clicked.waitForLoadState('domcontentloaded');
+  assert.equal(page.url(), articleUrl, 'a click on share keeps the article open');
+  assert.equal(new URL(clicked.url()).searchParams.get('url'), 'https://mnsgrosa.github.io/posts/como_comecaria/');
+  await clicked.close();
+  await shareLink.focus();
+  const [pressed] = await Promise.all([page.waitForEvent('popup'), page.keyboard.press('Enter')]);
+  await pressed.waitForLoadState('domcontentloaded');
+  assert.equal(page.url(), articleUrl, 'Enter on share keeps the article open');
+  assert.ok(pressed.url().startsWith('https://www.linkedin.com/sharing/share-offsite/?url='));
+  await pressed.close();
+  await page.context().unroute('**://www.linkedin.com/**');
   // Sticky banner: a column between the rail and the article that holds its
   // place while the article scrolls, and a plain band below the desktop layout.
   // The cover never displaces the reading column: at every width the article
@@ -227,7 +323,7 @@ try {
   await page.mouse.down(); await page.mouse.move(area.x + 80, area.y + 60); await page.mouse.up();
   const dragged = await page.locator('[data-camera]').getAttribute('transform');
   assert.notEqual(zoomed, dragged);
-  await page.locator('.topic-articles a').filter({ hasText: 'De RAG à produção' }).click();
+  await page.locator('.topic-articles a').filter({ hasText: 'From RAG to production' }).click();
   await page.locator('knowledge-map[data-ready="true"]').waitFor();
   assert.equal(await page.locator('.post-content a[href="/posts/make_the_llm_choose_pt/"]').count(), 1);
   await page.goBack();
@@ -265,20 +361,81 @@ try {
   assert.ok(await fallback.locator('.post-content').isVisible());
   assert.ok(await fallback.locator('.neighbor-links a').count() >= 1);
   await fallback.goto(`${origin}/posts/como_comecaria/`);
+  assert.equal(await fallback.locator('.post-share a').count(), 1, 'share works without JavaScript');
+  assert.ok((await fallback.locator('.post-share a').getAttribute('href')).startsWith('https://www.linkedin.com/sharing/share-offsite/?url='));
   await fallback.locator('.post-language-switch a').click();
   await fallback.waitForURL('**/posts/rag-to-production/');
   await fallback.locator('.post-language-switch a').click();
   await fallback.waitForURL('**/posts/como_comecaria/');
   await noJS.close();
+  // `/pt/` without JavaScript: the topic list stays the readable path.
+  const noJSpt = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 900 } });
+  const ptFallback = await noJSpt.newPage();
+  await ptFallback.goto(`${origin}/pt/`);
+  assert.equal(await ptFallback.locator('html').getAttribute('lang'), 'pt');
+  assert.equal(await ptFallback.locator('.topic-articles a:visible').count(), 1);
+  assert.equal(await ptFallback.locator('.topic-articles a').first().getAttribute('href'), '/posts/como_comecaria/');
+  await ptFallback.locator('.topic-articles a').first().click();
+  await ptFallback.waitForURL('**/posts/como_comecaria/');
+  assert.ok(await ptFallback.locator('.post-content').isVisible());
+  assert.equal(await ptFallback.locator('.post-language-switch a').getAttribute('href'), '/posts/rag-to-production/');
+  await noJSpt.close();
+  // Catalogues and the language switch without JavaScript. Both catalogues are
+  // static documents, so `/pt/posts/` must list Portuguese articles and `/` the
+  // English one, and `.lang-switch` must be navigation in both directions —
+  // not behaviour that only appears once a script runs. The cross-link label is
+  // read by screen readers in the *destination* language, so label, `lang` and
+  // `href` are asserted together.
+  const noJSRoutes = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 900 } });
+  const plain = await noJSRoutes.newPage();
+  await plain.goto(`${origin}/pt/posts/`);
+  assert.equal(await plain.locator('html').getAttribute('lang'), 'pt');
+  assert.deepEqual(await plain.locator('.post-card').evaluateAll(cards => [...new Set(cards.map(card => card.dataset.lang))]), ['pt'], 'pt catalogue lists Portuguese articles only');
+  assert.ok((await plain.locator('.post-card h2').allTextContents()).includes('De RAG à produção: meu roteiro de estudos em LLMOps'));
+  assert.equal((await plain.locator('body').textContent()).includes('From RAG to production'), false, 'pt catalogue shows no English card');
+  assert.equal(await plain.locator('.catalog-switch a').getAttribute('href'), '/posts/');
+  assert.equal(await plain.locator('.catalog-switch a').getAttribute('hreflang'), 'en');
+  assert.equal(await plain.locator('.catalog-switch a').getAttribute('lang'), 'en');
+  assert.equal(await plain.locator('.catalog-switch a').textContent(), 'English articles →');
+  await plain.locator('.catalog-switch a').click();
+  await plain.waitForURL(`${origin}/posts/`);
+  assert.equal(await plain.locator('html').getAttribute('lang'), 'en');
+  assert.deepEqual(await plain.locator('.post-card').evaluateAll(cards => [...new Set(cards.map(card => card.dataset.lang))]), ['en'], 'English catalogue lists English articles only');
+  assert.ok((await plain.locator('.post-card h2').allTextContents()).includes('From RAG to production: my LLMOps learning roadmap'));
+  assert.equal(await plain.locator('.catalog-switch a').getAttribute('href'), '/pt/posts/');
+  assert.equal(await plain.locator('.catalog-switch a').getAttribute('hreflang'), 'pt');
+  assert.equal(await plain.locator('.catalog-switch a').getAttribute('lang'), 'pt');
+  assert.equal(await plain.locator('.catalog-switch a').textContent(), 'Artigos em português →');
+  // The header switch on `/` and `/pt/` without JavaScript, both directions.
+  await plain.goto(origin);
+  assert.equal(await plain.locator('html').getAttribute('lang'), 'en');
+  assert.equal(await plain.locator('.home-header .lang-switch a[hreflang="pt"]').getAttribute('href'), '/pt/');
+  await plain.locator('.home-header .lang-switch a[hreflang="pt"]').click();
+  await plain.waitForURL(`${origin}/pt/`);
+  assert.equal(await plain.locator('html').getAttribute('lang'), 'pt');
+  assert.equal(await plain.locator('.home-header .lang-switch a[hreflang="en"]').getAttribute('href'), '/');
+  await plain.locator('.home-header .lang-switch a[hreflang="en"]').click();
+  await plain.waitForURL(`${origin}/`);
+  assert.equal(await plain.locator('html').getAttribute('lang'), 'en');
+  // `/pt/projects/` without JavaScript still lists the Portuguese projects and
+  // carries no English project prose.
+  await plain.goto(`${origin}/pt/projects/`);
+  assert.equal(await plain.locator('html').getAttribute('lang'), 'pt');
+  assert.deepEqual((await plain.locator('.project-card h2').allTextContents()).map(text => text.trim()).sort(), ['Projeto Dois', 'Projeto Um']);
+  const ptProjects = await plain.locator('body').textContent();
+  assert.equal(ptProjects.includes('A short description of what this project does'), false, 'pt projects show no English prose');
+  assert.equal(ptProjects.includes('Another project description'), false, 'pt projects show no English prose');
+  assert.equal(await plain.locator('.projects-empty').count(), 0, 'the pt projects list is not empty');
+  await noJSRoutes.close();
   await page.goto(`${origin}/posts/stepback/`);
   assert.equal(await page.locator('knowledge-map').count(), 0, 'excluded article remains published without a neighborhood');
   assert.ok(await page.locator('.post-content').isVisible());
-  for (const route of ['/posts/', '/experience/', '/projects/', '/posts/teste_1/', '/dashboard/']) {
+  for (const route of ['/posts/', '/experience/', '/projects/', '/posts/teste_1/', '/dashboard/', '/pt/', '/pt/posts/', '/pt/experience/', '/pt/projects/']) {
     assert.equal((await page.goto(`${origin}${route}`)).status(), 200, route);
   }
   await verifyScenes(browser, origin, artifacts, errors);
   assert.deepEqual(errors, [], 'No browser errors or failed local responses');
-  console.log('PASS: 5 widths, home/reader, map/list sync, keyboard, pan/zoom/reset, backlinks, Back restoration, scene glide, inner scroll, resize, reduced motion, no-JS, preserved routes.');
+  console.log('PASS: 5 widths, home/reader, map/list sync, keyboard, pan/zoom/reset, backlinks, Back restoration, scene glide, inner scroll, resize, reduced motion, no-JS, preserved routes, per-language map and catalogue, article pairing and hreflang, Portuguese routes.');
   console.log(`Screenshots: ${artifacts}`);
 } finally {
   await browser?.close();

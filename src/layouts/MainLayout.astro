@@ -1,38 +1,62 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
+import LanguageSwitch from '../components/LanguageSwitch.astro';
+import { isArticlePath, localeFromPathname, localePath } from '../i18n/paths.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/constellation.css';
-const { title, lang = 'en', contentClass, home = false } = Astro.props;
+
+const { title, lang, contentClass, home = false, alternates } = Astro.props;
+const pathname = Astro.url.pathname;
+// The route is the source of truth; an article overrides it with its own
+// frontmatter `lang`.
+const currentLang = lang ?? localeFromPathname(pathname);
+const t = useTranslations(currentLang);
+const absolute = path => new URL(path, Astro.site ?? Astro.url.origin).href;
+const enHref = localePath('en', pathname);
+const ptHref = localePath('pt', pathname);
+// A site route exists in both languages, so it points at its own twin. An
+// article has one prefix-free URL per language and gets its sibling handed in
+// by the page (paired through `translationKey`); its canonical stays its own URL.
+const hasLocaleTwin = !isArticlePath(pathname);
+const alternateLinks = alternates ?? (hasLocaleTwin
+  ? [{ lang: 'en', href: enHref }, { lang: 'pt', href: ptHref }]
+  : []);
 ---
 <!doctype html>
-<html lang={lang}>
+<html lang={currentLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={absolute(pathname)} />
+    {alternateLinks.map(link => <link rel="alternate" hreflang={link.lang} href={absolute(link.href)} />)}
     <title>{title} · Matheus Rosa</title>
   </head>
   <body class:list={{ 'home-page': home }}>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{t('site.skipToContent')}</a>
     {home ? (
       <header class="home-header">
-        <a class="home-wordmark" href="#main" aria-label="Matheus Rosa, home">mr<span aria-hidden="true">.</span></a>
-        <a href="#experience">View experience <span aria-hidden="true">↓</span></a>
+        <a class="home-wordmark" href="#main" aria-label={t('site.homeLabel')}>mr<span aria-hidden="true">.</span></a>
+        <div class="home-header-actions">
+          <a href="#experience">{t('home.viewExperience')} <span aria-hidden="true">↓</span></a>
+          <LanguageSwitch lang={currentLang} />
+        </div>
       </header>
-    ) : <Sidebar />}
+    ) : <Sidebar lang={currentLang} />}
     <main class="site-main" id="main">
       <div class:list={['content', contentClass]}>
         <slot />
         <footer class:list={['site-footer', { 'home-footer': home }]}>
           {home ? (
             <>
-              <div><p class="footer-name">Matheus Rosa</p><p>Data, models and the systems between them.</p></div>
-              <a href="mailto:matheusnsampaio@gmail.com">Get in touch ↗</a>
-              <a href="#main">Back to top ↑</a>
+              <div><p class="footer-name">Matheus Rosa</p><p>{t('home.tagline')}</p></div>
+              <a href="mailto:matheusnsampaio@gmail.com">{t('footer.contact')} ↗</a>
+              <a href="#main">{t('footer.backToTop')} ↑</a>
             </>
           ) : (
-            <><span>Matheus Rosa</span><a href="/#explore">Explore the map</a><a href="/posts/">All posts</a></>
+            <><span>Matheus Rosa</span><a href={localePath(currentLang, '/#explore')}>{t('footer.exploreMap')}</a><a href={localePath(currentLang, '/posts/')}>{t('footer.allPosts')}</a></>
           )}
         </footer>
       </div>

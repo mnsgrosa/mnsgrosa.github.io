@@ -1,0 +1,90 @@
+---
+/**
+ * The project catalogue, shared by `/projects/` and `/pt/projects/`.
+ *
+ * Each route lists its own language and nothing else: an English project with
+ * no pt sibling does not appear in `/pt/projects/`, because publishing English
+ * prose on a Portuguese route is the mixing this site refuses. An empty list
+ * says so in the route's language instead of borrowing a card.
+ */
+import { getCollection } from 'astro:content';
+import { localePath } from '../i18n/paths.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+// Entry ids pair as `project-1` (English) and `project-1.pt` (Portuguese).
+const allProjects = await getCollection('projects');
+const entryLang = entry => entry.data.lang ?? 'en';
+const projects = allProjects
+    .filter(entry => entryLang(entry) === lang)
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<a href={localePath(lang, '/')}>&larr; {t('projects.backHome')}</a>
+<h1>{t('nav.projects')}</h1>
+{projects.length === 0 && <p class="projects-empty">{t('projects.empty')}</p>}
+<div class="projects-grid">
+    {projects.map((project) => (
+        <div class="project-card">
+            <h2>
+                {project.data.url ? (
+                    <a href={project.data.url} target="_blank" rel="noreferrer">{project.data.title}</a>
+                ) : project.data.repo ? (
+                    <a href={project.data.repo} target="_blank" rel="noreferrer">{project.data.title}</a>
+                ) : (
+                    <span>{project.data.title}</span>
+                )}
+            </h2>
+            <div class="date">{project.data.date.toLocaleDateString(lang === 'pt' ? 'pt-BR' : 'en-US')}</div>
+            <p>{project.data.description}</p>
+            {project.data.tags && (
+                <div class="tags">
+                    {project.data.tags.map(tag => <span class="tag">{tag}</span>)}
+                </div>
+            )}
+        </div>
+    ))}
+</div>
+
+<style>
+    .projects-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+        text-align: left;
+    }
+
+    .project-card {
+        background: var(--ctp-mantle);
+        border: 1px solid var(--ctp-surface1);
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+
+    .project-card h2 {
+        margin-top: 0;
+    }
+
+    .date {
+        color: var(--ctp-subtext0);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .tag {
+        background: var(--ctp-surface0);
+        padding: 0.2rem 0.6rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: var(--ctp-mauve);
+    }
+</style>

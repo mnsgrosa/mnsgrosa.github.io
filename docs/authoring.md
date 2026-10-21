@@ -2,15 +2,41 @@
 
 How to publish an article, place it on the map, and link it to others. Only the `posts` collection is indexed by the map today; articles outside it stay routable but invisible to the graph.
 
+## Two languages
+
+The site is published twice as real routes, so language switching needs no JavaScript:
+
+| URL | Language | What lives there |
+| --- | --- | --- |
+| `/`, `/experience/`, `/projects/`, `/posts/` | English | English chrome, prose and graph |
+| `/pt/`, `/pt/experience/`, `/pt/projects/`, `/pt/posts/` | Portuguese | Portuguese chrome, prose and graph |
+| `/posts/<slug>/` | the post's `lang` | Article body, chrome and neighborhood in that language |
+
+Rules that follow from that:
+
+- The language of a page is the route. An article is the exception: it keeps one prefix-free URL per language and takes its language from frontmatter `lang`, which also picks the chrome, the date locale and the graph language.
+- Never prefix an article URL. `/pt/posts/<slug>/` does not exist, by design.
+- Every visible string lives in `src/i18n/ui.mjs`, and every language-aware URL comes from `src/i18n/paths.mjs`. Hardcoding either one in a component is what breaks the other language.
+- The map and the catalogue show one language at a time. `/pt/` never renders an English island title, node or catalogue card.
+
 ## Add or change an island
 
-Edit `src/data/subjects.json`. An entry has three fields:
+Edit `src/data/subjects.json`. An entry carries both languages:
 
 ```json
-[{ "id": "ai-engineering", "title": "AI Engineering", "description": "LLMs, agents, tools, and routing." }]
+[
+  {
+    "id": "ai-engineering",
+    "title": { "en": "AI Engineering", "pt": "Engenharia de IA" },
+    "description": {
+      "en": "LLMs, agents, tools, and routing.",
+      "pt": "LLMs, agentes, ferramentas e roteamento."
+    }
+  }
+]
 ```
 
-The `id` is lowercase kebab-case and is what frontmatter references. Adding an entry with no articles is valid and renders as an empty island. Renaming an `id` breaks every article that still points at the old one, so update the frontmatter in the same commit.
+The `id` is lowercase kebab-case and is what frontmatter references. Both languages are required — a missing one fails the build rather than letting English show up on a Portuguese page. Adding an entry with no articles is valid and renders as an empty island. Renaming an `id` breaks every article that still points at the old one, so update the frontmatter in the same commit.
 
 ## Publish an article
 
@@ -24,8 +50,13 @@ description: "Which model answers, and why."
 lang: "en"
 subject: ai-engineering
 graph: true
+translationKey: understanding-routing
 ---
 ```
+
+**`lang`** is `pt` or `en`. It decides the article's chrome, its date locale, and which map the article appears in: an `en` article is on `/`, a `pt` one on `/pt/`. An article is never shown in the other language's map, catalogue or neighborhood.
+
+**`translationKey`** pairs the two language versions of the same article. Both files take the same key; the key drives the article's language-switch link and its `rel="alternate"` `hreflang`, so the link and the metadata cannot disagree. Leave it off when the article has no translation — the switch then does not render. Never write the switch into the body: it is generated from frontmatter.
 
 **`subject`** names exactly one island from the registry. Leave it off and the article is still published at its URL but omitted from the map, the counts, and the neighborhood lists. Membership is single by design: an article belongs to one island, and its links are what cross between islands.
 
@@ -81,7 +112,7 @@ An unresolved or unsupported wikilink stops the build inside the markdown pipeli
 src/content/posts/my-post.md: Unresolved wikilink [[posts/does-not-exist]].
 ```
 
-The message names the file and the exact target. Two other checks fail early with their own message: an article whose `subject` is missing from the registry (or is a list), and a duplicate article slug or duplicate subject id.
+The message names the file and the exact target. Other checks fail early with their own message: an article whose `subject` is missing from the registry (or is a list), a duplicate article slug or duplicate subject id, a registry entry missing one of the two languages, and a `translationKey` used twice in the same language or on a group that does not have exactly one article per language.
 
 ## Verify before committing
 
@@ -98,8 +129,11 @@ npm run test:browser # interaction and layout at five widths
 - `src/lib/knowledge.mjs` — link resolution, graph assembly, validation, layout. Pure functions, no file or Astro APIs; this is what `npm test` covers.
 - `src/lib/content-index.mjs` — reads frontmatter and the subject registry from disk.
 - `src/lib/remark-wikilinks.mjs` — wires the resolver into Astro's markdown and MDX pipeline.
+- `src/i18n/ui.mjs` and `src/i18n/paths.mjs` — the language dictionary and the only source of language-aware URLs.
+- `src/pages/pt/` — the Portuguese site routes; a single `src/pages/posts/[slug].astro` serves articles in both languages.
 - `src/components/Constellation.astro` and `src/scripts/constellation.ts` — markup, SVG rendering, pan/zoom, keyboard handling, and the topic index.
 - `src/components/ArticleNeighbors.astro` — the per-article local graph and link lists.
+- `src/components/ArticleShare.astro` and `src/lib/share.mjs` — the LinkedIn share link: a static anchor whose URL is the article's own absolute canonical URL, built at build time by `linkedInShareUrl`, so it needs no client script.
 - `src/styles/constellation.css` and `tokens.css` — all styling, via named tokens.
 
 Behaviour and design rationale are in [`constellation-blog.md`](constellation-blog.md); the build order that produced this is in [`implementation-plan.md`](implementation-plan.md).

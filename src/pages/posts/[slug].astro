@@ -2,9 +2,13 @@
 // src/pages/posts/[slug].astro
 import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
+import ArticleLanguageSwitch from '../../components/ArticleLanguageSwitch.astro';
+import ArticleShare from '../../components/ArticleShare.astro';
 import ArticleNeighbors from '../../components/ArticleNeighbors.astro';
-import { readGraph } from '../../lib/content-index.mjs';
+import { readArticlePairs, readGraph } from '../../lib/content-index.mjs';
 import defaults from '../../data/defaults.json';
+import { localePath, articlePath } from '../../i18n/paths.mjs';
+import { useTranslations } from '../../i18n/ui.mjs';
 
 // This function is required for dynamic routes in static mode.
 // It tells Astro which pages to generate at build time.
@@ -19,16 +23,29 @@ export async function getStaticPaths() {
 // Get the specific post data from the props passed by getStaticPaths
 const { post } = Astro.props;
 const { Content } = await post.render();
-const graph = readGraph();
+// An article carries its own language: its chrome and its graph follow the
+// frontmatter, not the route — the URL never takes a `/pt/` prefix.
+const lang = post.data.lang;
+const graph = readGraph(lang);
 const currentId = `posts/${post.slug}`;
 const article = graph.articles.find(a => a.id === currentId);
 const subject = graph.subjects.find(s => s.id === article?.subject);
+// The sibling article, when the frontmatter names one. The same pair feeds the
+// switch below and the `hreflang` links, so they cannot point at different pages.
+const pair = readArticlePairs().get(currentId);
+const other = lang === 'pt' ? 'en' : 'pt';
+const sibling = pair?.[other];
+const alternates = sibling ? [{ lang: other, href: sibling.url }] : [];
 // `banner: false` opts out; omitting the field takes the shared default.
 const banner = post.data.banner === false ? undefined : post.data.banner ?? defaults.banner;
 const bannerAlt = post.data.bannerAlt ?? defaults.bannerAlt ?? '';
+// The share link points at the article's own absolute URL: one prefix-free URL
+// per language, the same one the canonical and the graph use.
+const shareUrl = new URL(articlePath(post.slug), Astro.site ?? Astro.url.origin).href;
+const t = useTranslations(lang);
 ---
 
-<MainLayout title={post.data.title} lang={post.data.lang} contentClass={banner ? 'content--banner' : undefined}>
+<MainLayout title={post.data.title} lang={lang} contentClass={banner ? 'content--banner' : undefined} alternates={alternates}>
     <div class:list={['article-shell', { 'has-banner': !!banner }]}>
         {banner && (
             <figure class="post-banner">
@@ -37,13 +54,17 @@ const bannerAlt = post.data.bannerAlt ?? defaults.bannerAlt ?? '';
         )}
         <div class="article-body">
             <header class="article-header">
-                <a class="index-link" href="/#explore">← Explore the map</a>
+                <a class="index-link" href={localePath(lang, '/#explore')}>← {t('footer.exploreMap')}</a>
                 <h1>{post.data.title}</h1>
-                <p class="article-meta">{subject?.title ?? 'Outside the map'} · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString(post.data.lang, { timeZone: 'UTC' })}</time></p>
+                <p class="article-meta">{subject?.title ?? t('map.outsideMap')} · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString(lang, { timeZone: 'UTC' })}</time></p>
+                <div class="article-actions">
+                    <ArticleLanguageSwitch pair={pair} lang={lang} />
+                    <ArticleShare url={shareUrl} lang={lang} />
+                </div>
             </header>
             <div class="reader-layout">
                 <article class="post-content"><Content /></article>
-                {article && <ArticleNeighbors graph={graph} currentId={currentId} />}
+                {article && <ArticleNeighbors graph={graph} currentId={currentId} lang={lang} />}
             </div>
         </div>
     </div>

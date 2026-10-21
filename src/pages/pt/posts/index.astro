@@ -1,0 +1,14 @@
+---
+// Portuguese article catalogue. Articles keep their prefix-free URLs; the
+// catalogue lists the Portuguese ones and links to the English catalogue.
+import MainLayout from '../../../layouts/MainLayout.astro';
+import PostCatalog from '../../../components/PostCatalog.astro';
+import { useTranslations } from '../../../i18n/ui.mjs';
+
+const t = useTranslations('pt');
+---
+
+<MainLayout title={t('catalog.title')} lang="pt">
+    <h1>{t('catalog.title')}</h1>
+    <PostCatalog lang="pt" />
+</MainLayout>

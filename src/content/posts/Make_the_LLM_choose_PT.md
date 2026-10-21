@@ -9,7 +9,7 @@ graph: false
 
 # Faça a LLM escolher
 
-Primeiro, preciso dizer que este será meu segundo post em inglês. O primeiro se chama [[posts/stepback]], já que fui direto para servidores MCP sem construir uma boa base para o leitor, o que vou abordar neste post.
+Primeiro, preciso dizer que este é meu segundo post por aqui. O primeiro se chama [[posts/stepback]], em que fui direto para servidores MCP sem construir uma boa base para o leitor — o que vou abordar neste post.
 
 - Por que você deve quebrar tarefas para LLMs  
 - Como quebrar em tarefas menores  

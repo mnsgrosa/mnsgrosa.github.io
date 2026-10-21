@@ -1,23 +1,41 @@
 ---
-const links = [
-  { href: '/', label: 'Home', route: '/' },
-  { href: '/#explore', label: 'Articles', route: '/posts/' },
-  { href: '/#experience', label: 'Experience', route: '/experience/' },
-  { href: '/#projects', label: 'Projects', route: '/projects/' },
-];
+/**
+ * The site rail. Labels come from the chrome dictionary and every `href` from
+ * `localePath()`, so the rail of `/pt/...` stays inside `/pt/...`.
+ */
+import { localePath } from '../i18n/paths.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
+import LanguageSwitch from './LanguageSwitch.astro';
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 const path = Astro.url.pathname;
+// The English path is the unprefixed route, so it is also the form to match
+// `aria-current` against: articles live at `/posts/<slug>/` in both languages.
+const bare = localePath('en', path);
+const homePath = localePath(lang, '/');
+// `route` is the unprefixed path each entry points at, used only for
+// `aria-current`; `href` is the localised destination.
+const links = [
+  { href: homePath, label: t('nav.home'), route: '/', exact: true },
+  { href: `${homePath}#explore`, label: t('nav.articles'), route: '/posts/' },
+  { href: `${homePath}#experience`, label: t('nav.experience'), route: '/experience/' },
+  { href: `${homePath}#projects`, label: t('nav.projects'), route: '/projects/' },
+];
+const isCurrent = link => (link.exact ? bare === link.route : bare.startsWith(link.route));
 ---
 <aside class="site-rail">
   <div class="rail-brand">
     <img src="/assets/pic.jpg" alt="" width="56" height="56" />
-    <a href="/">Matheus Rosa</a>
+    <a href={homePath}>Matheus Rosa</a>
   </div>
-  <p class="rail-caption">Notes on data & AI</p>
-  <nav aria-label="Main navigation">
+  <p class="rail-caption">{t('rail.caption')}</p>
+  <nav aria-label={t('nav.mainLabel')}>
     <ul>
       {links.map(link => (
-        <li><a href={link.href} aria-current={(link.route === '/' ? path === '/' : path.startsWith(link.route)) ? 'page' : undefined}>{link.label}</a></li>
+        <li><a href={link.href} aria-current={isCurrent(link) ? 'page' : undefined}>{link.label}</a></li>
       ))}
     </ul>
   </nav>
+  <LanguageSwitch lang={lang} />
 </aside>

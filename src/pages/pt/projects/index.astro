@@ -1,0 +1,12 @@
+---
+// Portuguese project catalogue: the same grid component as `/projects/`.
+import MainLayout from '../../../layouts/MainLayout.astro';
+import ProjectsGrid from '../../../components/ProjectsGrid.astro';
+import { useTranslations } from '../../../i18n/ui.mjs';
+
+const t = useTranslations('pt');
+---
+
+<MainLayout title={t('nav.projects')} lang="pt">
+    <ProjectsGrid lang="pt" />
+</MainLayout>

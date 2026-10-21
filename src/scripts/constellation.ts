@@ -2,6 +2,20 @@ type Subject = { id: string; title: string; count: number; x: number; y: number 
 type Article = { id: string; title: string; url: string; subject: string; x: number; y: number };
 type Graph = { subjects: Subject[]; articles: Article[]; edges: { source: string; target: string }[] };
 type View = { selected: string; x: number; y: number; zoom: number };
+/** The strings this component rendered for its language; no UI copy lives here. */
+type Strings = {
+  reading: string; choose: string; article: string; islandOne: string; islandMany: string;
+  openSubject: string; closeSubject: string; countOne: string; countMany: string;
+  currentArticle: string; collapsedIsland: string; error: string;
+};
+/** Fills `{name}` placeholders so the dictionary owns the word order. */
+function fill(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name] ?? ''));
+}
+function readStrings(root: Element): Strings {
+  const node = root.querySelector('[data-i18n="map"]');
+  return JSON.parse(node?.textContent || '{}') as Strings;
+}
 const NS = 'http://www.w3.org/2000/svg';
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 function svg<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string, string | number> = {}) {
@@ -28,20 +42,23 @@ function label(text: string, y: number) {
 class KnowledgeMap extends HTMLElement {
   connectedCallback() {
     if (this.dataset.ready) return;
+    this.strings = readStrings(this);
     try { this.initialize(); }
     catch (error) {
       console.error('Constellation unavailable:', error);
       this.querySelectorAll<HTMLElement>('.map-toolbar, .map-viewport, .map-hint, .map-legend').forEach(el => el.hidden = true);
       this.querySelectorAll<HTMLElement>('.topic-articles, .map-fallback').forEach(el => el.hidden = false);
       this.querySelectorAll<HTMLButtonElement>('.topic-toggle').forEach(el => { el.disabled = true; el.setAttribute('aria-expanded', 'true'); });
-      this.querySelector('.map-fallback')!.textContent = 'The map could not load. Use the topic links to keep reading.';
+      this.querySelector('.map-fallback')!.textContent = this.strings.error;
       this.dataset.state = 'error';
     }
   }
   disconnectedCallback() { this.cleanup?.(); }
   cleanup?: () => void;
+  strings!: Strings;
   initialize() {
     const graph: Graph = JSON.parse(this.querySelector('[data-graph]')!.textContent!);
+    const strings = this.strings;
     const currentId = this.dataset.current || '';
     const key = `constellation:${this.dataset.key}`;
     const surface = this.querySelector<SVGSVGElement>('.world-svg')!;
@@ -107,7 +124,7 @@ class KnowledgeMap extends HTMLElement {
         const start = { x: a.x + Math.cos(angle) * 28, y: a.y + Math.sin(angle) * 28 };
         const end = { x: b.x - Math.cos(angle) * 32, y: b.y - Math.sin(angle) * 32 };
         const line = svg('path', { d: `M${start.x},${start.y} L${end.x},${end.y}`, class: aggregate ? 'graph-edge aggregate-edge' : 'graph-edge' });
-        const title = svg('title'); title.textContent = `${from.title} → ${to.title}${aggregate ? ' (collapsed island)' : ''}`; line.append(title);
+        const title = svg('title'); title.textContent = `${from.title} → ${to.title}${aggregate ? ` ${strings.collapsedIsland}` : ''}`; line.append(title);
         lines.append(line);
         lines.append(svg('path', { class: 'edge-arrow', d: `M${end.x - Math.cos(angle - .5) * 10},${end.y - Math.sin(angle - .5) * 10} L${end.x},${end.y} L${end.x - Math.cos(angle + .5) * 10},${end.y - Math.sin(angle + .5) * 10}` }));
       }
@@ -118,7 +135,9 @@ class KnowledgeMap extends HTMLElement {
       camera.append(lines);
       if (!currentId) for (const subject of graph.subjects) {
         const selected = view.selected === subject.id;
-        const group = svg('g', { transform: `translate(${subject.x} ${subject.y})`, role: 'button', tabindex: '0', 'aria-label': `${selected ? 'Close' : 'Open'} ${subject.title}, ${subject.count} articles`, 'aria-expanded': String(selected), 'data-node-subject': subject.id, class: 'subject-node' });
+        const countLabel = fill(subject.count === 1 ? strings.countOne : strings.countMany, { count: subject.count });
+        const subjectLabel = fill(selected ? strings.closeSubject : strings.openSubject, { title: subject.title });
+        const group = svg('g', { transform: `translate(${subject.x} ${subject.y})`, role: 'button', tabindex: '0', 'aria-label': `${subjectLabel}, ${countLabel}`, 'aria-expanded': String(selected), 'data-node-subject': subject.id, class: 'subject-node' });
         group.append(svg('circle', { r: 47, class: 'subject-orbit' }), svg('circle', { r: 30, class: 'subject-core' }));
         const count = svg('text', { 'text-anchor': 'middle', dy: '0.35em', 'aria-hidden': 'true', class: 'node-count' }); count.textContent = String(subject.count);
         group.append(count, label(subject.title, 76));
@@ -130,7 +149,7 @@ class KnowledgeMap extends HTMLElement {
       }
       for (const article of graph.articles.filter(a => currentId || a.subject === view.selected)) {
         const active = article.id === currentId;
-        const anchor = svg('a', { href: article.url, transform: `translate(${article.x} ${article.y})`, class: `article-node${active ? ' is-current' : ''}`, 'aria-label': `${article.title}${active ? ', current article' : ''}` });
+        const anchor = svg('a', { href: article.url, transform: `translate(${article.x} ${article.y})`, class: `article-node${active ? ' is-current' : ''}`, 'aria-label': `${article.title}${active ? strings.currentArticle : ''}` });
         if (active) anchor.setAttribute('aria-current', 'page');
         const title = svg('title'); title.textContent = article.title;
         anchor.append(title, svg('circle', { r: 24, class: 'node-hit' }), svg('circle', { r: active ? 11 : 7, class: 'node-dot' }), label(article.title, 42));
@@ -143,7 +162,11 @@ class KnowledgeMap extends HTMLElement {
         if (list) list.hidden = !expanded;
       });
       const selected = subjects.get(view.selected);
-      status.textContent = currentId ? 'Follow an arrow to a linked article. Lists below separate links and backlinks.' : selected ? `${selected.title} open · ${selected.count} articles. Select an article to read.` : 'Choose an island to find an article.';
+      status.textContent = currentId
+        ? strings.article
+        : selected
+          ? fill(selected.count === 1 ? strings.islandOne : strings.islandMany, { title: selected.title, count: selected.count })
+          : strings.choose;
       updateCamera();
     };
     this.querySelectorAll<HTMLElement>('.map-toolbar, .map-viewport, .map-hint, .map-legend').forEach(el => el.hidden = false);

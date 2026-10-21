@@ -1,0 +1,159 @@
+---
+/**
+ * The article catalogue of one language, shared by `/posts/` and `/pt/posts/`.
+ *
+ * The route is the language, so the filter buttons (`All / PT / EN`) are gone:
+ * this list holds one language and a single link leads to the other catalogue.
+ * Article URLs stay prefix-free (`articlePath`), so both catalogues point at
+ * articles, never at a copy of one.
+ */
+import { getCollection } from 'astro:content';
+import { articlePath, catalogPath } from '../i18n/paths.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+const other = lang === 'pt' ? 'en' : 'pt';
+const target = useTranslations(other);
+const posts = (await getCollection('posts'))
+    .filter(post => post.data.lang === lang)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<nav class="catalog-switch" aria-label={t('catalog.switchLabel')}>
+    <a href={catalogPath(other)} hreflang={other} lang={other}>{target('catalog.otherLanguage')}</a>
+</nav>
+
+<div class="posts-grid">
+    {posts.map(post => (
+        <a href={articlePath(post.slug)} class="post-card" data-lang={post.data.lang}>
+            <article>
+                <div class="post-header">
+                    <span class="lang-badge" data-lang={post.data.lang}>
+                        {post.data.lang === 'pt' ? '🇧🇷 PT' : '🇺🇸 EN'}
+                    </span>
+                </div>
+                <h2>{post.data.title}</h2>
+                <time datetime={post.data.pubDate.toISOString()}>
+                    {post.data.pubDate.toLocaleDateString(post.data.lang === 'pt' ? 'pt-BR' : 'en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })}
+                </time>
+                <p>{post.data.description}</p>
+            </article>
+        </a>
+    ))}
+</div>
+
+<style>
+    /* Catalogue cross-link · one link, not a filter bar. */
+    .catalog-switch {
+        margin-bottom: var(--space-xl);
+    }
+
+    .catalog-switch a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding-bottom: .15em;
+        border-bottom: 1px solid var(--color-rule);
+        color: var(--color-secondary);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        letter-spacing: .02em;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    @media (hover: hover) {
+        .catalog-switch a:hover {
+            border-bottom-color: var(--color-accent);
+            color: var(--color-ink);
+        }
+    }
+
+    .catalog-switch a:active {
+        transform: translateY(1px);
+    }
+
+    .catalog-switch a:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 4px;
+    }
+
+    /* Never narrower than the column: a 300px track overflows a 320px screen. */
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+        gap: 1.5rem;
+    }
+
+    .post-card {
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-rule);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-decoration: none;
+        transition: border-color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+        display: block;
+    }
+
+    @media (hover: hover) {
+        .post-card:hover {
+            border-color: var(--color-accent);
+            background-color: var(--color-panel);
+        }
+    }
+
+    .post-card:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 4px;
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: .75rem;
+    }
+
+    .lang-badge {
+        font-size: .75rem;
+        padding: .25rem .6rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+    }
+
+    .lang-badge[data-lang="pt"] {
+        background: var(--color-surface);
+        border: 1px solid var(--color-rule);
+        color: var(--color-ink);
+    }
+
+    .lang-badge[data-lang="en"] {
+        background: var(--color-surface);
+        border: 1px solid var(--color-rule);
+        color: var(--color-secondary);
+    }
+
+    .post-card h2 {
+        margin: 0 0 .5rem 0;
+        font-size: var(--text-lg);
+        color: var(--color-accent);
+        font-style: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .post-card time {
+        font-size: var(--text-sm);
+        color: var(--color-muted);
+    }
+
+    .post-card p {
+        color: var(--color-secondary);
+        margin-top: 1rem;
+        line-height: 1.5;
+    }
+</style>

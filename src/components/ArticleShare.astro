@@ -1,0 +1,24 @@
+---
+/**
+ * The article's LinkedIn share link: one static anchor to LinkedIn's
+ * `share-offsite` endpoint, carrying the article's absolute canonical URL.
+ *
+ * Built at build time, so it needs no client script and still works with
+ * JavaScript disabled. The URL comes from the page (`Astro.site` +
+ * `articlePath(slug)`) — an article URL is never prefixed, in either language.
+ * The label follows the article's frontmatter `lang`, like the rest of its chrome:
+ * `Compartilhar` on a Portuguese article, `Share this post` on an English one.
+ * The network is named in the nav's accessible name and the new tab in the
+ * link's, so the label stays short and `↗` (markup, not copy) keeps its meaning
+ * for sighted readers. `target="_blank"` + `rel="noreferrer"` (which implies
+ * `noopener`) always open a separate tab: the reader never loses the article.
+ */
+import { linkedInShareUrl } from '../lib/share.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { url, lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+---
+<nav class="post-share" aria-label={t('article.shareLabel')} lang={lang}>
+  <a href={linkedInShareUrl(url)} target="_blank" rel="noreferrer" aria-label={`${t('article.shareLinkedIn')} (${t('article.opensInNewTab')})`}>{t('article.shareLinkedIn')} <span aria-hidden="true">↗</span></a>
+</nav>

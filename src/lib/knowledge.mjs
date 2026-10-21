@@ -57,11 +57,40 @@ export function articleTree(article) {
   return processor.parse(article.body || '');
 }
 
-export function buildGraph(articles, subjects) {
+/** Every language the graph can be built for, in dictionary order. */
+const LANGS = ['en', 'pt'];
+
+/**
+ * A registry entry carries one string per language (`{ en, pt }`), never a bare
+ * string: a subject that exists in only one language would leak that language
+ * into the other map. Returns the field so the caller can resolve it.
+ */
+function localizedField(subject, field) {
+  const value = subject[field];
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`Subject "${subject.id}": ${field} must be an object with one string per language (${LANGS.join(', ')}).`);
+  }
+  const missing = LANGS.filter(lang => typeof value[lang] !== 'string' || !value[lang].trim());
+  if (missing.length) {
+    throw new Error(`Subject "${subject.id}": missing ${missing.map(lang => `${field}.${lang}`).join(' and ')}. The registry needs ${field} in every language (${LANGS.join(', ')}).`);
+  }
+  return value;
+}
+
+/**
+ * The graph of one language: articles whose frontmatter `lang` matches, their
+ * islands with the registry text resolved to that language, and the edges among
+ * them. Same resolver as `compileLinks`, so anchors, counts and arrows agree.
+ */
+export function buildGraph(articles, subjects, lang = 'en') {
+  if (!LANGS.includes(lang)) throw new Error(`Unsupported graph language: ${lang}. Use ${LANGS.join(' or ')}.`);
   const subjectIds = new Set();
   for (const subject of subjects) {
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(subject.id) || !subject.title) throw new Error('Invalid subject registry entry');
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(subject.id)) throw new Error(`Invalid subject id: ${subject.id}`);
     if (subjectIds.has(subject.id)) throw new Error(`Duplicate subject: ${subject.id}`);
+    localizedField(subject, 'title');
+    // `description` stays optional, but when it is there both languages are.
+    if (subject.description !== undefined) localizedField(subject, 'description');
     subjectIds.add(subject.id);
   }
   const ids = new Set();
@@ -69,24 +98,75 @@ export function buildGraph(articles, subjects) {
   for (const article of articles) {
     if (ids.has(article.id) || urls.has(article.url)) throw new Error(`Duplicate article: ${article.id}`);
     ids.add(article.id); urls.add(article.url);
+    if (!LANGS.includes(article.lang)) {
+      throw new Error(`${article.file || article.id}: lang must be "${LANGS.join('" or "')}" so the article can be placed in a graph.`);
+    }
     if (article.graph !== false && (typeof article.subject !== 'string' || !subjectIds.has(article.subject))) {
       throw new Error(`${article.file || article.id}: assign exactly one registered subject, or explicitly set graph: false.`);
     }
   }
-  const included = articles.filter(article => article.graph !== false);
+  const included = articles.filter(article => article.lang === lang && article.graph !== false);
   const includedIds = new Set(included.map(article => article.id));
   const edges = [];
   for (const article of articles) {
+    // Links are resolved against every article so an unresolved wikilink still
+    // fails loudly; only edges whose two ends are in this language survive.
     const links = compileLinks(articleTree(article), articles, article.file || article.id);
+    if (!includedIds.has(article.id)) continue;
     for (const target of links) {
-      if (includedIds.has(article.id) && includedIds.has(target) && target !== article.id) edges.push({ source: article.id, target });
+      if (includedIds.has(target) && target !== article.id) edges.push({ source: article.id, target });
     }
   }
   return {
-    subjects: subjects.map(subject => ({ ...subject, count: included.filter(a => a.subject === subject.id).length })),
+    subjects: subjects.map(subject => ({
+      id: subject.id,
+      title: subject.title[lang],
+      ...(subject.description ? { description: subject.description[lang] } : {}),
+      count: included.filter(a => a.subject === subject.id).length,
+    })),
     articles: included.map(({ body, file, ...article }) => article),
     edges,
   };
+}
+
+/**
+ * Article translations, keyed by `translationKey` in frontmatter. The map is
+ * the single source of truth for "which article is the other language version
+ * of this one", so the article switch and its `hreflang` cannot disagree.
+ *
+ * Returns `Map(articleId → { en, pt })` holding only complete pairs. An article
+ * without a `translationKey` is simply absent, which is the normal case for a
+ * note that was written in one language only.
+ */
+export function pairArticles(articles) {
+  const groups = new Map();
+  for (const article of articles) {
+    const key = article.translationKey;
+    if (!key) continue;
+    if (!LANGS.includes(article.lang)) {
+      throw new Error(`${article.file || article.id}: lang must be "${LANGS.join('" or "')}" before it can be paired by translationKey "${key}".`);
+    }
+    const group = groups.get(key) ?? { en: [], pt: [] };
+    group[article.lang].push(article);
+    groups.set(key, group);
+  }
+  const pairs = new Map();
+  for (const [key, group] of groups) {
+    const names = lang => group[lang].map(article => article.id).join(', ') || 'none';
+    for (const lang of LANGS) {
+      if (group[lang].length > 1) {
+        throw new Error(`translationKey "${key}" is used by ${group[lang].length} ${lang} articles: ${names(lang)}. A key can name one article per language.`);
+      }
+    }
+    const missing = LANGS.filter(lang => group[lang].length === 0);
+    if (missing.length) {
+      throw new Error(`translationKey "${key}" needs one article per language; missing ${missing.join(' and ')}. Found en: ${names('en')}; pt: ${names('pt')}.`);
+    }
+    const pair = { en: group.en[0], pt: group.pt[0] };
+    pairs.set(pair.en.id, pair);
+    pairs.set(pair.pt.id, pair);
+  }
+  return pairs;
 }
 
 export function neighborhood(graph, id) {

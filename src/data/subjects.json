@@ -1,7 +1,13 @@
 [
   {
     "id": "ai-engineering",
-    "title": "AI Engineering",
-    "description": "LLMs, agents, tools, and routing."
+    "title": {
+      "en": "AI Engineering",
+      "pt": "Engenharia de IA"
+    },
+    "description": {
+      "en": "LLMs, agents, tools, and routing.",
+      "pt": "LLMs, agentes, ferramentas e roteamento."
+    }
   }
 ]

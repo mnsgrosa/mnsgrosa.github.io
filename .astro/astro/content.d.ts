@@ -217,6 +217,13 @@ declare module 'astro:content' {
   collection: "pages";
   data: InferEntrySchema<"pages">
 } & { render(): Render[".md"] };
+"experience.pt.md": {
+	id: "experience.pt.md";
+  slug: "experiencept";
+  body: string;
+  collection: "pages";
+  data: InferEntrySchema<"pages">
+} & { render(): Render[".md"] };
 "home.md": {
 	id: "home.md";
   slug: "home";
@@ -270,9 +277,23 @@ declare module 'astro:content' {
   collection: "projects";
   data: InferEntrySchema<"projects">
 } & { render(): Render[".md"] };
+"project-1.pt.md": {
+	id: "project-1.pt.md";
+  slug: "project-1pt";
+  body: string;
+  collection: "projects";
+  data: InferEntrySchema<"projects">
+} & { render(): Render[".md"] };
 "project-2.md": {
 	id: "project-2.md";
   slug: "project-2";
+  body: string;
+  collection: "projects";
+  data: InferEntrySchema<"projects">
+} & { render(): Render[".md"] };
+"project-2.pt.md": {
+	id: "project-2.pt.md";
+  slug: "project-2pt";
   body: string;
   collection: "projects";
   data: InferEntrySchema<"projects">

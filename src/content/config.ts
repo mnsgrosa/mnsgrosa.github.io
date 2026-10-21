@@ -11,6 +11,10 @@ const postsCollection = defineCollection({
     lang: z.enum(['pt', 'en']),
     subject: z.string().optional(),
     graph: z.boolean().default(true),
+    // Names the other-language version of this article. Paired articles share a
+    // key and differ in `lang`; the article switch and its `hreflang` both read
+    // the pair, so the link and the metadata cannot disagree.
+    translationKey: z.string().optional(),
     // Cover shown beside the article; root-relative or absolute URL. Omit it to
     // take the default from src/data/defaults.json, or set false for no cover.
     banner: z
@@ -44,6 +48,9 @@ const projectsCollection = defineCollection({
     url: z.string().optional(),
     repo: z.string().optional(),
     tags: z.array(z.string()).optional(),
+    // Omitted means English, so the existing files keep their meaning. A pt
+    // sibling lives beside the English file as `<id>.pt.md`.
+    lang: z.enum(['pt', 'en']).optional(),
   }),
 });
 
@@ -51,6 +58,9 @@ const pagesCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
+    // Same convention as `projects`: omitted is English, `<id>.pt.md` is
+    // Portuguese.
+    lang: z.enum(['pt', 'en']).optional(),
   }),
 });
 

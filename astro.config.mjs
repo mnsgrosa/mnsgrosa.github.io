@@ -8,6 +8,12 @@ import gruvbox from './src/lib/shiki-gruvbox-dark.mjs';
 export default defineConfig({
   site: "https://mnsgrosa.github.io",
   base: "/",
+  // Both languages are real routes: `/` is English, `/pt/` is Portuguese.
+  i18n: {
+    locales: ['en', 'pt'],
+    defaultLocale: 'en',
+    routing: { prefixDefaultLocale: false },
+  },
   integrations: [react(), mdx()],
   markdown: {
     remarkPlugins: [remarkWikilinks],

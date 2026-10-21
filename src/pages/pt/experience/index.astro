@@ -1,0 +1,27 @@
+---
+// Portuguese experience page. It reads `experience.pt` and requires it: a
+// missing translation fails the build naming the file, instead of quietly
+// serving the English document under `/pt/`.
+import { getCollection } from 'astro:content';
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { useTranslations } from '../../../i18n/ui.mjs';
+
+const t = useTranslations('pt');
+// Same selection as the home scene. `experienceBase` pairs `experience.pt(.md)`
+// with `experience`, so the lookup ignores the extension and only the
+// frontmatter `lang` decides.
+const pages = await getCollection('pages');
+const experienceBase = entry => entry.id.replace(/\.(pt\.)?md$/, '').replace(/\.pt$/, '');
+const experiencePage = pages.find(entry => experienceBase(entry) === 'experience' && entry.data.lang === 'pt');
+if (!experiencePage) {
+  throw new Error(
+    'src/pages/pt/experience/ needs src/content/pages/experience.pt.md with `lang: pt` in its frontmatter. ' +
+    'The file is missing (or lost its `lang`), and this route does not fall back to the English document.'
+  );
+}
+const { Content } = await experiencePage.render();
+---
+
+<MainLayout title={t('nav.experience')} lang="pt">
+  <Content />
+</MainLayout>

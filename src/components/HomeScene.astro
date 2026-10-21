@@ -1,0 +1,86 @@
+---
+/**
+ * The home body, extracted from `src/pages/index.astro` so `/` and `/pt/` render
+ * the same scene. Every visible string comes from `t()`, so the English route
+ * renders the same sentences, markup, ids and section order it always has.
+ */
+import { getCollection } from 'astro:content';
+import KnowledgeOverview from './KnowledgeOverview.astro';
+import SceneNavigator from './SceneNavigator.astro';
+import Constellation from './Constellation.astro';
+import { readGraph } from '../lib/content-index.mjs';
+import { useTranslations } from '../i18n/ui.mjs';
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+// Portuguese home reads the pt entry, English reads the base one. Selection is
+// by frontmatter `lang` and there is no fallback: a missing Portuguese document
+// fails the build naming the file it expects, because `/pt/` must never render
+// the English prose.
+const pages = await getCollection('pages');
+const experienceBase = entry => entry.id.replace(/\.(pt\.)?md$/, '').replace(/\.pt$/, '');
+let experience;
+if (lang === 'en') {
+  experience = pages.find(entry => experienceBase(entry) === 'experience' && (entry.data.lang ?? 'en') === 'en');
+} else {
+  experience = pages.find(entry => experienceBase(entry) === 'experience' && entry.data.lang === 'pt');
+  if (!experience) {
+    throw new Error(
+      'The Portuguese home needs src/content/pages/experience.pt.md with `lang: pt` in its frontmatter. ' +
+      'The file is missing (or lost its `lang`), and /pt/ does not fall back to the English document.'
+    );
+  }
+}
+const { Content: Experience } = await experience!.render();
+const graph = readGraph(lang);
+---
+<SceneNavigator lang={lang}>
+<section class="scene-panel" data-scene="knowledge" aria-label={t('home.sceneKnowledge')}>
+<section class="home-intro" aria-labelledby="about-title">
+  <h1 id="about-title">Matheus Rosa</h1>
+  <div class="home-intro-bottom">
+    <p>{t('home.intro')}<br class="desktop-break" /> {t('home.introDetail')}</p>
+    <a class="contact-cta" href="mailto:matheusnsampaio@gmail.com">{t('home.getInTouch')} <span aria-hidden="true">↗</span></a>
+  </div>
+  <p class="home-location">{t('home.location')}</p>
+</section>
+
+<KnowledgeOverview lang={lang} />
+</section>
+
+<section id="explore" class="home-section scene-panel" data-scene="articles" aria-labelledby="explore-title">
+  <div class="section-intro">
+    <h2 id="explore-title">{t('home.exploreTitle')}</h2>
+    <p>{t('home.exploreIntro')}</p>
+  </div>
+  <Constellation graph={graph} lang={lang} />
+</section>
+
+<section id="profile" class="home-section home-profile scene-panel" data-scene="about" aria-labelledby="profile-title">
+  <h2 id="profile-title">{t('home.profileTitle')}</h2>
+  <div class="profile-columns">
+    <div>
+      <p>{t('home.profileBody1')}</p>
+      <p>{t('home.profileBody2')}</p>
+    </div>
+    <aside class="recruiter-note" aria-label={t('home.recruitersLabel')}>
+      <h3>{t('home.recruitersTitle')}</h3>
+      <p>{t('home.recruitersLine')}</p>
+      <div class="profile-links">
+        <a href="https://linkedin.com/in/mnsgr">{t('home.linkedin')} ↗</a>
+        <a href="mailto:matheusnsampaio@gmail.com">{t('home.emailMe')} ↗</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="home-section home-experience scene-panel" data-scene="experience" aria-labelledby="experience">
+  <Experience />
+</section>
+
+<section id="projects" class="home-section home-projects scene-panel" data-scene="projects" aria-labelledby="projects-title">
+  <h2 id="projects-title">{t('home.projectsTitle')}</h2>
+  <p>{t('home.projectsIntro')}</p>
+  <a class="project-destination" href="https://github.com/mnsgrosa">{t('home.browseGithub')} <span aria-hidden="true">↗</span></a>
+</section>
+</SceneNavigator>
