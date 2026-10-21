@@ -24,6 +24,14 @@ const postsCollection = defineCollection({
       ])
       .optional(),
     bannerAlt: z.string().optional(),
+    // The social card is generated per slug, so this is an override, not a
+    // requirement: point it at a 1200×630 image (under /public or absolute) when
+    // a post deserves a hand-made one. `banner` is the portrait cover and is not
+    // the card.
+    ogImage: z
+      .string()
+      .regex(/^(\/|https?:\/\/)/, 'ogImage must start with / or http(s)://')
+      .optional(),
   }),
 });
 

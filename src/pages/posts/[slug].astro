@@ -9,6 +9,7 @@ import { readArticlePairs, readGraph } from '../../lib/content-index.mjs';
 import defaults from '../../data/defaults.json';
 import { localePath, articlePath } from '../../i18n/paths.mjs';
 import { useTranslations } from '../../i18n/ui.mjs';
+import { ogImagePath } from '../../lib/og.mjs';
 
 // This function is required for dynamic routes in static mode.
 // It tells Astro which pages to generate at build time.
@@ -42,10 +43,15 @@ const bannerAlt = post.data.bannerAlt ?? defaults.bannerAlt ?? '';
 // The share link points at the article's own absolute URL: one prefix-free URL
 // per language, the same one the canonical and the graph use.
 const shareUrl = new URL(articlePath(post.slug), Astro.site ?? Astro.url.origin).href;
+// The card is the article's own: one per slug, so a translation never borrows
+// its sibling's image or its sibling's URL. `ogImage` in frontmatter replaces
+// the generated one; `banner` never does — it is a portrait cover.
+const ogImage = post.data.ogImage ?? ogImagePath(post.slug);
+const ogImageAlt = subject ? `${post.data.title} — ${subject.title}` : post.data.title;
 const t = useTranslations(lang);
 ---
 
-<MainLayout title={post.data.title} lang={lang} contentClass={banner ? 'content--banner' : undefined} alternates={alternates}>
+<MainLayout title={post.data.title} lang={lang} contentClass={banner ? 'content--banner' : undefined} alternates={alternates} description={post.data.description} image={ogImage} imageAlt={ogImageAlt} ogType="article">
     <div class:list={['article-shell', { 'has-banner': !!banner }]}>
         {banner && (
             <figure class="post-banner">

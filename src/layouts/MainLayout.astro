@@ -3,11 +3,17 @@ import Sidebar from '../components/Sidebar.astro';
 import LanguageSwitch from '../components/LanguageSwitch.astro';
 import { isArticlePath, localeFromPathname, localePath } from '../i18n/paths.mjs';
 import { useTranslations } from '../i18n/ui.mjs';
+import { ogAlternateLocales, ogLocale, siteCardPath } from '../lib/og.mjs';
+import { card } from '../lib/og-theme.mjs';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/constellation.css';
 
-const { title, lang, contentClass, home = false, alternates } = Astro.props;
+// `description`, `image`, `imageAlt` and `ogType` are the only head overrides a
+// page may pass. Everything else — the locales, the card, the URL — is derived
+// here from the same values the page already resolved, so the link preview and
+// the `hreflang` set cannot disagree.
+const { title, lang, contentClass, home = false, alternates, description, image, imageAlt, ogType = 'website' } = Astro.props;
 const pathname = Astro.url.pathname;
 // The route is the source of truth; an article overrides it with its own
 // frontmatter `lang`.
@@ -23,6 +29,14 @@ const hasLocaleTwin = !isArticlePath(pathname);
 const alternateLinks = alternates ?? (hasLocaleTwin
   ? [{ lang: 'en', href: enHref }, { lang: 'pt', href: ptHref }]
   : []);
+const canonical = absolute(pathname);
+// Metadata is a layout concern: the description and the card default here, so a
+// route that passes nothing still ships a complete preview. A page overrides
+// only what it actually knows better — an article's own description and card.
+const metaDescription = description ?? t('site.description');
+const metaImage = absolute(image ?? siteCardPath(currentLang));
+const metaImageAlt = imageAlt ?? t('site.cardAlt');
+const alternateLocales = ogAlternateLocales(alternateLinks, currentLang);
 ---
 <!doctype html>
 <html lang={currentLang}>
@@ -30,9 +44,27 @@ const alternateLinks = alternates ?? (hasLocaleTwin
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={absolute(pathname)} />
+    <link rel="canonical" href={canonical} />
     {alternateLinks.map(link => <link rel="alternate" hreflang={link.lang} href={absolute(link.href)} />)}
     <title>{title} · Matheus Rosa</title>
+    <meta name="description" content={metaDescription} />
+    <meta property="og:site_name" content="Matheus Rosa" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocale(currentLang)} />
+    {alternateLocales.map(locale => <meta property="og:locale:alternate" content={locale} />)}
+    <meta property="og:image" content={metaImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(card.width)} />
+    <meta property="og:image:height" content={String(card.height)} />
+    <meta property="og:image:alt" content={metaImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={metaImage} />
+    <meta name="twitter:image:alt" content={metaImageAlt} />
   </head>
   <body class:list={{ 'home-page': home }}>
     <a class="skip-link" href="#main">{t('site.skipToContent')}</a>

@@ -94,6 +94,27 @@ That trade is deliberate and has a ceiling. Filling the last of the gap at 2560 
 
 Size the asset before committing; there is no image pipeline. A tall portrait crop works best, roughly 3:4 or taller, 400–600px wide, under about 250KB. `public/images/article-banner.jpg` is the current placeholder and is safe to replace.
 
+## Social card
+
+**The cover is not the card.** `banner` is a portrait image that sits beside the article; the link preview needs a 1200×630 landscape. So the preview is generated, per article, by the build itself:
+
+- `npm run build` writes one PNG per article to `dist/og/posts/<slug>.png`, plus `dist/og/en.png` and `dist/og/pt.png` for the site routes. Nothing is committed to `public/`, and there is no prebuild step to remember.
+- The card is drawn by `satori` into SVG and rasterized by `sharp` (`src/lib/og-card.mjs`), in the fonts the site already bundles and the colours `tokens.css` already declares — `src/lib/og-theme.mjs` mirrors them by role name, and `npm test` fails if the two drift apart.
+- It carries the `mr.` wordmark, the article's island and date, and the title, at most four lines and ellipsized past that. Every string is real frontmatter or `src/i18n/ui.mjs`; nothing on the card is invented.
+- Cards are keyed by **slug**, not by `translationKey`: a translated article gets its own card behind its own URL, in its own language. `teste_1` has `banner: false` and still gets one.
+
+`MainLayout.astro` emits the tags, derived from the route: `og:locale` follows the article's frontmatter `lang` (a site route's own prefix), and `og:locale:alternate` is built from the same list as `hreflang`, so the two cannot disagree. Only the article page overrides anything — its description, its card, and `og:type=article`.
+
+**Overriding one card.** Add `ogImage` to frontmatter, with the same rule as `banner` (a path under `public/`, or an absolute URL). It must be 1200×630: the tags declare that size, because the generated cards are.
+
+```yaml
+ogImage: "/images/rag-roadmap-card.png"
+```
+
+Prompts for hand-made artwork — for the site routes and for the graph article — live in [`image-prompts.md`](image-prompts.md), already constrained to these tokens.
+
+After deploying, check a URL in LinkedIn's Post Inspector. LinkedIn holds a preview for about a week, so a re-scrape shows the old card until its cache turns over; the freshly built PNG is correct at its URL on the first build.
+
 ## Link articles
 
 Write `[[posts/slug]]` to link to an article. Use `[[posts/slug|label]]` to override the visible text; the default label is the target's title. Both forms render as ordinary anchors to the canonical URL, and the same resolution produces the graph arrows and the backlinks, so rendered links and drawn edges can never disagree.
@@ -134,6 +155,7 @@ npm run test:browser # interaction and layout at five widths
 - `src/components/Constellation.astro` and `src/scripts/constellation.ts` — markup, SVG rendering, pan/zoom, keyboard handling, and the topic index.
 - `src/components/ArticleNeighbors.astro` — the per-article local graph and link lists.
 - `src/components/ArticleShare.astro` and `src/lib/share.mjs` — the LinkedIn share link: a static anchor whose URL is the article's own absolute canonical URL, built at build time by `linkedInShareUrl`, so it needs no client script.
+- `src/lib/og.mjs`, `src/lib/og-theme.mjs`, `src/lib/og-card.mjs` and `src/pages/og/` — the generated social cards: their names and locale strings, the token mirror they draw with, the renderer, and the two endpoints that write them.
 - `src/styles/constellation.css` and `tokens.css` — all styling, via named tokens.
 
 Behaviour and design rationale are in [`constellation-blog.md`](constellation-blog.md); the build order that produced this is in [`implementation-plan.md`](implementation-plan.md).

@@ -168,6 +168,29 @@ try {
   assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://mnsgrosa.github.io/posts/como_comecaria/');
   assert.equal(await page.locator('.post-language-switch a').getAttribute('hreflang'), 'en');
   assert.equal(await page.locator('.post-language-switch a').getAttribute('lang'), 'en');
+  // Link previews. MainLayout owns these tags, so a home route and an article
+  // route both have to carry them without their pages asking; the card behind
+  // the URL is a real PNG served from `dist/og/`, not a promise.
+  for (const route of ['/', '/posts/como_comecaria/']) {
+    await page.goto(`${origin}${route}`);
+    // Read the tags directly: a missing one fails as a named assertion instead of
+    // a locator timeout.
+    const meta = await page.evaluate(() => {
+      const tags = {};
+      for (const tag of document.querySelectorAll('meta[property], meta[name]')) {
+        tags[tag.getAttribute('property') ?? tag.getAttribute('name')] = tag.getAttribute('content') ?? '';
+      }
+      return tags;
+    });
+    assert.ok(/^https:\/\/mnsgrosa\.github\.io\/og\//.test(meta['og:image'] ?? ''), `og:image is an absolute card URL at ${route}: ${meta['og:image']}`);
+    assert.ok((meta['og:image:alt'] ?? '').trim().length > 0, `og:image:alt is set at ${route}`);
+    assert.equal(meta['twitter:image'], meta['og:image'], `twitter:image matches og:image at ${route}`);
+    assert.equal(meta['og:type'], route === '/' ? 'website' : 'article', `og:type at ${route}`);
+    // Serve the card from the preview server, never from the network.
+    const card = await page.request.get(`${origin}${new URL(meta['og:image']).pathname}`);
+    assert.equal(card.status(), 200, `the card for ${route} is built`);
+    assert.match(card.headers()['content-type'] ?? '', /^image\/png/, `the card for ${route} is a PNG`);
+  }
   await page.goto(`${origin}/posts/rag-to-production/`);
   assert.deepEqual(await page.locator('link[rel="alternate"]').evaluateAll(links => links.map(link => [link.getAttribute('hreflang'), link.getAttribute('href')])), [['pt', 'https://mnsgrosa.github.io/posts/como_comecaria/']]);
   assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://mnsgrosa.github.io/posts/rag-to-production/');

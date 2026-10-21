@@ -51,6 +51,10 @@ and the token roles in `tokens.css`.
   islands' English text, `/pt/` the Portuguese ones. A node or edge from one
   language must never appear in the other, and translations of the same article
   stay one island each, paired by `translationKey`.
+- Link metadata is emitted once, in `MainLayout.astro`, from the route and the
+  same `alternates` list the `hreflang` links use — `og:locale` cannot disagree
+  with `hreflang`. A page may override a description, an image, its alt and
+  `og:type`; it never writes these tags itself.
 
 ## Verify
 

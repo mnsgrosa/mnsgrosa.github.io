@@ -19,6 +19,10 @@ export const defaultLang = 'en';
 export const ui = {
   en: {
     'site.title': 'AI/ML Engineer & knowledge map',
+    // The default `<meta name="description">` and the site cards' alt text: the
+    // two places a route describes itself when the page passes nothing.
+    'site.description': 'Notes by Matheus Rosa, an AI/ML Engineer: data pipelines, evaluation, APIs and the systems around models.',
+    'site.cardAlt': 'Card: Matheus Rosa, AI/ML Engineer and knowledge map.',
     'site.skipToContent': 'Skip to content',
     'site.homeLabel': 'Matheus Rosa, home',
     'home.viewExperience': 'View experience',
@@ -149,6 +153,8 @@ export const ui = {
   },
   pt: {
     'site.title': 'Engenheiro de IA/ML e mapa de conhecimento',
+    'site.description': 'Notas de Matheus Rosa, engenheiro de IA/ML: pipelines de dados, avaliação, APIs e os sistemas em volta dos modelos.',
+    'site.cardAlt': 'Cartão: Matheus Rosa, engenheiro de IA/ML e mapa de conhecimento.',
     'site.skipToContent': 'Ir para o conteúdo',
     'site.homeLabel': 'Matheus Rosa, página inicial',
     'home.viewExperience': 'Ver experiência',
