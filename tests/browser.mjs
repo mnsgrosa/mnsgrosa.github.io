@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import sharp from 'sharp';
 import { verifyScenes } from './scene-browser.mjs';
 
 const probe = createServer();
@@ -16,6 +17,39 @@ const origin = `http://127.0.0.1:${port}`;
 const SITE = /site:\s*['"]([^'"]+)['"]/.exec(await readFile(new URL('../astro.config.mjs', import.meta.url), 'utf8'))[1].replace(/\/$/, '');
 const artifacts = '/tmp/constellation-browser';
 await mkdir(artifacts, { recursive: true });
+
+/**
+ * Decode a PNG screenshot into a small pixel accessor plus its size. `sharp` is
+ * already a dependency (the OG cards are rendered through it), so decoding
+ * stays in-repo and needs no new package. Returns the size too, so a caller can
+ * prove the surface it sampled is bigger than the anti-aliased rim.
+ */
+const raster = async png => {
+  const { data, info } = await sharp(png).raw().toBuffer({ resolveWithObject: true });
+  const at = (x, y) => {
+    assert.ok(x >= 0 && y >= 0 && x < info.width && y < info.height, `sample point ${x},${y} falls outside the ${info.width}×${info.height} screenshot`);
+    const offset = (y * info.width + x) * info.channels;
+    return [...data.subarray(offset, offset + 3)];
+  };
+  return { size: [info.width, info.height], at };
+};
+
+/** Squared sRGB distance — only used to rank candidate pixels, not as a colour metric. */
+const rgbDistance = (a, b) => a.reduce((sum, channel, index) => sum + (channel - b[index]) ** 2, 0);
+
+/** OKLab ΔE (Ottosson) between two sRGB byte triples — how far apart two painted colours are. */
+const deltaEOk = (a, b) => {
+  const linear = value => (value /= 255) <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  const lab = rgb => {
+    const [r, g, bl] = rgb.map(linear);
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * bl);
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * bl);
+    const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * bl);
+    return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s, 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+  };
+  const [x, y] = [lab(a), lab(b)];
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+};
 const server = spawn(process.execPath, ['node_modules/astro/astro.js', 'preview', '--host', '127.0.0.1', '--port', String(port)], { stdio: ['ignore', 'pipe', 'pipe'] });
 let log = '';
 server.stdout.on('data', chunk => log += chunk);
@@ -460,9 +494,135 @@ try {
   for (const route of ['/posts/', '/experience/', '/projects/', '/posts/teste_1/', '/dashboard/', '/pt/', '/pt/posts/', '/pt/experience/', '/pt/projects/']) {
     assert.equal((await page.goto(`${origin}${route}`)).status(), 200, route);
   }
+  // The visited cue. In the map, "this article has been read" is signalled by
+  // one thing only: the rim of the node dot recolouring from accent mauve to
+  // visited pink (`src/styles/constellation.css`, `.article-node:visited
+  // .node-dot`). The disc itself stays filled with the accent, so the cue is a
+  // ring around a filled core, not a hollow disc — if that rule does not paint,
+  // the cue does not exist.
+  //
+  // It can only be checked by PIXEL. Chromium deliberately spoofs
+  // `getComputedStyle` for `:visited` (style information must not leak browsing
+  // history), so a CSSOM assertion is green no matter what the rule says — a
+  // check that cannot fail is not a check. Three facts are measured below, and
+  // one is out of reach in this harness:
+  //   1. an unvisited dot paints `--color-accent` at both its centre and its
+  //      rim — the colour the cue departs from, sampled as the reference;
+  //   2. with the `:visited` state forced on the node's own anchor through CDP,
+  //      the descendant dot keeps the accent core and paints `--color-visited`
+  //      on the rim, which proves the selector attaches to `.node-dot` and
+  //      reaches paint — the part this repo owns;
+  //   3. the history → `:visited` wiring is NOT exercised: headless Chromium has
+  //      no visited-link store, so a genuine visit leaves the rim mauve. That is
+  //      asserted as a tripwire, not claimed as coverage; the last hop needs a
+  //      headed browser with a real profile.
+  {
+    const cue = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+    const cuePage = await cue.newPage();
+    cuePage.on('pageerror', error => errors.push(error.message));
+    cuePage.on('response', response => { if (response.status() >= 400 && response.url().startsWith(origin)) errors.push(`${response.status()} ${response.url()}`); });
+    // The palette is authored in OKLCH; one canvas round-trip turns each role
+    // into the sRGB bytes the compositor paints, so the expectation is derived
+    // from tokens.css rather than from a second copy of the hex values.
+    const roleBytes = () => cuePage.evaluate(() => {
+      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 1;
+      const ctx = canvas.getContext('2d');
+      const resolve = value => {
+        ctx.clearRect(0, 0, 1, 1); ctx.fillStyle = value; ctx.fillRect(0, 0, 1, 1);
+        return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3);
+      };
+      const style = getComputedStyle(document.documentElement);
+      return { accent: resolve(style.getPropertyValue('--color-accent').trim()), visited: resolve(style.getPropertyValue('--color-visited').trim()) };
+    });
+    // Open the island if it is closed, let the `appear` animation finish rather
+    // than sleeping, and sample two places on the dot: the centre (which must
+    // stay the accent, proving the disc is still filled) and the rim, where the
+    // read ring paints. The rim is located from the SVG geometry the stylesheet
+    // styles, not from a hardcoded pixel offset: the circle has radius `r` and a
+    // 2-unit stroke, so the stroke centreline sits `r` user units from the
+    // centre, which the camera transform scales to device pixels. The ring is
+    // only ~1.6px wide at the map's default zoom, so which column holds it
+    // depends on sub-pixel alignment — the scan takes the band the geometry
+    // predicts, one device pixel either side, and keeps the strongest sample.
+    const dot = async file => {
+      if (await cuePage.locator('.article-node').count() === 0) await cuePage.locator('.topic-toggle').click();
+      const handle = cuePage.locator('.article-node .node-dot').first();
+      await handle.waitFor();
+      await cuePage.locator('.article-node').first().evaluate(el => Promise.all(el.getAnimations({ subtree: true }).map(animation => animation.finished.catch(() => {}))));
+      const png = await handle.screenshot({ path: `${artifacts}/${file}.png` });
+      // `getScreenCTM().a` is the horizontal scale the compositor applies to the
+      // dot, camera zoom included; devicePixelRatio turns it into screenshot px.
+      const { radius, scale, dpr } = await handle.evaluate(el => ({
+        radius: Number(el.getAttribute('r')),
+        scale: el.getScreenCTM().a,
+        dpr: window.devicePixelRatio || 1,
+      }));
+      const image = await raster(png);
+      const centre = image.at(Math.floor(image.size[0] / 2), Math.floor(image.size[1] / 2));
+      const ringRadius = radius * scale * dpr;
+      const middle = Math.floor(image.size[0] / 2);
+      const band = [];
+      for (const direction of [-1, 1]) {
+        for (const offset of [Math.floor(ringRadius) - 1, Math.floor(ringRadius), Math.ceil(ringRadius) + 1]) {
+          const x = middle + direction * offset;
+          if (offset > 0 && x >= 0 && x < image.size[0]) band.push([offset, image.at(x, Math.floor(image.size[1] / 2))]);
+        }
+      }
+      return { size: image.size, radius, ringRadius, band, centre };
+    };
+    /** The band sample closest to `expected` — the pixel the compositor actually painted on the rim. */
+    const rim = (pixels, expected) => pixels.band.reduce((best, sample) => rgbDistance(sample[1], expected) < rgbDistance(best[1], expected) ? sample : best);
+    const near = (measured, expected, message) => assert.ok(measured.every((channel, index) => Math.abs(channel - expected[index]) <= 2),
+      `${message}: expected rgb(${expected.join(', ')}) ±2, measured rgb(${measured.join(', ')})`);
+
+    await cuePage.goto(origin);
+    await cuePage.locator('knowledge-map[data-ready="true"]').waitFor();
+    const { accent, visited } = await roleBytes();
+    const dotPixels = await dot('visited-cue-unvisited');
+    assert.ok(Math.min(...dotPixels.size) >= 10, `the dot is large enough to sample away from its anti-aliased rim (${dotPixels.size.join('×')}px)`);
+    near(dotPixels.centre, accent, 'an unvisited node dot paints the accent role');
+    const unvisitedRim = rim(dotPixels, visited);
+    assert.ok(rgbDistance(unvisitedRim[1], visited) > 3 * 2 ** 2, `an unread dot paints no visited-coloured pixel on its rim (no read cue): closest rim sample rgb(${unvisitedRim[1].join(', ')}) vs visited rgb(${visited.join(', ')})`);
+    const computedUnvisited = await cuePage.locator('.article-node .node-dot').first().evaluate(el => getComputedStyle(el).fill);
+
+    // A real navigation, so the article URL genuinely enters this context's
+    // history, then back to the map. Measured: the dot stays accent.
+    await cuePage.locator('.article-node').first().click();
+    await cuePage.waitForURL('**/posts/rag-to-production/');
+    await cuePage.goto(origin);
+    await cuePage.locator('knowledge-map[data-ready="true"]').waitFor();
+    const afterVisit = await dot('visited-cue-after-real-visit');
+    near(afterVisit.centre, accent, 'TRIPWIRE, not coverage: after a real navigation the dot still paints the accent, because headless Chromium keeps no visited-link store. If this now paints the visited role, headless gained visited support and step 3 below can be replaced by a genuine visit');
+
+    // Force the state the browser cannot look up, on the real node, and let the
+    // real style engine and compositor do the rest.
+    const cdp = await cue.newCDPSession(cuePage);
+    const { root } = await cdp.send('DOM.getDocument', { depth: -1 });
+    const { nodeId } = await cdp.send('DOM.querySelector', { nodeId: root.nodeId, selector: '.article-node' });
+    assert.ok(nodeId, 'the article node is reachable through the DOM domain');
+    await cdp.send('CSS.enable');
+    await cdp.send('CSS.forcePseudoState', { nodeId, forcedPseudoClasses: ['visited'] });
+    const forced = await dot('visited-cue-visited');
+    const forcedRim = rim(forced, visited);
+    near(forced.centre, accent, 'the visited dot keeps its accent core, so the read cue is a ring, not a hollow disc');
+    near(forcedRim[1], visited, `the visited cue paints a ring at the dot's rim (${forcedRim[0]}px from centre, ring radius ${forced.ringRadius.toFixed(2)}px for r=${forced.radius} + 2 units of stroke): \`.article-node:visited .node-dot\` reaches a descendant, not only the anchor`);
+    // The two paints must differ by more than a rounding step. 0.10 OKLab ΔE is
+    // the floor accepted for this cue (it measures 0.107 between the accent core
+    // of an unread dot and the visited ring of a read one); anything below it and
+    // the cue has quietly become invisible, which no CSSOM check would notice.
+    const separation = deltaEOk(dotPixels.centre, forcedRim[1]);
+    assert.ok(separation >= 0.10, `the visited ring is distinguishable from the unread dot (ΔE_ok ${separation.toFixed(3)} ≥ 0.10, rgb(${dotPixels.centre.join(', ')}) → rgb(${forcedRim[1].join(', ')}))`);
+    // The privacy wall this whole check exists to route around, pinned so it is
+    // never "simplified" back into a computed-style assertion.
+    assert.equal(await cuePage.locator('.article-node .node-dot').first().evaluate(el => getComputedStyle(el).fill), computedUnvisited,
+      'getComputedStyle keeps reporting the unvisited fill even while the pixel is the visited colour');
+    await cuePage.screenshot({ path: `${artifacts}/visited-cue-scene-1440.png`, fullPage: true });
+    console.log(`visited cue: rim rgb(${forcedRim[1].join(', ')}) at ${forcedRim[0]}px around a rgb(${forced.centre.join(', ')}) accent core, on a ${dotPixels.size.join('×')}px dot (ring radius ${forced.ringRadius.toFixed(2)}px), ΔE_ok ${separation.toFixed(3)}`);
+    await cue.close();
+  }
   await verifyScenes(browser, origin, artifacts, errors);
   assert.deepEqual(errors, [], 'No browser errors or failed local responses');
-  console.log('PASS: 5 widths, home/reader, map/list sync, keyboard, pan/zoom/reset, backlinks, Back restoration, scene glide, inner scroll, resize, reduced motion, no-JS, preserved routes, per-language map and catalogue, article pairing and hreflang, Portuguese routes.');
+  console.log('PASS: 5 widths, home/reader, map/list sync, keyboard, pan/zoom/reset, backlinks, Back restoration, scene glide, inner scroll, resize, reduced motion, no-JS, preserved routes, per-language map and catalogue, article pairing and hreflang, Portuguese routes, visited-cue pixel paint (forced state; history hop not observable headless).');
   console.log(`Screenshots: ${artifacts}`);
 } finally {
   await browser?.close();

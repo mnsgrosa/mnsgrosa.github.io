@@ -7,8 +7,8 @@ The home supports two paths: contact/review experience, or explore connected
 articles. Existing article URLs and publishing rules remain intact.
 
 ## Genre and macrostructure
-Technical modern-minimal, with the established Gruvbox identity taking priority
-over catalog defaults. Map / Diagram is retained at the owner's request.
+Technical modern-minimal, with the established Catppuccin Mocha identity taking
+priority over catalog defaults. Map / Diagram is retained at the owner's request.
 The change is structural: full-width name/contact and a practice-area diagram,
 then the article explorer, profile, experience and projects in one scroll.
 
@@ -20,8 +20,9 @@ then the article explorer, profile, experience and projects in one scroll.
   topic index. Its only source of connections is the existing content resolver.
 
 ## Theme and typography
-`tokens.css` is the runtime source of truth. Warm charcoal surfaces, cream text,
-orange for actions and focus, purple only for visited links. No light mode.
+`tokens.css` is the runtime source of truth. Muted indigo surfaces, soft
+lavender-white text, mauve for actions and focus, pink only for visited links.
+No light mode.
 Inter Variable 400 body; upright JetBrains Mono Variable 700 headings and code.
 No additional fonts, external assets or motion libraries.
 The homepage name uses `--text-home-display`; article typography is unchanged.

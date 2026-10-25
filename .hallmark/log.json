@@ -20,5 +20,16 @@
     "footer": "Ft1 home",
     "brief": "Single scrolling portfolio for technical readers and recruiters",
     "rotation": "Owner asked for a vertical, smoother transition instead of a rotating carousel: the home scenes now glide on one vertical track (no 3D, no perspective), with inner scrolling per scene and explicit previous/next, mode and link controls."
+  },
+  {
+    "date": "2026-10-25",
+    "scope": "app",
+    "macrostructure": "Map / Diagram",
+    "theme": "Catppuccin Mocha",
+    "enrichment": "none; functional knowledge diagram",
+    "nav": "N9 home / N3 reader",
+    "footer": "Ft1 home",
+    "brief": "Single scrolling portfolio for technical readers and recruiters",
+    "rotation": "Owner replaced the Gruvbox Dark palette with Catppuccin Mocha, keeping every token role and the macrostructure unchanged. Panel (mantle) is now darker than paper (base), so panels read as recessed wells; owner reviewed the rendered home at 1440 and accepted it. Shiki code theme follows the palette."
   }
 ]

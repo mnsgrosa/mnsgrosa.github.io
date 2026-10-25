@@ -15,7 +15,7 @@ Status: design and behavior brief, not an implemented feature or an approved mig
 - Connections: articles link to other articles, including across islands.
 - Reading: show an article and its neighbors; allow navigation through article nodes.
 - Authoring: MDX with Obsidian-style `[[wikilinks]]`.
-- Visual identity: Gruvbox Dark, playful constellation.
+- Visual identity: Catppuccin Mocha, playful constellation.
 - Technology: framework choice is open; motion dependencies are permitted when useful.
 - Hosting context: GitHub Actions and a custom domain.
 
@@ -23,7 +23,7 @@ Status: design and behavior brief, not an implemented feature or an approved mig
 
 Inspected `refactor/ground-up` without checking it out. This brief is written on `feat/world-md`; it does not merge either branch.
 
-The reference branch already has Astro, `@astrojs/mdx`, static article routes, self-hosted Inter and JetBrains Mono, and a Gruvbox Dark system in `docs/design.md`. It contains MDX under `src/content/estudos/` and `src/content/diversos/`.
+The reference branch already has Astro, `@astrojs/mdx`, static article routes, self-hosted Inter and JetBrains Mono, and a colour-token system described in `design.md` (since moved to Catppuccin Mocha). It contains MDX under `src/content/estudos/` and `src/content/diversos/`.
 
 Relevant reference-branch files:
 
@@ -37,7 +37,7 @@ Relevant reference-branch files:
 
 ## Page shape
 
-Hallmark macrostructure: **Map / Diagram**, preceded by the requested About introduction. The map is functional navigation, not hero decoration. The playful tone comes from discovery and expansion, while the existing Gruvbox typography and palette remain the visual foundation.
+Hallmark macrostructure: **Map / Diagram**, preceded by the requested About introduction. The map is functional navigation, not hero decoration. The playful tone comes from discovery and expansion, while the existing typography and the Catppuccin Mocha palette remain the visual foundation.
 
 ### Home
 
@@ -134,12 +134,12 @@ Before implementation, approve this contract or adjust it to match the author's 
 
 ## Visual language
 
-**Gruvbox Dark is chosen, not a theme to rotate away from.** Follow the reference branch's `docs/design.md`, retaining its established token roles:
+**Catppuccin Mocha is the identity, not a theme to rotate away from.** The reference branch's token roles are retained; only the palette the roles resolve to changed, from Gruvbox Dark to Catppuccin Mocha, at the owner's request. `tokens.css` is the source of truth for the values, so read the roles there rather than from this prose:
 
-- Warm charcoal paper and stepped dark surfaces.
-- Warm cream text with quieter metadata.
-- Orange for actionable links, active selection, and keyboard focus.
-- Purple reserved for visited links, not arbitrary subject coloring.
+- Muted indigo paper and stepped dark surfaces.
+- Soft lavender-white text with quieter metadata.
+- Mauve for actionable links, active selection, and keyboard focus.
+- Pink reserved for visited links, not arbitrary subject coloring.
 - Inter body text; upright JetBrains Mono headings and code.
 
 The world should resemble a drawn knowledge map rather than a starfield wallpaper. Use sparse lines, readable labels, and clear selected states. Distinguish subjects from articles by geometry, size, and text, not color alone. Avoid glow clouds, fake browser frames, rainbow topic colors, and continuous particle motion.

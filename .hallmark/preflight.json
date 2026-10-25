@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-29",
+  "date": "2026-10-25",
   "framework": {
     "value": "Astro 4",
     "source": "package.json:19"
@@ -12,8 +12,8 @@
     "source": "package.json:17-18; tokens.css:23-25"
   },
   "palette": {
-    "value": "Gruvbox Dark, OKLCH semantic tokens",
-    "source": "tokens.css:5-22"
+    "value": "Catppuccin Mocha, OKLCH semantic tokens",
+    "source": "tokens.css:5-13"
   },
   "spacing": {
     "value": "Named 4-point scale",

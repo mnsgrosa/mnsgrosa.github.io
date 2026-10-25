@@ -1,5 +1,5 @@
-/* Hallmark · macrostructure: Map / Diagram · tone: technical, explorable · anchor hue: orange
- * theme: Gruvbox Dark · design-system: design.md · designed-as-app
+/* Hallmark · macrostructure: Map / Diagram · tone: technical, explorable · anchor hue: mauve
+ * theme: Catppuccin Mocha · design-system: design.md · designed-as-app
  * nav: N9 home / N3 reader · footer: Ft1 home / Ft2 reader
  * pre-emit critique: P4 H4 E4 S5 R5 V4 · home text contrast: verified */
 @import '../../tokens.css';
@@ -41,7 +41,7 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .site-rail nav a[aria-current] { color: var(--color-accent); text-decoration: underline; }
 
 /* Language switch · component: nav link pair · genre: technical modern-minimal
- * theme: Gruvbox Dark (design.md / tokens.css) · states: default · hover · focus · active · current
+ * theme: Catppuccin Mocha (design.md / tokens.css) · states: default · hover · focus · active · current
  * The route is the language, so this is two static links, never a toggle.
  */
 .lang-switch ul { display: flex; flex-direction: row; gap: var(--space-2xs); list-style: none; margin: 0; padding: 0; }
@@ -95,9 +95,16 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .subject-core { fill: var(--color-panel); stroke: var(--color-ink); stroke-width: 1.5; }
 .subject-node[aria-expanded="true"] .subject-core { stroke: var(--color-accent); stroke-width: 3; }
 .node-hit { fill: var(--color-panel); stroke: var(--color-rule); }
-.node-dot { fill: var(--color-accent); }
+.node-dot { fill: var(--color-accent); stroke: var(--color-accent); stroke-width: 2; }
 .article-node { cursor: pointer; }
-.article-node:visited .node-dot { fill: var(--color-visited); }
+/* Read cue: the disc stays filled with the accent, and its rim (a 2-unit stroke
+ * that is accent-coloured while unvisited, so the dot reads as one flat disc)
+ * turns to the visited role. So "already read" is a ring around a filled core,
+ * not a hollow disc — a hollow disc would collide with the legend's `○`
+ * article glyph. The base stroke cannot be omitted: Chromium only recolours a
+ * stroke that the unvisited style already paints, so a `stroke` declared on
+ * `:visited` alone never renders. */
+.article-node:visited .node-dot { stroke: var(--color-visited); }
 .article-node.is-current .node-hit { stroke: var(--color-accent); stroke-width: 3; }
 .article-node:focus-visible .node-hit, .subject-node:focus-visible .subject-core { stroke: var(--color-focus); stroke-width: 3; }
 @media (hover: hover) { .article-node:hover .node-hit, .subject-node:hover .subject-core { stroke: var(--color-accent); } }
@@ -140,12 +147,12 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .post-content h3 { margin-top: var(--space-lg); }
 .post-content a { overflow-wrap: anywhere; }
 /* Article language switch · component: nav link · genre: technical modern-minimal
- * theme: Gruvbox Dark (tokens.css) · states: default · hover · focus-visible · active · visited
+ * theme: Catppuccin Mocha (tokens.css) · states: default · hover · focus-visible · active · visited
  * One link to the article's translation, paired by frontmatter `translationKey`.
  */
 .post-language-switch { margin-bottom: var(--space-lg); }
 /* Article actions · component: action row · genre: technical modern-minimal
- * theme: Gruvbox Dark (tokens.css) · states: default · hover · focus-visible · active
+ * theme: Catppuccin Mocha (tokens.css) · states: default · hover · focus-visible · active
  * The language switch and the outbound share link share one row, wrap at narrow
  * widths, and each label stays on one line. `margin-bottom: 0` lets the row own
  * the spacing, so a page with no language switch does not gain a gap.
@@ -162,7 +169,7 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 .post-language-switch a:active { background: var(--color-paper); color: var(--color-ink); transform: translateY(1px); }
 .post-language-switch a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
 /* Repository card · component: linked repo summary · genre: technical modern-minimal
- * theme: Gruvbox Dark (tokens.css) · states: default · hover · focus-visible · active · visited
+ * theme: Catppuccin Mocha (tokens.css) · states: default · hover · focus-visible · active · visited
  * Static HTML: one anchor carries the avatar, the handle, the repository name and
  * the star count, so there is no nested link and nothing is hover-only. The text
  * block is `min-width: 0` and the avatar is a fixed 48px, so the card shrinks to
@@ -244,7 +251,7 @@ blockquote { margin-inline: 0; padding-inline-start: var(--space-lg); border-inl
 }
 
 /* Hallmark · macrostructure: Map / Diagram · genre: modern-minimal
- * design-system: design.md · designed-as-app · theme: Gruvbox Dark (preserved)
+ * design-system: design.md · designed-as-app · theme: Catppuccin Mocha (preserved)
  * nav: N9 (home), N3 (reader) · footer: Ft1 (home)
  * audience: technical readers and recruiters · tone: technical, explorable
  * pre-emit critique: P4 H4 E4 S5 R5 V4 */

@@ -1,5 +1,5 @@
 /* Hallmark · component: social card (1200×630) · genre: technical modern-minimal
- * theme: Gruvbox Dark (locked — mirror of tokens.css, never a catalog pick)
+ * theme: Catppuccin Mocha (locked — mirror of tokens.css, never a catalog pick)
  * pre-emit critique: P4 H5 E4 S5 R5 V4
  * contrast: pass (40–41) · tokens: pass (48) · honest: pass (46) · chrome: pass (47)
  * states: n/a — a build-time raster has no interactive states
@@ -14,17 +14,17 @@
  * size may be typed inline in `og-card.mjs` (slop-test gate 48).
  */
 
-/** Colour roles, in tokens.css order. Values are the Gruvbox hexes its comments cite. */
+/** Colour roles, in tokens.css order. Values are the Catppuccin Mocha hexes its comments cite. */
 export const colors = {
-  paper: '#282828',
-  panel: '#32302f',
-  surface: '#3c3836',
-  rule: '#504945',
-  ink: '#ebdbb2',
-  secondary: '#d5c4a1',
-  muted: '#a89984',
-  accent: '#fe8019',
-  visited: '#d3869b',
+  paper: '#1e1e2e',
+  panel: '#181825',
+  surface: '#313244',
+  rule: '#45475a',
+  ink: '#cdd6f4',
+  secondary: '#bac2de',
+  muted: '#a6adc8',
+  accent: '#cba6f7',
+  visited: '#f5c2e7',
 };
 
 /**

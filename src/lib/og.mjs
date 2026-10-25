@@ -1,5 +1,5 @@
 /* Hallmark · component: social card helpers · genre: technical modern-minimal
- * theme: Gruvbox Dark (locked) · pure functions, no Astro APIs, unit-tested.
+ * theme: Catppuccin Mocha (locked) · pure functions, no Astro APIs, unit-tested.
  *
  * Everything a page or an endpoint needs to *name* a card lives here: the URL,
  * the locale strings, and how a title becomes at most four lines. The sizes it

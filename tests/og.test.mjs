@@ -21,13 +21,16 @@ function readPosts() {
 
 // --- the token mirror ---------------------------------------------------------
 
-test('og-theme mirrors the Gruvbox roles tokens.css declares', () => {
+test('og-theme mirrors the Catppuccin Mocha roles tokens.css declares', () => {
   const css = readFileSync(path.join(root, 'tokens.css'), 'utf8');
   const declared = new Map();
-  for (const match of css.matchAll(/--color-([a-z-]+):\s*oklch\([^)]*\);\s*\/\* Gruvbox (#[0-9a-f]{6}) \*\//g)) {
+  for (const match of css.matchAll(/--color-([a-z-]+):\s*oklch\([^)]*\);\s*\/\* Catppuccin Mocha (#[0-9a-f]{6}) \*\//g)) {
     declared.set(match[1], match[2].toLowerCase());
   }
-  assert.ok(declared.size >= 9, `tokens.css declares ${declared.size} Gruvbox colour roles`);
+  // Exactly nine: a stale annotation label would match zero lines and leave the
+  // drift assertion below comparing an empty map against a non-empty mirror, so
+  // the count is asserted before the comparison rather than after it.
+  assert.equal(declared.size, 9, `tokens.css declares ${declared.size} Catppuccin Mocha colour roles, expected 9`);
   for (const [role, hex] of declared) {
     assert.equal(colors[role], hex, `og-theme.colors.${role} drifted from tokens.css (${hex})`);
   }
@@ -154,7 +157,9 @@ test('a short title renders without padding the page with an empty card', async 
  */
 async function inkBounds(png) {
   const { data, info } = await sharp(png).raw().toBuffer({ resolveWithObject: true });
-  const paper = [0x28, 0x28, 0x28];
+  // Read from the token mirror, not a literal: a stale ground colour would treat
+  // every background pixel as ink and fail the margin assertion for the wrong reason.
+  const paper = [1, 3, 5].map(i => parseInt(colors.paper.slice(i, i + 2), 16));
   let minX = Infinity, minY = Infinity, maxX = -1, maxY = -1;
   for (let y = 0; y < info.height; y++) {
     for (let x = 0; x < info.width; x++) {

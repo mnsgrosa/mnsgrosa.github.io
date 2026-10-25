@@ -1,16 +1,16 @@
-/* Hallmark · macrostructure: Map / Diagram · tone: playful constellation · anchor hue: orange
- * theme: Gruvbox Dark (user-selected) · nav: N3 adapted side-rail · footer: Ft2
+/* Hallmark · macrostructure: Map / Diagram · tone: playful constellation · anchor hue: mauve
+ * theme: Catppuccin Mocha (user-selected) · nav: N3 adapted side-rail · footer: Ft2
  * pre-emit critique: P4 H4 E4 S5 R5 V4; browser verification recorded separately. */
 :root {
-  --color-paper: oklch(27.68482% 0.000000 89.8756); /* Gruvbox #282828 */
-  --color-panel: oklch(31.08824% 0.003375 48.6190); /* Gruvbox #32302f */
-  --color-surface: oklch(34.40675% 0.006603 48.5229); /* Gruvbox #3c3836 */
-  --color-rule: oklch(41.09760% 0.011527 51.8658); /* Gruvbox #504945 */
-  --color-ink: oklch(89.41459% 0.056590 89.2405); /* Gruvbox #ebdbb2 */
-  --color-secondary: oklch(82.54901% 0.050676 85.1158); /* Gruvbox #d5c4a1 */
-  --color-muted: oklch(69.02596% 0.034629 76.3067); /* Gruvbox #a89984 */
-  --color-accent: oklch(73.10874% 0.182011 51.6932); /* Gruvbox #fe8019 */
-  --color-visited: oklch(70.54014% 0.097578 2.1895); /* Gruvbox #d3869b */
+  --color-paper: oklch(24.28669% 0.030357 283.9110); /* Catppuccin Mocha #1e1e2e */
+  --color-panel: oklch(21.55216% 0.025417 284.0647); /* Catppuccin Mocha #181825 */
+  --color-surface: oklch(32.40219% 0.031885 281.9784); /* Catppuccin Mocha #313244 */
+  --color-rule: oklch(40.36914% 0.031955 280.1520); /* Catppuccin Mocha #45475a */
+  --color-ink: oklch(87.86601% 0.042552 272.2767); /* Catppuccin Mocha #cdd6f4 */
+  --color-secondary: oklch(81.68228% 0.040345 272.8622); /* Catppuccin Mocha #bac2de */
+  --color-muted: oklch(75.09605% 0.039565 273.9320); /* Catppuccin Mocha #a6adc8 */
+  --color-accent: oklch(78.71462% 0.118670 304.7693); /* Catppuccin Mocha #cba6f7 */
+  --color-visited: oklch(87.00326% 0.075158 336.3041); /* Catppuccin Mocha #f5c2e7 */
   --color-focus: var(--color-accent);
   --color-accent-ink: var(--color-paper);
   --color-edge: var(--color-muted);
