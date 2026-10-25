@@ -1,84 +1,34 @@
-<!-- Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 -->
-# Design — Matheus Rosa
+# Design: Matheus Rosa
 
-## Audience and intent
-Technical readers in data engineering, data science and AI, plus recruiters.
-The home supports two paths: contact/review experience, or explore connected
-articles. Existing article URLs and publishing rules remain intact.
+The locked system. Every Hallmark run reads this first and pages share it. Change it on purpose; the file is the rule.
 
-## Genre and macrostructure
-Technical modern-minimal, with the established identity taking priority over
-catalog defaults: Slate Blue as the light default, with Slate Blue Dark as the
-automatic dark mode — the same palette with the Tailwind scale mirrored and the
-ground inverted. Map / Diagram is retained at the owner's request.
-The change is structural: full-width name/contact and a practice-area diagram,
-then the article explorer, profile, experience and projects in one scroll.
+## System
+- Genre: modern-minimal
+- Shape of the first page: Map / Diagram — an About-first entry (name + contact), the world below it, the topic list beside it
+- Theme: Slate Blue (custom, v1, "electric blue on slate, in both schemes")
+- Axes: light/mono/cool · posture: none declared — the About entry opens the page, the diagram follows in document flow
 
-- Home: N9 edge-aligned header, outlined contact link, Ft1 mast-headed footer.
-- Reader and legacy routes: retain the N3 sidebar and existing reader geometry.
-- The eight-area overview is static HTML with decorative SVG connections.
-  Its lines illustrate practice-area relationships, not authored article links.
-- The article constellation remains an interactive enhancement of a static
-  topic index. Its only source of connections is the existing content resolver.
+The axes sit near the catalog theme Wayfind (light/mono/cool); the palette is named custom, not dealt, because its roles resolve to Tailwind's stock slate/blue/violet. Gate 74 is open on that and is recorded (not waived) in `docs/constellation-blog.md`.
 
-## Theme and typography
-`tokens.css` is the runtime source of truth. Light (default): off-white slate
-ground, deep-navy ink, electric blue for actions and focus, violet only for
-visited links. Dark (automatic via `prefers-color-scheme: dark`) is the same set
-mirrored on the same palette scales — navy slate ground, off-white ink, a lighter
-blue for actions and focus, a lighter violet for visited links — because a
-blue-600 accent on a navy-900 ground measures 3.45:1 and would fail AA as text.
-Inter Variable 400 body; upright JetBrains Mono Variable 700 headings and code.
-No additional fonts, external assets or motion libraries.
-The homepage name uses `--text-home-display`; article typography is unchanged.
+## Tokens
+`tokens.css` is the source of truth; read values there, never from this prose.
 
-## Layout and motion
-Use the existing named 4-point spacing scale. Home content is bounded by
-`--home-width`; headings stack above content. On mobile the knowledge diagram
-becomes two staggered columns, with all eight labels readable.
+- Colour roles: `--color-paper`, `--color-panel`, `--color-surface`, `--color-rule`, `--color-ink`, `--color-secondary`, `--color-muted`, `--color-accent`, `--color-visited`; the dark set lives once as `--dark-*`, mapped onto the role names by the OS media query and the `[data-theme="dark"]` override.
+- Aliases: `--color-focus` (accent), `--color-accent-ink` (paper), `--color-edge` (muted), `--color-clear`.
+- Type: `--font-body` Inter Variable, `--font-display`/`--font-mono` JetBrains Mono Variable; the scale runs `--text-sm` to `--text-display`/`--text-home-display`.
+- Space: the named 4-point scale `--space-2xs` … `--space-3xl`; container `--home-width`; measure `--measure`/`--measure-wide`.
+- Motion: `--ease-out`/`-in`/`-in-out`, `--dur-micro`, `--dur-short`, plus the scene glide's `--dur-scene`/`--ease-scene`.
 
-On a roomy pointer desktop with motion enabled, the five home scenes (knowledge,
-article map, about, experience, projects) sit in one vertical track that glides
-between them: the wheel, `←`/`→`, the header links and the scene links all move
-the track, and `.scene-links` plus the arrow buttons are the explicit controls.
-It is a plain vertical glide — no rotation, no perspective, no 3D faces — with
-`--dur-scene` and `--ease-scene`; only the active scene and the one leaving it
-are visible, everything else stays `inert` and `aria-hidden`. A long scene
-scrolls inside itself first and only glides onward at its boundary, so content
-is never skipped. `Use page scroll` (persisted per session) turns the glide off
-again, and the mode is unavailable on small screens, coarse pointers, short
-viewports, `prefers-reduced-motion: reduce`, and without JavaScript. In every one
-of those cases the page is the ordinary scrolling document, which is also what
-ink-link anchors (`#explore`, `#projects`, …) resolve to.
+## Controls
+- Primary: outlined accent link (`.contact-cta`) · radius `--radius-sm` (4px) · min-height 48px
+- Secondary: filled panel button · hairline muted border · radius `--radius-sm` (4px) · min-height 44px
 
-No idle movement, scroll reveals, particles or fake browser chrome. Existing
-article expansion fades and explicit pan/zoom stay. Reduced motion disables
-animation; focus outlines appear immediately.
-
-## Interaction and CTA voice
-Contact is a native `mailto:matheusnsampaio@gmail.com` link, not a submission
-form. It must not claim that a message was sent. Native links have default,
-hover, keyboard focus, active and visited states; loading/error/success and
-disabled submission states do not apply. Map controls retain their disabled
-limits, selected states, status text and renderer-failure fallback.
-
-## Content boundaries
-Reuse the real experience collection, rather than duplicating its business
-claims. Profile copy is condensed from the existing published home content.
-The current project collection contains example entries: the new home shows
-an explicit catalogue-in-progress notice and the real GitHub destination,
-not invented projects. Old routes remain available for existing links.
-The demo dashboard is not promoted into the professional homepage.
-
-## Verification
-`npm test && npm run build && npm run test:browser`
-
-Browser coverage includes the requested four mobile/tablet widths plus desktop,
-name/contact, eight non-overlapping areas, section order, real experience,
-project destination, graph exclusion, keyboard, no-JS and reader regressions.
-Screenshots: `/tmp/constellation-browser/`.
+## Motion
+- Character: calm. One reveal at most; the home's five-scene vertical glide and its no-JS/reduced-motion fallbacks are described in `docs/constellation-blog.md`.
+- Under reduced motion everything ends at once; focus outlines appear immediately.
 
 ## Exports
+
 The following snapshots reproduce the current system for reuse. They are not
 extra runtime styles or dependencies; update them when `tokens.css` changes.
 

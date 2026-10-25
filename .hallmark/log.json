@@ -1,46 +1,70 @@
 [
-  {
-    "date": "2026-09-29",
-    "scope": "app",
-    "macrostructure": "Map / Diagram",
-    "theme": "Gruvbox Dark",
-    "enrichment": "none; functional knowledge diagram",
-    "nav": "N9 home / N3 reader",
-    "footer": "Ft1 home",
-    "brief": "Single scrolling portfolio for technical readers and recruiters",
-    "rotation": "Owner requested retaining constellation and visual identity; home switches from sidebar to edge header and adds a separate eight-area diagram."
-  },
-  {
-    "date": "2026-09-29",
-    "scope": "app",
-    "macrostructure": "Map / Diagram",
-    "theme": "Gruvbox Dark",
-    "enrichment": "none; functional knowledge diagram",
-    "nav": "N9 home / N3 reader",
-    "footer": "Ft1 home",
-    "brief": "Single scrolling portfolio for technical readers and recruiters",
-    "rotation": "Owner asked for a vertical, smoother transition instead of a rotating carousel: the home scenes now glide on one vertical track (no 3D, no perspective), with inner scrolling per scene and explicit previous/next, mode and link controls."
-  },
-  {
-    "date": "2026-10-25",
-    "scope": "app",
-    "macrostructure": "Map / Diagram",
-    "theme": "Catppuccin Mocha",
-    "enrichment": "none; functional knowledge diagram",
-    "nav": "N9 home / N3 reader",
-    "footer": "Ft1 home",
-    "brief": "Single scrolling portfolio for technical readers and recruiters",
-    "rotation": "Owner replaced the Gruvbox Dark palette with Catppuccin Mocha, keeping every token role and the macrostructure unchanged. Panel (mantle) is now darker than paper (base), so panels read as recessed wells; owner reviewed the rendered home at 1440 and accepted it. Shiki code theme follows the palette."
-  },
-  {
-    "date": "2026-10-25",
-    "scope": "app",
-    "macrostructure": "Map / Diagram",
-    "theme": "Slate Blue (light) + Catppuccin Mocha (dark)",
-    "enrichment": "none; functional knowledge diagram",
-    "nav": "N9 home / N3 reader",
-    "footer": "Ft1 home",
-    "brief": "Single scrolling portfolio for technical readers and recruiters",
-    "rotation": "Owner replaced Catppuccin Mocha as the dark mode with Slate Blue Dark: the light set mirrored on the same Tailwind scales (paper 50->900, surface 100->800, panel 200->700, rule 300->600, ink 900->50, secondary 700->300, muted 500->400), with accent blue-600->blue-400 and visited violet-700->violet-300 because blue-600 on navy is 3.45:1 and fails AA as text. Shiki dark theme follows: github-dark-default."
-  }
+ {
+  "shape": "Map / Diagram",
+  "theme": "Slate Blue (custom, v1, \"electric blue on slate, in both schemes\")",
+  "axes": "light/mono/cool",
+  "hero": "none — About-first entry (name + contact), no hero posture",
+  "nav": "N3 adapted side-rail",
+  "footer": "Ft2",
+  "imagery": "none; functional SVG knowledge diagram, not imagery",
+  "photos": [],
+  "entry": "About (name + contact), then the world and topic list",
+  "fingerprint": "Hanging|Single column|Hairline|Outlined|None|None",
+  "sections": [
+   "Knowledge (practice-area diagram)",
+   "Article map (constellation)",
+   "About",
+   "Experience",
+   "Projects"
+  ],
+  "signature": "the interactive constellation — subject islands that expand into article nodes",
+  "waived": [],
+  "prompt": "Single scrolling portfolio for technical readers and recruiters",
+  "date": "2026-10-25",
+  "mode": "build"
+ },
+ {
+  "date": "2026-09-29",
+  "scope": "app",
+  "macrostructure": "Map / Diagram",
+  "theme": "Gruvbox Dark",
+  "enrichment": "none; functional knowledge diagram",
+  "nav": "N9 home / N3 reader",
+  "footer": "Ft1 home",
+  "brief": "Single scrolling portfolio for technical readers and recruiters",
+  "rotation": "Owner requested retaining constellation and visual identity; home switches from sidebar to edge header and adds a separate eight-area diagram."
+ },
+ {
+  "date": "2026-09-29",
+  "scope": "app",
+  "macrostructure": "Map / Diagram",
+  "theme": "Gruvbox Dark",
+  "enrichment": "none; functional knowledge diagram",
+  "nav": "N9 home / N3 reader",
+  "footer": "Ft1 home",
+  "brief": "Single scrolling portfolio for technical readers and recruiters",
+  "rotation": "Owner asked for a vertical, smoother transition instead of a rotating carousel: the home scenes now glide on one vertical track (no 3D, no perspective), with inner scrolling per scene and explicit previous/next, mode and link controls."
+ },
+ {
+  "date": "2026-10-25",
+  "scope": "app",
+  "macrostructure": "Map / Diagram",
+  "theme": "Catppuccin Mocha",
+  "enrichment": "none; functional knowledge diagram",
+  "nav": "N9 home / N3 reader",
+  "footer": "Ft1 home",
+  "brief": "Single scrolling portfolio for technical readers and recruiters",
+  "rotation": "Owner replaced the Gruvbox Dark palette with Catppuccin Mocha, keeping every token role and the macrostructure unchanged. Panel (mantle) is now darker than paper (base), so panels read as recessed wells; owner reviewed the rendered home at 1440 and accepted it. Shiki code theme follows the palette."
+ },
+ {
+  "date": "2026-10-25",
+  "scope": "app",
+  "macrostructure": "Map / Diagram",
+  "theme": "Slate Blue (light) + Slate Blue Dark (dark)",
+  "enrichment": "none; functional knowledge diagram",
+  "nav": "N9 home / N3 reader",
+  "footer": "Ft1 home",
+  "brief": "Single scrolling portfolio for technical readers and recruiters",
+  "rotation": "Owner replaced Catppuccin Mocha as the dark mode with Slate Blue Dark: the light set mirrored on the same Tailwind scales (paper 50->900, surface 100->800, panel 200->700, rule 300->600, ink 900->50, secondary 700->300, muted 500->400), with accent blue-600->blue-400 and visited violet-700->violet-300 because blue-600 on navy is 3.45:1 and fails AA as text. Shiki dark theme follows: github-dark-default."
+ }
 ]

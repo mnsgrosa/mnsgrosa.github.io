@@ -1,6 +1,7 @@
-/* Hallmark · macrostructure: Map / Diagram · tone: playful constellation · anchor hue: blue (light) / blue (dark)
- * theme: Slate Blue (light, default) + Slate Blue Dark (dark via prefers-color-scheme) · nav: N3 adapted side-rail · footer: Ft2
- * pre-emit critique: P4 H4 E4 S5 R5 V4; browser verification recorded separately. */
+/* Hallmark · macrostructure: Map / Diagram · genre: modern-minimal · axes: light/mono/cool
+ * theme: Slate Blue (custom, v1, "electric blue on slate, in both schemes") · nav: N3 adapted side-rail · footer: Ft2
+ * pre-emit critique: P4 H4 E4 S5 R5 V4 · weakest: E, the sweep below still carries open Floor findings
+ */
 :root {
   --color-paper: oklch(98.41519% 0.003413 247.8575); /* Slate Blue #f8fafc */
   --color-panel: oklch(92.87613% 0.012619 255.5078); /* Slate Blue #e2e8f0 */

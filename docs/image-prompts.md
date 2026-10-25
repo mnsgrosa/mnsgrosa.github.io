@@ -1,7 +1,7 @@
 # Image prompts — banners for non-post routes and for the graph article
 
-/* Hallmark · component: social card artwork · genre: technical modern-minimal (locked)
- * theme: Slate Blue (light raster — banner artwork follows the default palette) · pre-emit critique: P5 H4 E4 S5 R5 V4
+/* Hallmark · component: social card artwork · genre: modern-minimal · theme: Slate Blue (custom, v1)
+ * pre-emit critique: P5 H4 E4 S5 R5 V4 · weakest: E, raster output is verified by hand at 300px, never swept
  * Prose prompts for an external image model. Not a build step. */
 
 These are prompts for an **external** image model, used to replace a generated card

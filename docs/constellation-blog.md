@@ -1,4 +1,7 @@
-<!-- Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4. Document review only; no rendered UI verified. -->
+<!-- Hallmark · macrostructure: Map / Diagram · genre: modern-minimal · axes: light/mono/cool
+     theme: Slate Blue (custom, v1, "electric blue on slate, in both schemes") · nav: N3 adapted side-rail · footer: Ft2
+     pre-emit critique: P4 H4 E4 S5 R5 V4 · weakest: E, the sweep below still carries open Floor findings
+     Document review only; no rendered UI verified. -->
 # Constellation blog
 
 **An About-first technical blog where readers explore a pannable, zoomable 2D constellation, expand subject islands, and follow linked MDX articles.**
@@ -7,7 +10,7 @@ Status: design and behavior brief, not an implemented feature or an approved mig
 
 ## Confirmed direction
 
-- Audience: beginner-to-intermediate data engineers and data scientists.
+- Audience: technical readers in data engineering, data science and AI, plus recruiters. The home supports two paths — contact or review experience, or explore connected articles.
 - Entry: the author's About content, with the world below it and a topic list beside the world.
 - World: a 2D constellation with pan and zoom, not a rotating 3D globe.
 - Subjects: selecting a subject expands it into named article nodes.
@@ -39,32 +42,22 @@ Relevant reference-branch files:
 
 Hallmark macrostructure: **Map / Diagram**, preceded by the requested About introduction. The map is functional navigation, not hero decoration. The playful tone comes from discovery and expansion, while the existing typography and the Slate Blue light / Slate Blue Dark palette remain the visual foundation.
 
+The structure is: a full-width name/contact entry and a practice-area diagram, then the article explorer, profile, experience and projects in one scroll. The eight-area overview is static HTML with decorative SVG connections; its lines illustrate practice-area relationships, not authored article links. The article constellation remains an interactive enhancement of a static topic index, and its only source of connections is the existing content resolver.
+
 ### Home
 
-1. Existing site navigation, preserving established destinations.
+1. Home uses the N9 edge-aligned header with an outlined contact link; the footer is Ft1 mast-headed.
 2. About: real author introduction and relevant existing links. Final copy comes from the author or approved existing content, never invented credentials.
 3. Explore: constellation on the left, synchronized topic list on the right.
 4. Compact footer using existing contact destinations.
 
-The About section should introduce the author without consuming an obligatory full viewport. The explorer follows in normal document flow rather than taking over the whole page.
+The About section should introduce the author without consuming an obligatory full viewport. The explorer follows in normal document flow rather than taking over the whole page. Home content is bounded by `--home-width`; headings stack above content. On mobile the knowledge diagram becomes two staggered columns, with all eight labels readable.
 
 #### Home scenes
 
-On a roomy pointer desktop with motion enabled, the home sections are five
-scenes (knowledge, article map, about, experience, projects) in one vertical
-track that glides between them under `src/scripts/scene-navigation.ts`: wheel,
-arrow keys, the header links, the `scene-links` row and the previous/next buttons
-all move it, and the controls stay visible so the movement is never the only way
-out. It is a plain vertical glide — no rotation and no perspective — and the
-document itself does not scroll while it is active.
+On a roomy pointer desktop with motion enabled, the home sections are five scenes (knowledge, article map, about, experience, projects) in one vertical track that glides between them under `src/scripts/scene-navigation.ts`: wheel, arrow keys, the header links, the `scene-links` row and the previous/next buttons all move it, and the controls stay visible so the movement is never the only way out. It is a plain vertical glide — no rotation and no perspective — with `--dur-scene` and `--ease-scene`; only the active scene and the one leaving it are visible, everything else stays `inert` and `aria-hidden`. A scene taller than the viewport scrolls inside itself first and only glides onward at its boundary, so content is never skipped. `Use page scroll` (persisted per session) turns the glide off again.
 
-This is an enhancement, never the source of truth: the server-rendered page is a
-complete scrolling document, and small screens, coarse pointers, short viewports,
-`prefers-reduced-motion: reduce` or JavaScript disabled all keep that document
-untouched, including `#explore`-style deep links. Non-active scenes are `inert`
-and `aria-hidden`; a scene taller than the viewport scrolls inside itself first
-and only glides onward at its boundary; `Use page scroll` turns the glide off for
-the session.
+This is an enhancement, never the source of truth: the server-rendered page is a complete scrolling document, and small screens, coarse pointers, short viewports, `prefers-reduced-motion: reduce` or JavaScript disabled all keep that document untouched, including `#explore`-style deep links. In every one of those cases the page is the ordinary scrolling document, which is also what ink-link anchors (`#explore`, `#projects`, …) resolve to. No idle movement, scroll reveals, particles or fake browser chrome.
 
 ### Explorer
 
@@ -78,9 +71,9 @@ Cross-island bridges represent actual article links, not inferred similarity. Wh
 
 ### Reader
 
-Selecting an article opens its canonical URL. On desktop, place readable prose beside a local neighborhood map and text links. Do not compress the article into a small floating popup.
+Selecting an article opens its canonical URL. On desktop, place readable prose beside a local neighborhood map and text links. Do not compress the article into a small floating popup. Reader and legacy routes retain the N3 sidebar and existing reader geometry.
 
-**Proposed neighbor definition:** articles directly linked by the current article, plus articles linking to it. Distinguish “Links from this article” and “Articles linking here.” Sharing an island alone does not make two articles linked neighbors.
+**Proposed neighbor definition:** articles directly linked by the current article, plus articles linking to it. Distinguish "Links from this article" and "Articles linking here." Sharing an island alone does not make two articles linked neighbors.
 
 Selecting a neighbor opens that article and updates the local graph. Keep its subject visible so readers understand when they cross an island boundary. Provide a return-to-map link.
 
@@ -140,7 +133,8 @@ Before implementation, approve this contract or adjust it to match the author's 
 - Deep-navy ink (light) / off-white ink (dark), with quieter metadata in both.
 - Electric blue for actionable links, active selection, and keyboard focus — blue-600 on the light ground, blue-400 on the dark one, since blue-600 on navy is 3.45:1 and would fail AA as text.
 - Violet reserved for visited links, not arbitrary subject coloring — violet-700 (light) / violet-300 (dark).
-- Inter body text; upright JetBrains Mono headings and code.
+- Inter Variable 400 body; upright JetBrains Mono Variable 700 headings and code. No additional fonts, external assets or motion libraries.
+- The homepage name uses `--text-home-display`; article typography is unchanged.
 
 The world should resemble a drawn knowledge map rather than a starfield wallpaper. Use sparse lines, readable labels, and clear selected states. Distinguish subjects from articles by geometry, size, and text, not color alone. Avoid glow clouds, fake browser frames, rainbow topic colors, and continuous particle motion.
 
@@ -206,6 +200,23 @@ palette and delete the other.
      dark favicon; change `html { color-scheme: light dark; }` to `dark`.
    - Verify: `npm test && npm run build`.
 
+## Interaction and CTA voice
+
+Contact is a native `mailto:matheusnsampaio@gmail.com` link, not a submission
+form, and it must not claim that a message was sent. Native links have default,
+hover, keyboard focus, active and visited states; loading/error/success and
+disabled submission states do not apply. Map controls retain their disabled
+limits, selected states, status text and renderer-failure fallback.
+
+## Content boundaries
+
+Reuse the real experience collection rather than duplicating its business
+claims; profile copy is condensed from the existing published home content. The
+current project collection contains example entries: the home shows an explicit
+catalogue-in-progress notice and the real GitHub destination, not invented
+projects. Old routes remain available for existing links, and the demo dashboard
+is not promoted into the professional homepage.
+
 ## Accessibility and small screens
 
 The graph is an enhancement, never the only route to content.
@@ -221,6 +232,44 @@ The graph is an enhancement, never the only route to content.
 - Without JavaScript, articles and the topic/article index remain navigable. Renderer failure must leave those links available.
 
 Verify at 320, 375, 414, and 768 px, plus desktop. Long titles must remain discoverable without overlap or page-level horizontal scrolling. Keep control labels on one line; use a readable list when graph labels cannot all fit.
+
+## Verification
+
+`npm test && npm run build && npm run test:browser`
+
+Browser coverage includes the requested four mobile/tablet widths plus desktop,
+name/contact, eight non-overlapping areas, section order, real experience,
+project destination, graph exclusion, keyboard, no-JS and reader regressions.
+Screenshots land in `/tmp/constellation-browser/`.
+
+## Known open findings (sloplint, recorded not waived)
+
+The sweep `sloplint src tokens.css --genre modern-minimal` reports **7 FAIL, 12 WARN**. These are recorded open here; they were not fixed because the owner has not approved that batch. A stamp claiming a clean sweep here would be slop.
+
+**Floor — never waived, owner's batch to fix:**
+
+- **30a** `src/components/ArticleShare.astro:12` — emoji `↗` passed as an icon.
+- **34** `src/layouts/MainLayout.astro:1` — no `overflow-x: clip` on `html` and `body` (also `src/pages/dashboard.astro:1`).
+- **48** `src/pages/dashboard.astro:12` — colour literals `#f0f4f8` and `#555` outside tokens; `src/components/MyChart.jsx:13` — inline-style `#007bff`.
+- **63** `src/components/KnowledgeOverview.astro:50` — arrow glued to the label `{t('knowledge.cta')} →`.
+- **40** `src/styles/constellation.css:221` — `.post-language-switch a` at 4.07:1 against its surface, below the 4.5:1 body threshold. The static tier reports this as WARN because it suspects the pair rather than proving it; the gate itself is Floor, so it is listed here, and it stays open until the pair is measured in the render tier or darkened.
+- **28a** `src/components/GithubRepoCard.astro:21` — the first image is `loading="lazy"` and is likely the LCP element. A video/LCP gate is Floor; ordering is what decides it, so this stays open until the render tier names the LCP.
+
+`src/pages/dashboard.astro` and `src/components/MyChart.jsx` are a demo route excluded from the site's scope; their findings stand until those files are deleted.
+
+**Reflex — open, no guard holds:**
+
+- **74** the stock swatch — the roles resolve to Tailwind's slate/blue/violet hexes. Its guard is "the pre-flight found it in the project", and the pre-flight found Gruvbox, so the guard does not hold. The mirror was chosen deliberately for AA contrast; closing 74 means mixing the roles off the stock scales in OKLCH. Open.
+- **25** `src/styles/constellation.css:363` — `.home-footer p` measure 40ch (below the 45–75ch range).
+- **49** `src/components/ThemeToggle.astro:16` — the toggle's label has no `nowrap`. The gate splits: 49a (a button label wrapping) is Floor, 49b (a footer link, tab or breadcrumb) is Reflex. This is a button, so it is Floor if it wraps at any width from 320 to 1920; the static tier cannot tell, so it is recorded undecided rather than waived.
+
+**Finish — answered as open, not blocking:**
+
+- **F3** no `text-wrap: balance` on display heads (`src/styles/constellation.css:24`, `src/components/PostCatalog.astro:141`).
+- **F6** numeric selectors without `tabular-nums` (`.map-hint/.map-legend/.map-status:165`, `.topic-count:176`, `.practice-figure figcaption:341`).
+- **F15** two container widths on one page (1260, 1120px) (`src/styles/constellation.css:1`).
+- **F16** `::selection` unthemed (`src/styles/constellation.css:1`).
+- **F2** `src/pages/dashboard.astro:25` — three-period ellipsis in prose (demo route).
 
 ## Implementation stages, not authorization to build
 
