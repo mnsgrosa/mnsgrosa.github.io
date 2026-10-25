@@ -32,7 +32,9 @@ and the token roles in `tokens.css`.
 - `src/pages/index.astro`, `src/pages/posts/[slug].astro` — the two pages that
   render the graph, via `src/components/Constellation.astro`.
 - `tokens.css` + `src/styles/constellation.css` — all styling. Colours and fonts
-  come from named tokens; there is no light mode.
+  come from named tokens; the light Slate Blue palette is the default and the
+  Slate Blue Dark palette — the same scales mirrored — applies automatically
+  under `prefers-color-scheme: dark`.
 
 ## Invariants
 

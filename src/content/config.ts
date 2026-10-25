@@ -24,6 +24,17 @@ const postsCollection = defineCollection({
       ])
       .optional(),
     bannerAlt: z.string().optional(),
+    // The dark-mode twin of `banner`. Omit it and the page looks for the same
+    // file with `-dark` before its extension (`cover.jpg` -> `cover-dark.jpg`)
+    // and uses it only if it is really there; set false to keep one cover in
+    // both schemes; set a path to name a twin that does not follow the
+    // convention (a remote URL, a different crop).
+    bannerDark: z
+      .union([
+        z.string().regex(/^(\/|https?:\/\/)/, 'bannerDark must start with / or http(s)://'),
+        z.literal(false),
+      ])
+      .optional(),
     // The social card is generated per slug, so this is an override, not a
     // requirement: point it at a 1200×630 image (under /public or absolute) when
     // a post deserves a hand-made one. `banner` is the portrait cover and is not

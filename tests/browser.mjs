@@ -412,6 +412,8 @@ try {
   const noJS = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 900 } });
   const fallback = await noJS.newPage();
   await fallback.goto(origin);
+  assert.equal(await fallback.locator('[data-theme-toggle]').count(), 1, 'theme toggle is present in markup');
+  assert.equal(await fallback.locator('[data-theme-toggle]:visible').count(), 0, 'no-JS leaves the theme toggle hidden');
   assert.equal(await fallback.locator('.knowledge-node:visible').count(), 8);
   assert.equal(await fallback.locator('.contact-cta').getAttribute('href'), 'mailto:matheusnsampaio@gmail.com');
   assert.ok(await fallback.locator('#experience').isVisible());
@@ -621,6 +623,67 @@ try {
     await cue.close();
   }
   await verifyScenes(browser, origin, artifacts, errors);
+  // Theme toggle: a manual light/dark override flips the computed `--color-paper`,
+  // persists across a reload, and a stored choice beats the emulated OS preference
+  // in both directions. Expectations are read from tokens.css, not a second copy.
+  {
+    const tokens = await readFile(new URL('../tokens.css', import.meta.url), 'utf8');
+    const lightPaper = /--color-paper:\s*(oklch\([^)]*\))/.exec(tokens)[1].trim();
+    const darkPaper = /--dark-paper:\s*(oklch\([^)]*\))/.exec(tokens)[1].trim();
+    // Chromium normalises the serialised custom property (drops the leading zero
+    // in `0.003413`), so compare the OKLCH channels numerically, not the strings.
+    const channels = value => /oklch\(([\d.]+)%\s+([\d.]+)\s+([\d.]+)\)/.exec(value).slice(1).map(Number);
+    const paper = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-paper').trim());
+    const samePaper = (got, want, message) => assert.deepEqual(channels(got), channels(want), message);
+    const theme = () => page.locator('html').getAttribute('data-theme');
+    const toggle = () => page.locator('[data-theme-toggle]');
+
+    // Clean slate, light OS: the unstored default follows the OS and reveals the button.
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.goto(origin);
+    await page.evaluate(() => localStorage.removeItem('theme'));
+    await page.reload();
+    assert.equal(await toggle().count(), 1, 'one theme toggle renders per page');
+    assert.equal(await toggle().isVisible(), true, 'the inline script reveals the toggle');
+    assert.equal(await theme(), 'light', 'unstored default follows the light OS');
+    samePaper(await paper(), lightPaper, 'light OS paints the light paper');
+    assert.equal(await toggle().getAttribute('aria-pressed'), 'false');
+
+    // A click flips to dark and persists across a reload.
+    await toggle().click();
+    assert.equal(await theme(), 'dark');
+    assert.equal(await toggle().getAttribute('aria-pressed'), 'true');
+    samePaper(await paper(), darkPaper, 'a click switches to the dark paper');
+    await page.reload();
+    assert.equal(await theme(), 'dark', 'the choice survives a reload');
+    samePaper(await paper(), darkPaper, 'reload keeps the dark paper');
+    assert.equal(await toggle().getAttribute('aria-pressed'), 'true');
+
+    // Stored light wins over a dark OS preference.
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.evaluate(() => localStorage.setItem('theme', 'light'));
+    await page.reload();
+    assert.equal(await theme(), 'light');
+    samePaper(await paper(), lightPaper, 'stored light wins over a dark OS');
+    assert.equal(await toggle().getAttribute('aria-pressed'), 'false');
+
+    // Stored dark wins over a light OS preference.
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.evaluate(() => localStorage.setItem('theme', 'dark'));
+    await page.reload();
+    assert.equal(await theme(), 'dark');
+    samePaper(await paper(), darkPaper, 'stored dark wins over a light OS');
+    assert.equal(await toggle().getAttribute('aria-pressed'), 'true');
+
+    // No stored choice follows the OS again, and clean up for any later run.
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.evaluate(() => localStorage.removeItem('theme'));
+    await page.reload();
+    assert.equal(await theme(), 'dark', 'unstored default follows the dark OS');
+    samePaper(await paper(), darkPaper, 'unstored default paints the dark paper');
+    await page.emulateMedia({ colorScheme: 'light' });
+    await page.evaluate(() => localStorage.removeItem('theme'));
+  }
   assert.deepEqual(errors, [], 'No browser errors or failed local responses');
   console.log('PASS: 5 widths, home/reader, map/list sync, keyboard, pan/zoom/reset, backlinks, Back restoration, scene glide, inner scroll, resize, reduced motion, no-JS, preserved routes, per-language map and catalogue, article pairing and hreflang, Portuguese routes, visited-cue pixel paint (forced state; history hop not observable headless).');
   console.log(`Screenshots: ${artifacts}`);

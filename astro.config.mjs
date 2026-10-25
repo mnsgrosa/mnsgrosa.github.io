@@ -16,6 +16,9 @@ export default defineConfig({
   integrations: [react(), mdx()],
   markdown: {
     remarkPlugins: [remarkWikilinks],
-    shikiConfig: { theme: 'catppuccin-mocha' },
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark-default' },
+      defaultColor: 'light',
+    },
   },
 });

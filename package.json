@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "node --test tests/knowledge.test.mjs tests/share.test.mjs tests/og.test.mjs tests/github-repo.test.mjs tests/color.test.mjs",
+    "test": "node --test tests/knowledge.test.mjs tests/share.test.mjs tests/og.test.mjs tests/github-repo.test.mjs tests/color.test.mjs tests/banner.test.mjs",
     "test:browser": "node tests/browser.mjs"
   },
   "dependencies": {

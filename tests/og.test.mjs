@@ -21,16 +21,20 @@ function readPosts() {
 
 // --- the token mirror ---------------------------------------------------------
 
-test('og-theme mirrors the Catppuccin Mocha roles tokens.css declares', () => {
+test('og-theme mirrors the Slate Blue (light) roles tokens.css declares', () => {
   const css = readFileSync(path.join(root, 'tokens.css'), 'utf8');
   const declared = new Map();
-  for (const match of css.matchAll(/--color-([a-z-]+):\s*oklch\([^)]*\);\s*\/\* Catppuccin Mocha (#[0-9a-f]{6}) \*\//g)) {
+  // Only the light block is mirrored: a build-time raster has no media query, so
+  // the card follows the default palette. Parsing only the `Slate Blue` label
+  // (not `Slate Blue Dark`) means a second, dark-only block can never silently
+  // satisfy this assertion.
+  for (const match of css.matchAll(/--color-([a-z-]+):\s*oklch\([^)]*\);\s*\/\* Slate Blue (#[0-9a-f]{6}) \*\//g)) {
     declared.set(match[1], match[2].toLowerCase());
   }
   // Exactly nine: a stale annotation label would match zero lines and leave the
   // drift assertion below comparing an empty map against a non-empty mirror, so
   // the count is asserted before the comparison rather than after it.
-  assert.equal(declared.size, 9, `tokens.css declares ${declared.size} Catppuccin Mocha colour roles, expected 9`);
+  assert.equal(declared.size, 9, `tokens.css declares ${declared.size} Slate Blue colour roles (the light raster mirror), expected 9`);
   for (const [role, hex] of declared) {
     assert.equal(colors[role], hex, `og-theme.colors.${role} drifted from tokens.css (${hex})`);
   }

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Slate Blue Dark. Mirror of favicon.svg: the same geometry, the palette's
+       dark value set. Wired in MainLayout.astro with a
+       `media="(prefers-color-scheme: dark)"` link, after the light default, so a
+       browser that ignores `media` on icons keeps the light one. -->
+  <rect width="64" height="64" rx="14" fill="#0f172a" />
+  <g fill="none" stroke="#f8fafc" stroke-linecap="round" stroke-width="2.5">
+    <path d="M14 43 27 20l13 25 11-18" />
+    <path d="m14 43 26 2" opacity=".65" />
+  </g>
+  <circle cx="14" cy="43" r="5" fill="#60a5fa" />
+  <circle cx="27" cy="20" r="4" fill="#f8fafc" />
+  <circle cx="40" cy="45" r="6" fill="#60a5fa" />
+  <circle cx="51" cy="27" r="4" fill="#cbd5e1" />
+</svg>

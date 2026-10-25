@@ -1,6 +1,7 @@
 ---
 import Sidebar from '../components/Sidebar.astro';
 import LanguageSwitch from '../components/LanguageSwitch.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { isArticlePath, localeFromPathname, localePath } from '../i18n/paths.mjs';
 import { useTranslations } from '../i18n/ui.mjs';
 import { ogAlternateLocales, ogLocale, siteCardPath } from '../lib/og.mjs';
@@ -43,7 +44,62 @@ const alternateLocales = ogAlternateLocales(alternateLinks, currentLang);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {/* Theme runs before the stylesheet paints: an inline, blocking script sets
+        `data-theme` on <html> from storage (or the OS when nothing is stored),
+        then reveals the hidden toggle once the DOM is ready. A bundled module
+        would run too late and flash the wrong palette on every dark load. */}
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var stored = null;
+        try { stored = localStorage.getItem('theme'); } catch (error) { /* storage unavailable */ }
+        var dark = stored === 'dark' || (stored !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+        root.setAttribute('data-theme', dark ? 'dark' : 'light');
+        function syncChrome(isDark) {
+          // The icon and the browser-chrome colour are not CSS, so they cannot be
+          // switched by `[data-theme]`. Their `media` attributes are rewritten
+          // here instead: `not all` disables a link outright, which is how a
+          // chosen light wins on an OS that prefers dark (and the reverse).
+          document.querySelectorAll('[data-theme-icon]').forEach(function (link) {
+            link.media = (link.getAttribute('data-theme-icon') === (isDark ? 'dark' : 'light')) ? 'all' : 'not all';
+          });
+          document.querySelectorAll('[data-theme-color]').forEach(function (meta) {
+            meta.media = (meta.getAttribute('data-theme-color') === (isDark ? 'dark' : 'light')) ? 'all' : 'not all';
+          });
+        }
+        function sync() {
+          var isDark = root.getAttribute('data-theme') === 'dark';
+          syncChrome(isDark);
+          document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
+            button.hidden = false;
+            button.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+          });
+        }
+        function onReady() {
+          sync();
+          document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
+            button.addEventListener('click', function () {
+              var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+              root.setAttribute('data-theme', next);
+              sync();
+              try { localStorage.setItem('theme', next); } catch (error) { /* storage unavailable */ }
+            });
+          });
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady);
+        else onReady();
+      })();
+    </script>
+    {/* The icon follows the palette. The light file is declared first with no
+        `media`, so a browser that ignores `media` on icon links keeps a light
+        icon rather than falling through to nothing; the dark file overrides it
+        only when the OS preference is dark. */}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" data-theme-icon="light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)" data-theme-icon="dark" />
+    {/* Browser chrome follows too, so the tab and address bar do not stay white
+        in dark mode. Values are --color-paper for each palette. */}
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" data-theme-color="light" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" data-theme-color="dark" />
     <link rel="canonical" href={canonical} />
     {alternateLinks.map(link => <link rel="alternate" hreflang={link.lang} href={absolute(link.href)} />)}
     <title>{title} · Matheus Rosa</title>
@@ -74,6 +130,7 @@ const alternateLocales = ogAlternateLocales(alternateLinks, currentLang);
         <div class="home-header-actions">
           <a href="#experience">{t('home.viewExperience')} <span aria-hidden="true">↓</span></a>
           <LanguageSwitch lang={currentLang} />
+          <ThemeToggle lang={currentLang} />
         </div>
       </header>
     ) : <Sidebar lang={currentLang} />}

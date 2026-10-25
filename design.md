@@ -7,8 +7,10 @@ The home supports two paths: contact/review experience, or explore connected
 articles. Existing article URLs and publishing rules remain intact.
 
 ## Genre and macrostructure
-Technical modern-minimal, with the established Catppuccin Mocha identity taking
-priority over catalog defaults. Map / Diagram is retained at the owner's request.
+Technical modern-minimal, with the established identity taking priority over
+catalog defaults: Slate Blue as the light default, with Slate Blue Dark as the
+automatic dark mode — the same palette with the Tailwind scale mirrored and the
+ground inverted. Map / Diagram is retained at the owner's request.
 The change is structural: full-width name/contact and a practice-area diagram,
 then the article explorer, profile, experience and projects in one scroll.
 
@@ -20,9 +22,12 @@ then the article explorer, profile, experience and projects in one scroll.
   topic index. Its only source of connections is the existing content resolver.
 
 ## Theme and typography
-`tokens.css` is the runtime source of truth. Muted indigo surfaces, soft
-lavender-white text, mauve for actions and focus, pink only for visited links.
-No light mode.
+`tokens.css` is the runtime source of truth. Light (default): off-white slate
+ground, deep-navy ink, electric blue for actions and focus, violet only for
+visited links. Dark (automatic via `prefers-color-scheme: dark`) is the same set
+mirrored on the same palette scales — navy slate ground, off-white ink, a lighter
+blue for actions and focus, a lighter violet for visited links — because a
+blue-600 accent on a navy-900 ground measures 3.45:1 and would fail AA as text.
 Inter Variable 400 body; upright JetBrains Mono Variable 700 headings and code.
 No additional fonts, external assets or motion libraries.
 The homepage name uses `--text-home-display`; article typography is unchanged.
@@ -81,18 +86,18 @@ extra runtime styles or dependencies; update them when `tokens.css` changes.
 
 ```css
 :root {
-  --color-paper: oklch(27.68482% 0.000000 89.8756);
-  --color-panel: oklch(31.08824% 0.003375 48.6190);
-  --color-surface: oklch(34.40675% 0.006603 48.5229);
-  --color-rule: oklch(41.09760% 0.011527 51.8658);
-  --color-ink: oklch(89.41459% 0.056590 89.2405);
-  --color-secondary: oklch(82.54901% 0.050676 85.1158);
-  --color-muted: oklch(69.02596% 0.034629 76.3067);
-  --color-accent: oklch(73.10874% 0.182011 51.6932);
-  --color-visited: oklch(70.54014% 0.097578 2.1895);
-  --color-focus: var(--color-accent);
-  --color-accent-ink: var(--color-paper);
-  --color-edge: var(--color-muted);
+  --color-paper: oklch(98.41519% 0.003413 247.8575);
+  --color-panel: oklch(92.87613% 0.012619 255.5078);
+  --color-surface: oklch(96.82603% 0.006854 247.8956);
+  --color-rule: oklch(86.89814% 0.019848 252.8943);
+  --color-ink: oklch(20.76819% 0.039824 265.7549);
+  --color-secondary: oklch(37.16963% 0.039156 257.2870);
+  --color-muted: oklch(55.43910% 0.040717 257.4166);
+  --color-accent: oklch(54.61497% 0.215208 262.8809);
+  --color-visited: oklch(49.06665% 0.241232 292.5809);
+  --color-focus: oklch(54.61497% 0.215208 262.8809);
+  --color-accent-ink: oklch(98.41519% 0.003413 247.8575);
+  --color-edge: oklch(55.43910% 0.040717 257.4166);
   --color-clear: transparent;
   --font-body: 'Inter Variable', sans-serif;
   --font-display: 'JetBrains Mono Variable', monospace;
@@ -127,24 +132,39 @@ extra runtime styles or dependencies; update them when `tokens.css` changes.
   --radius-md: 8px;
   --rule-width: 1px;
 }
+
+/* Dark is automatic: the same nine roles, overridden by the OS preference. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: oklch(20.76819% 0.039824 265.7549);
+    --color-panel: oklch(37.16963% 0.039156 257.2870);
+    --color-surface: oklch(27.94952% 0.036848 260.0310);
+    --color-rule: oklch(44.55331% 0.037447 257.2808);
+    --color-ink: oklch(98.41519% 0.003413 247.8575);
+    --color-secondary: oklch(86.89814% 0.019848 252.8943);
+    --color-muted: oklch(71.06716% 0.035114 256.7878);
+    --color-accent: oklch(71.37400% 0.143381 254.6240);
+    --color-visited: oklch(81.11618% 0.101287 293.5712);
+  }
+}
 ```
 
 ### Tailwind v4
 
 ```css
 @theme {
-  --color-paper: oklch(27.68482% 0.000000 89.8756);
-  --color-panel: oklch(31.08824% 0.003375 48.6190);
-  --color-surface: oklch(34.40675% 0.006603 48.5229);
-  --color-rule: oklch(41.09760% 0.011527 51.8658);
-  --color-ink: oklch(89.41459% 0.056590 89.2405);
-  --color-secondary: oklch(82.54901% 0.050676 85.1158);
-  --color-muted: oklch(69.02596% 0.034629 76.3067);
-  --color-accent: oklch(73.10874% 0.182011 51.6932);
-  --color-visited: oklch(70.54014% 0.097578 2.1895);
-  --color-focus: oklch(73.10874% 0.182011 51.6932);
-  --color-accent-ink: oklch(27.68482% 0.000000 89.8756);
-  --color-edge: oklch(69.02596% 0.034629 76.3067);
+  --color-paper: oklch(98.41519% 0.003413 247.8575);
+  --color-panel: oklch(92.87613% 0.012619 255.5078);
+  --color-surface: oklch(96.82603% 0.006854 247.8956);
+  --color-rule: oklch(86.89814% 0.019848 252.8943);
+  --color-ink: oklch(20.76819% 0.039824 265.7549);
+  --color-secondary: oklch(37.16963% 0.039156 257.2870);
+  --color-muted: oklch(55.43910% 0.040717 257.4166);
+  --color-accent: oklch(54.61497% 0.215208 262.8809);
+  --color-visited: oklch(49.06665% 0.241232 292.5809);
+  --color-focus: oklch(54.61497% 0.215208 262.8809);
+  --color-accent-ink: oklch(98.41519% 0.003413 247.8575);
+  --color-edge: oklch(55.43910% 0.040717 257.4166);
   --color-clear: transparent;
   --font-body: 'Inter Variable', sans-serif;
   --font-display: 'JetBrains Mono Variable', monospace;
@@ -188,18 +208,18 @@ resolution for token pipelines that require fixed dimensions.
 
 ```json
 {
-  "color-paper": {"$value":"oklch(27.68482% 0.000000 89.8756)","$type":"color"},
-  "color-panel": {"$value":"oklch(31.08824% 0.003375 48.6190)","$type":"color"},
-  "color-surface": {"$value":"oklch(34.40675% 0.006603 48.5229)","$type":"color"},
-  "color-rule": {"$value":"oklch(41.09760% 0.011527 51.8658)","$type":"color"},
-  "color-ink": {"$value":"oklch(89.41459% 0.056590 89.2405)","$type":"color"},
-  "color-secondary": {"$value":"oklch(82.54901% 0.050676 85.1158)","$type":"color"},
-  "color-muted": {"$value":"oklch(69.02596% 0.034629 76.3067)","$type":"color"},
-  "color-accent": {"$value":"oklch(73.10874% 0.182011 51.6932)","$type":"color"},
-  "color-visited": {"$value":"oklch(70.54014% 0.097578 2.1895)","$type":"color"},
-  "color-focus": {"$value":"oklch(73.10874% 0.182011 51.6932)","$type":"color"},
-  "color-accent-ink": {"$value":"oklch(27.68482% 0.000000 89.8756)","$type":"color"},
-  "color-edge": {"$value":"oklch(69.02596% 0.034629 76.3067)","$type":"color"},
+  "color-paper": {"$value":"oklch(98.41519% 0.003413 247.8575)","$type":"color"},
+  "color-panel": {"$value":"oklch(92.87613% 0.012619 255.5078)","$type":"color"},
+  "color-surface": {"$value":"oklch(96.82603% 0.006854 247.8956)","$type":"color"},
+  "color-rule": {"$value":"oklch(86.89814% 0.019848 252.8943)","$type":"color"},
+  "color-ink": {"$value":"oklch(20.76819% 0.039824 265.7549)","$type":"color"},
+  "color-secondary": {"$value":"oklch(37.16963% 0.039156 257.2870)","$type":"color"},
+  "color-muted": {"$value":"oklch(55.43910% 0.040717 257.4166)","$type":"color"},
+  "color-accent": {"$value":"oklch(54.61497% 0.215208 262.8809)","$type":"color"},
+  "color-visited": {"$value":"oklch(49.06665% 0.241232 292.5809)","$type":"color"},
+  "color-focus": {"$value":"oklch(54.61497% 0.215208 262.8809)","$type":"color"},
+  "color-accent-ink": {"$value":"oklch(98.41519% 0.003413 247.8575)","$type":"color"},
+  "color-edge": {"$value":"oklch(55.43910% 0.040717 257.4166)","$type":"color"},
   "color-clear": {"$value":"transparent","$type":"color"},
   "font-body": {"$value":"'Inter Variable', sans-serif","$type":"fontFamily"},
   "font-display": {"$value":"'JetBrains Mono Variable', monospace","$type":"fontFamily"},
@@ -243,23 +263,44 @@ project's color-function convention.
 
 ```css
 :root {
-  --background: 27.68482% 0.000000 89.8756;
-  --foreground: 89.41459% 0.056590 89.2405;
-  --card: 31.08824% 0.003375 48.6190;
-  --card-foreground: 89.41459% 0.056590 89.2405;
-  --popover: 31.08824% 0.003375 48.6190;
-  --popover-foreground: 89.41459% 0.056590 89.2405;
-  --primary: 73.10874% 0.182011 51.6932;
-  --primary-foreground: 27.68482% 0.000000 89.8756;
-  --secondary: 34.40675% 0.006603 48.5229;
-  --secondary-foreground: 82.54901% 0.050676 85.1158;
-  --muted: 34.40675% 0.006603 48.5229;
-  --muted-foreground: 69.02596% 0.034629 76.3067;
-  --accent: 34.40675% 0.006603 48.5229;
-  --accent-foreground: 89.41459% 0.056590 89.2405;
-  --border: 41.09760% 0.011527 51.8658;
-  --input: 69.02596% 0.034629 76.3067;
-  --ring: 73.10874% 0.182011 51.6932;
+  --background: 98.41519% 0.003413 247.8575;
+  --foreground: 20.76819% 0.039824 265.7549;
+  --card: 92.87613% 0.012619 255.5078;
+  --card-foreground: 20.76819% 0.039824 265.7549;
+  --popover: 92.87613% 0.012619 255.5078;
+  --popover-foreground: 20.76819% 0.039824 265.7549;
+  --primary: 54.61497% 0.215208 262.8809;
+  --primary-foreground: 98.41519% 0.003413 247.8575;
+  --secondary: 96.82603% 0.006854 247.8956;
+  --secondary-foreground: 37.16963% 0.039156 257.2870;
+  --muted: 96.82603% 0.006854 247.8956;
+  --muted-foreground: 55.43910% 0.040717 257.4166;
+  --accent: 96.82603% 0.006854 247.8956;
+  --accent-foreground: 20.76819% 0.039824 265.7549;
+  --border: 86.89814% 0.019848 252.8943;
+  --input: 55.43910% 0.040717 257.4166;
+  --ring: 54.61497% 0.215208 262.8809;
   --radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 20.76819% 0.039824 265.7549;
+    --foreground: 98.41519% 0.003413 247.8575;
+    --card: 37.16963% 0.039156 257.2870;
+    --card-foreground: 98.41519% 0.003413 247.8575;
+    --popover: 37.16963% 0.039156 257.2870;
+    --popover-foreground: 98.41519% 0.003413 247.8575;
+    --primary: 71.37400% 0.143381 254.6240;
+    --primary-foreground: 20.76819% 0.039824 265.7549;
+    --secondary: 27.94952% 0.036848 260.0310;
+    --secondary-foreground: 86.89814% 0.019848 252.8943;
+    --muted: 27.94952% 0.036848 260.0310;
+    --muted-foreground: 71.06716% 0.035114 256.7878;
+    --accent: 27.94952% 0.036848 260.0310;
+    --accent-foreground: 98.41519% 0.003413 247.8575;
+    --border: 44.55331% 0.037447 257.2808;
+    --input: 71.06716% 0.035114 256.7878;
+    --ring: 71.37400% 0.143381 254.6240;
+  }
 }
 ```

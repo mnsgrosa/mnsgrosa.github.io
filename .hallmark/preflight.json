@@ -12,8 +12,8 @@
     "source": "package.json:17-18; tokens.css:23-25"
   },
   "palette": {
-    "value": "Catppuccin Mocha, OKLCH semantic tokens",
-    "source": "tokens.css:5-13"
+    "value": "Slate Blue (light, default) + Slate Blue Dark (dark via prefers-color-scheme), OKLCH semantic tokens",
+    "source": "tokens.css:5-13, 81-89"
   },
   "spacing": {
     "value": "Named 4-point scale",

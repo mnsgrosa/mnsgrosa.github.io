@@ -1,7 +1,7 @@
 # Image prompts — banners for non-post routes and for the graph article
 
 /* Hallmark · component: social card artwork · genre: technical modern-minimal (locked)
- * theme: Catppuccin Mocha (locked) · pre-emit critique: P5 H4 E4 S5 R5 V4
+ * theme: Slate Blue (light raster — banner artwork follows the default palette) · pre-emit critique: P5 H4 E4 S5 R5 V4
  * Prose prompts for an external image model. Not a build step. */
 
 These are prompts for an **external** image model, used to replace a generated card
@@ -25,11 +25,12 @@ drifting into AI-slop and away from this site.
 Rendering: flat vector / technical diagram. Solid fills and 1 px strokes only.
 No gradient, no glow, no blur, no drop shadow, no bevel, no 3D, no isometric, no
 glassmorphism, no noise, no grain, no paper texture, no vignette, no lens flare.
-Palette is exactly these six and nothing else: #1e1e2e (ground), #cdd6f4 (ink),
-#a6adc8 (muted), #45475a (rules), #cba6f7 (accent), #f5c2e7 (secondary accent).
-No blue, no teal, no green, no red, no neon, no pure #000000 or #ffffff.
-Do not substitute a near-miss for mauve or pink: a model that returns #b47ee8 or
-#e8a9d4 puts the artwork off the site's palette just as surely as a wrong ground.
+Palette is exactly these six and nothing else: #f8fafc (ground), #0f172a (ink),
+#64748b (muted), #cbd5e1 (rules), #2563eb (accent), #6d28d9 (secondary accent).
+No green, no red, no orange, no magenta, no neon, no pure #000000 or #ffffff.
+Do not substitute a near-miss for the accent blue or the violet: a model that
+returns #3b82f6 or #7c3aed puts the artwork off the site's palette just as surely
+as a wrong ground.
 Composition: off-centre, deliberately asymmetric, generous negative space;
 never a centred symmetric motif, never a full-bleed illustration edge to edge.
 Keep the outer 96 px on every side free of content (safe area).
@@ -40,8 +41,8 @@ no border, no caption, no text, no letters, no numerals, no logo.
 **Negative prompt** (if the model takes one):
 
 ```
-gradient, glow, neon, bokeh, blur, 3D render, plastic, glass, chrome, teal, cyan,
-green, red, synthwave, cyberpunk city, hologram, humanoid robot, glowing
+gradient, glow, neon, bokeh, blur, 3D render, plastic, glass, chrome, green, red,
+orange, magenta, synthwave, cyberpunk city, hologram, humanoid robot, glowing
 brain, brain half-circuit, neural network spaghetti, magnifying glass, lightbulb,
 gears, handshake, rocket, laptop on desk, stock-photo person, team meeting,
 mountain summit, chess pieces, maze, watermark, signature, text, letters, numbers,
@@ -63,13 +64,13 @@ languages**; the language difference is carried by the tags, not the artwork.
 Subject block:
 
 ```
-An abstract constellation map on a solid #1e1e2e ground. Nine small circles of
-ink #cdd6f4 — radii between 8 and 22 px — joined by 1 px #a6adc8 lines into a
+An abstract constellation map on a solid #f8fafc ground. Nine small circles of
+ink #0f172a — radii between 8 and 22 px — joined by 1 px #64748b lines into a
 sparse, open, irregular network that reads as a knowledge map with no centre.
-Three circles are filled solid #cba6f7; one connecting line is #f5c2e7. The
+Three circles are filled solid #2563eb; one connecting line is #6d28d9. The
 network occupies the right 40% of the canvas and runs off the right edge, as if
-cut from something larger. In the upper left, a single 1 px #45475a horizontal
-rule, 560 px long, with a 12 px #cba6f7 square sitting on its right end. The
+cut from something larger. In the upper left, a single 1 px #cbd5e1 horizontal
+rule, 560 px long, with a 12 px #2563eb square sitting on its right end. The
 left 45% of the canvas is empty ground. Everything is flat, print-like, precise,
 unhurried — closer to a star chart in a technical manual than to a poster.
 ```
@@ -81,8 +82,8 @@ chrome, and a model cannot reproduce the mono letterforms at 1:1. If you want it
 the image, add this sentence and check the glyphs afterwards:
 
 ```
-Lower left, 32 px above the safe area: the wordmark "mr." in #cdd6f4 letter-spaced
-monospace, the period in #cba6f7 and nothing else.
+Lower left, 32 px above the safe area: the wordmark "mr." in #0f172a letter-spaced
+monospace, the period in #2563eb and nothing else.
 ```
 
 ---
@@ -97,12 +98,12 @@ nothing else: one article node, one island node, one edge.
 Subject block:
 
 ```
-A single constellation, small and isolated on a solid #1e1e2e ground. One circle
-of ink #cdd6f4, 26 px radius, filled solid #cba6f7, near the right third of the
-canvas at chest height. From it, one straight 2 px #cba6f7 line rises to a second
-circle, 14 px radius, drawn as a 1 px #a6adc8 outline with no fill, at the upper
-right. One further 1 px #a6adc8 line continues off the right edge of the canvas,
-implying the rest of the map without drawing it. Two short 1 px #45475a ticks mark
+A single constellation, small and isolated on a solid #f8fafc ground. One circle
+of ink #0f172a, 26 px radius, filled solid #2563eb, near the right third of the
+canvas at chest height. From it, one straight 2 px #2563eb line rises to a second
+circle, 14 px radius, drawn as a 1 px #64748b outline with no fill, at the upper
+right. One further 1 px #64748b line continues off the right edge of the canvas,
+implying the rest of the map without drawing it. Two short 1 px #cbd5e1 ticks mark
 the left margin. The left 60% of the canvas is empty ground, reserved for a title
 that is not part of the image.
 ```
@@ -115,8 +116,8 @@ Optional accent for the Portuguese file only, if you want the pair to differ:
 replace the last two sentences with
 
 ```
-One 1 px #f5c2e7 line crosses the empty left third at y=60%, ending in a 6 px
-#f5c2e7 square at x=96 px.
+One 1 px #6d28d9 line crosses the empty left third at y=60%, ending in a 6 px
+#6d28d9 square at x=96 px.
 ```
 
 ---
@@ -149,7 +150,7 @@ what the card shows, change that string, not the image.
 - `npm run build`, then open the PNG and look at it at **300 px wide** — the size a
   feed actually shows. If the composition only reads at full size, it does not work.
 - Confirm the six palette values, not "something close": a model that substitutes
-  `#2b2b2b` puts the card off the site's ground.
+  `#f9fafb` puts the card off the site's ground.
 - Check for stray text, then check the tags: the built HTML must still show the
   absolute `og:image` URL and `1200`/`630`, and `npm run test:browser` must pass.
 - A card is a preview, never a poster: it may not carry a claim, a metric, a date or

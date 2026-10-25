@@ -31,5 +31,16 @@
     "footer": "Ft1 home",
     "brief": "Single scrolling portfolio for technical readers and recruiters",
     "rotation": "Owner replaced the Gruvbox Dark palette with Catppuccin Mocha, keeping every token role and the macrostructure unchanged. Panel (mantle) is now darker than paper (base), so panels read as recessed wells; owner reviewed the rendered home at 1440 and accepted it. Shiki code theme follows the palette."
+  },
+  {
+    "date": "2026-10-25",
+    "scope": "app",
+    "macrostructure": "Map / Diagram",
+    "theme": "Slate Blue (light) + Catppuccin Mocha (dark)",
+    "enrichment": "none; functional knowledge diagram",
+    "nav": "N9 home / N3 reader",
+    "footer": "Ft1 home",
+    "brief": "Single scrolling portfolio for technical readers and recruiters",
+    "rotation": "Owner replaced Catppuccin Mocha as the dark mode with Slate Blue Dark: the light set mirrored on the same Tailwind scales (paper 50->900, surface 100->800, panel 200->700, rule 300->600, ink 900->50, secondary 700->300, muted 500->400), with accent blue-600->blue-400 and visited violet-700->violet-300 because blue-600 on navy is 3.45:1 and fails AA as text. Shiki dark theme follows: github-dark-default."
   }
 ]

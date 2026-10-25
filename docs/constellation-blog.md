@@ -15,7 +15,7 @@ Status: design and behavior brief, not an implemented feature or an approved mig
 - Connections: articles link to other articles, including across islands.
 - Reading: show an article and its neighbors; allow navigation through article nodes.
 - Authoring: MDX with Obsidian-style `[[wikilinks]]`.
-- Visual identity: Catppuccin Mocha, playful constellation.
+- Visual identity: Slate Blue light (default) with Slate Blue Dark (automatic), playful constellation.
 - Technology: framework choice is open; motion dependencies are permitted when useful.
 - Hosting context: GitHub Actions and a custom domain.
 
@@ -23,7 +23,7 @@ Status: design and behavior brief, not an implemented feature or an approved mig
 
 Inspected `refactor/ground-up` without checking it out. This brief is written on `feat/world-md`; it does not merge either branch.
 
-The reference branch already has Astro, `@astrojs/mdx`, static article routes, self-hosted Inter and JetBrains Mono, and a colour-token system described in `design.md` (since moved to Catppuccin Mocha). It contains MDX under `src/content/estudos/` and `src/content/diversos/`.
+The reference branch already has Astro, `@astrojs/mdx`, static article routes, self-hosted Inter and JetBrains Mono, and a colour-token system described in `design.md` (single palette then; it now carries a light default and an automatic dark mode). It contains MDX under `src/content/estudos/` and `src/content/diversos/`.
 
 Relevant reference-branch files:
 
@@ -37,7 +37,7 @@ Relevant reference-branch files:
 
 ## Page shape
 
-Hallmark macrostructure: **Map / Diagram**, preceded by the requested About introduction. The map is functional navigation, not hero decoration. The playful tone comes from discovery and expansion, while the existing typography and the Catppuccin Mocha palette remain the visual foundation.
+Hallmark macrostructure: **Map / Diagram**, preceded by the requested About introduction. The map is functional navigation, not hero decoration. The playful tone comes from discovery and expansion, while the existing typography and the Slate Blue light / Slate Blue Dark palette remain the visual foundation.
 
 ### Home
 
@@ -134,12 +134,12 @@ Before implementation, approve this contract or adjust it to match the author's 
 
 ## Visual language
 
-**Catppuccin Mocha is the identity, not a theme to rotate away from.** The reference branch's token roles are retained; only the palette the roles resolve to changed, from Gruvbox Dark to Catppuccin Mocha, at the owner's request. `tokens.css` is the source of truth for the values, so read the roles there rather than from this prose:
+**The palette is two value sets over one role vocabulary, not a theme to rotate away from.** The reference branch's token roles are retained; only the palette the roles resolve to changed, from Gruvbox Dark to Catppuccin Mocha and now to Slate Blue, at the owner's request. Slate Blue is the light default and Slate Blue Dark is the same scales mirrored, applied automatically under `prefers-color-scheme: dark`. `tokens.css` is the source of truth for the values, so read the roles there rather than from this prose:
 
-- Muted indigo paper and stepped dark surfaces.
-- Soft lavender-white text with quieter metadata.
-- Mauve for actionable links, active selection, and keyboard focus.
-- Pink reserved for visited links, not arbitrary subject coloring.
+- Light (default): off-white slate ground and stepped light surfaces; dark (automatic): navy slate ground and stepped dark surfaces, the same relationships inverted.
+- Deep-navy ink (light) / off-white ink (dark), with quieter metadata in both.
+- Electric blue for actionable links, active selection, and keyboard focus — blue-600 on the light ground, blue-400 on the dark one, since blue-600 on navy is 3.45:1 and would fail AA as text.
+- Violet reserved for visited links, not arbitrary subject coloring — violet-700 (light) / violet-300 (dark).
 - Inter body text; upright JetBrains Mono headings and code.
 
 The world should resemble a drawn knowledge map rather than a starfield wallpaper. Use sparse lines, readable labels, and clear selected states. Distinguish subjects from articles by geometry, size, and text, not color alone. Avoid glow clouds, fake browser frames, rainbow topic colors, and continuous particle motion.
@@ -147,6 +147,64 @@ The world should resemble a drawn knowledge map rather than a starfield wallpape
 Subject expansion and camera movement communicate context. No idle drifting, automatic panning, bounce, or endless force simulation. Stable positions help readers remember where a subject lives. A motion library is optional; selecting one is not a prerequisite to the document.
 
 Use existing named tokens in implementation. Any needed graph-specific surface, line, spacing, or state value becomes a named token rather than an inline exception. Validate graph line and control contrast separately; existing decorative divider colors are not automatically suitable for meaningful connections.
+
+### Theme toggle (temporary)
+
+A temporary two-state light/dark toggle sits in both chrome headers (home header
+and reader rail), rendered by `src/components/ThemeToggle.astro` and driven by an
+inline head script that sets `data-theme` before first paint. It stores `light`
+or `dark` in `localStorage.theme`; with nothing stored the page follows the OS,
+and a no-JS browser keeps the button hidden and follows the OS as before. The
+dark palette's values live once as `--dark-*` in `tokens.css`'s `:root`, mapped
+onto the role names by the OS media query and the `[data-theme="dark"]`
+override — see the deletion recipe below.
+
+#### Deletion recipe — run after the palettes are compared
+
+The toggle is scaffolding. Remove it and the losing palette in one pass. Step 1
+removes the toggle regardless of which palette wins; then keep exactly one
+palette and delete the other.
+
+1. **Remove the toggle (common to both outcomes).**
+   - Delete `src/components/ThemeToggle.astro`.
+   - `src/layouts/MainLayout.astro`: remove the `ThemeToggle` import, the
+     `<ThemeToggle lang={currentLang} />` inside `.home-header-actions`, and the
+     `<script is:inline>…</script>` theme block in `<head>`.
+   - `src/components/Sidebar.astro`: remove the `ThemeToggle` import and the
+     `<ThemeToggle lang={lang} />` line.
+   - `src/i18n/ui.mjs`: remove `theme.light` and `theme.dark` from both `en` and `pt`.
+   - `src/styles/constellation.css`: remove the block beginning
+     `/* Theme toggle · component: button …` (the `.theme-toggle…` rules).
+   - `tests/browser.mjs`: remove the `// Theme toggle:` block and the two
+     `theme toggle` assertions in the no-JS section.
+   - `docs/constellation-blog.md`: remove this section.
+2. **Keep light — delete the dark palette.**
+   - `tokens.css`: delete the nine `--dark-*` declarations in `:root`; delete the
+     whole `@media (prefers-color-scheme: dark) { … }` block; delete the
+     `:root[data-theme="dark"] { … }` block. The light `--color-*` set stays.
+   - `tests/color.test.mjs`: drop the `Slate Blue Dark` palette from `PALETTES`
+     and the `dark` block in the pinned-ratios test (light-only gates remain).
+   - Dead OS dark affordances: remove the dark `<link rel="icon" …
+     href="/favicon-dark.svg" …>` and the dark `<meta name="theme-color"
+     content="#0f172a" …>` in `MainLayout.astro`; delete `public/favicon-dark.svg`;
+     delete the `@media (prefers-color-scheme: dark) { .astro-code … }` Shiki flip
+     in `constellation.css`; change `html { color-scheme: light dark; }` to `light`.
+   - Verify: `npm test && npm run build`.
+3. **Keep dark — delete the light palette.**
+   - `tokens.css`: replace the nine light `--color-*` values in `:root` with the
+     dark values and re-annotate each `/* Slate Blue #<dark-hex> */`; delete the
+     `--dark-*` declarations, the `@media (prefers-color-scheme: dark) { … }`
+     block, and the `:root[data-theme="dark"] { … }` block.
+   - `src/lib/og-theme.mjs`: set `colors` to the dark hexes — `paper #0f172a`,
+     `panel #334155`, `surface #1e293b`, `rule #475569`, `ink #f8fafc`,
+     `secondary #cbd5e1`, `muted #94a3b8`, `accent #60a5fa`, `visited #c4b5fd` —
+     so the card mirror follows the surviving palette.
+   - `tests/color.test.mjs`: gate the single surviving palette with the `dark`
+     pinned ratios (the file already carries them); drop the light set.
+   - Light-only affordances: in `MainLayout.astro` drop the light `<meta
+     name="theme-color" content="#f8fafc" …>` and make `public/favicon.svg` the
+     dark favicon; change `html { color-scheme: light dark; }` to `dark`.
+   - Verify: `npm test && npm run build`.
 
 ## Accessibility and small screens
 
