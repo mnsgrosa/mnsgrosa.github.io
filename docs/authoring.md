@@ -98,6 +98,8 @@ A remote `banner` does **not** get a guessed twin: nothing can prove the remote 
 
 The same `.jpg`/`.png`/`.avif` works in both slots; what matters is that the dark file is actually dark. A copy of the light file is not a dark cover, it just makes the page do a pointless request.
 
+**The twin must share the light cover's crop, not just its subject.** The cover box is portrait: an extreme 260×836 (ratio 0.31) on the wide layout, 4:5 elsewhere, and the image fills it with `object-fit: cover`. A square twin loses about two thirds of its width to the crop — a 500×500 illustration showed a vertical slice of its planet and the figure in it fell outside the frame entirely. The light default is 427×1318; match that proportion (3:4 or taller, 400 to 600px wide) and the crop costs nothing. A square or landscape twin would need a per-image `object-position`, which the CSS cannot choose per file, so the rule would then apply to every dark cover.
+
 The project's own favicon follows the same idea with two files, `public/favicon.svg` and `public/favicon-dark.svg`, wired in `MainLayout.astro` with a `media="(prefers-color-scheme: dark)"` link after the light default, so a browser that ignores `media` on icons keeps the light one rather than showing nothing.
 
 Placement is responsive:
