@@ -1,78 +1,34 @@
-<!-- Hallmark · pre-emit critique: P4 H4 E4 S5 R5 V4 -->
-# Design — Matheus Rosa
+# Design: Matheus Rosa
 
-## Audience and intent
-Technical readers in data engineering, data science and AI, plus recruiters.
-The home supports two paths: contact/review experience, or explore connected
-articles. Existing article URLs and publishing rules remain intact.
+The locked system. Every Hallmark run reads this first and pages share it. Change it on purpose; the file is the rule.
 
-## Genre and macrostructure
-Technical modern-minimal, with the established Gruvbox identity taking priority
-over catalog defaults. Map / Diagram is retained at the owner's request.
-The change is structural: full-width name/contact and a practice-area diagram,
-then the article explorer, profile, experience and projects in one scroll.
+## System
+- Genre: modern-minimal
+- Shape of the first page: Map / Diagram — an About-first entry (name + contact), the world below it, the topic list beside it
+- Theme: Slate Blue (custom, v1, "electric blue on slate, in both schemes")
+- Axes: light/mono/cool · posture: none declared — the About entry opens the page, the diagram follows in document flow
 
-- Home: N9 edge-aligned header, outlined contact link, Ft1 mast-headed footer.
-- Reader and legacy routes: retain the N3 sidebar and existing reader geometry.
-- The eight-area overview is static HTML with decorative SVG connections.
-  Its lines illustrate practice-area relationships, not authored article links.
-- The article constellation remains an interactive enhancement of a static
-  topic index. Its only source of connections is the existing content resolver.
+The axes sit near the catalog theme Wayfind (light/mono/cool); the palette is named custom, not dealt, because its roles resolve to Tailwind's stock slate/blue/violet. Gate 74 is open on that and is recorded (not waived) in `docs/constellation-blog.md`.
 
-## Theme and typography
-`tokens.css` is the runtime source of truth. Warm charcoal surfaces, cream text,
-orange for actions and focus, purple only for visited links. No light mode.
-Inter Variable 400 body; upright JetBrains Mono Variable 700 headings and code.
-No additional fonts, external assets or motion libraries.
-The homepage name uses `--text-home-display`; article typography is unchanged.
+## Tokens
+`tokens.css` is the source of truth; read values there, never from this prose.
 
-## Layout and motion
-Use the existing named 4-point spacing scale. Home content is bounded by
-`--home-width`; headings stack above content. On mobile the knowledge diagram
-becomes two staggered columns, with all eight labels readable.
+- Colour roles: `--color-paper`, `--color-panel`, `--color-surface`, `--color-rule`, `--color-ink`, `--color-secondary`, `--color-muted`, `--color-accent`, `--color-visited`; the dark set lives once as `--dark-*`, mapped onto the role names by the OS media query and the `[data-theme="dark"]` override.
+- Aliases: `--color-focus` (accent), `--color-accent-ink` (paper), `--color-edge` (muted), `--color-clear`.
+- Type: `--font-body` Inter Variable, `--font-display`/`--font-mono` JetBrains Mono Variable; the scale runs `--text-sm` to `--text-display`/`--text-home-display`.
+- Space: the named 4-point scale `--space-2xs` … `--space-3xl`; container `--home-width`; measure `--measure`/`--measure-wide`.
+- Motion: `--ease-out`/`-in`/`-in-out`, `--dur-micro`, `--dur-short`, plus the scene glide's `--dur-scene`/`--ease-scene`.
 
-On a roomy pointer desktop with motion enabled, the five home scenes (knowledge,
-article map, about, experience, projects) sit in one vertical track that glides
-between them: the wheel, `←`/`→`, the header links and the scene links all move
-the track, and `.scene-links` plus the arrow buttons are the explicit controls.
-It is a plain vertical glide — no rotation, no perspective, no 3D faces — with
-`--dur-scene` and `--ease-scene`; only the active scene and the one leaving it
-are visible, everything else stays `inert` and `aria-hidden`. A long scene
-scrolls inside itself first and only glides onward at its boundary, so content
-is never skipped. `Use page scroll` (persisted per session) turns the glide off
-again, and the mode is unavailable on small screens, coarse pointers, short
-viewports, `prefers-reduced-motion: reduce`, and without JavaScript. In every one
-of those cases the page is the ordinary scrolling document, which is also what
-ink-link anchors (`#explore`, `#projects`, …) resolve to.
+## Controls
+- Primary: outlined accent link (`.contact-cta`) · radius `--radius-sm` (4px) · min-height 48px
+- Secondary: filled panel button · hairline muted border · radius `--radius-sm` (4px) · min-height 44px
 
-No idle movement, scroll reveals, particles or fake browser chrome. Existing
-article expansion fades and explicit pan/zoom stay. Reduced motion disables
-animation; focus outlines appear immediately.
-
-## Interaction and CTA voice
-Contact is a native `mailto:matheusnsampaio@gmail.com` link, not a submission
-form. It must not claim that a message was sent. Native links have default,
-hover, keyboard focus, active and visited states; loading/error/success and
-disabled submission states do not apply. Map controls retain their disabled
-limits, selected states, status text and renderer-failure fallback.
-
-## Content boundaries
-Reuse the real experience collection, rather than duplicating its business
-claims. Profile copy is condensed from the existing published home content.
-The current project collection contains example entries: the new home shows
-an explicit catalogue-in-progress notice and the real GitHub destination,
-not invented projects. Old routes remain available for existing links.
-The demo dashboard is not promoted into the professional homepage.
-
-## Verification
-`npm test && npm run build && npm run test:browser`
-
-Browser coverage includes the requested four mobile/tablet widths plus desktop,
-name/contact, eight non-overlapping areas, section order, real experience,
-project destination, graph exclusion, keyboard, no-JS and reader regressions.
-Screenshots: `/tmp/constellation-browser/`.
+## Motion
+- Character: calm. One reveal at most; the home's five-scene vertical glide and its no-JS/reduced-motion fallbacks are described in `docs/constellation-blog.md`.
+- Under reduced motion everything ends at once; focus outlines appear immediately.
 
 ## Exports
+
 The following snapshots reproduce the current system for reuse. They are not
 extra runtime styles or dependencies; update them when `tokens.css` changes.
 
@@ -80,18 +36,18 @@ extra runtime styles or dependencies; update them when `tokens.css` changes.
 
 ```css
 :root {
-  --color-paper: oklch(27.68482% 0.000000 89.8756);
-  --color-panel: oklch(31.08824% 0.003375 48.6190);
-  --color-surface: oklch(34.40675% 0.006603 48.5229);
-  --color-rule: oklch(41.09760% 0.011527 51.8658);
-  --color-ink: oklch(89.41459% 0.056590 89.2405);
-  --color-secondary: oklch(82.54901% 0.050676 85.1158);
-  --color-muted: oklch(69.02596% 0.034629 76.3067);
-  --color-accent: oklch(73.10874% 0.182011 51.6932);
-  --color-visited: oklch(70.54014% 0.097578 2.1895);
-  --color-focus: var(--color-accent);
-  --color-accent-ink: var(--color-paper);
-  --color-edge: var(--color-muted);
+  --color-paper: oklch(98.41519% 0.003413 247.8575);
+  --color-panel: oklch(92.87613% 0.012619 255.5078);
+  --color-surface: oklch(96.82603% 0.006854 247.8956);
+  --color-rule: oklch(86.89814% 0.019848 252.8943);
+  --color-ink: oklch(20.76819% 0.039824 265.7549);
+  --color-secondary: oklch(37.16963% 0.039156 257.2870);
+  --color-muted: oklch(55.43910% 0.040717 257.4166);
+  --color-accent: oklch(54.61497% 0.215208 262.8809);
+  --color-visited: oklch(49.06665% 0.241232 292.5809);
+  --color-focus: oklch(54.61497% 0.215208 262.8809);
+  --color-accent-ink: oklch(98.41519% 0.003413 247.8575);
+  --color-edge: oklch(55.43910% 0.040717 257.4166);
   --color-clear: transparent;
   --font-body: 'Inter Variable', sans-serif;
   --font-display: 'JetBrains Mono Variable', monospace;
@@ -126,24 +82,39 @@ extra runtime styles or dependencies; update them when `tokens.css` changes.
   --radius-md: 8px;
   --rule-width: 1px;
 }
+
+/* Dark is automatic: the same nine roles, overridden by the OS preference. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: oklch(20.76819% 0.039824 265.7549);
+    --color-panel: oklch(37.16963% 0.039156 257.2870);
+    --color-surface: oklch(27.94952% 0.036848 260.0310);
+    --color-rule: oklch(44.55331% 0.037447 257.2808);
+    --color-ink: oklch(98.41519% 0.003413 247.8575);
+    --color-secondary: oklch(86.89814% 0.019848 252.8943);
+    --color-muted: oklch(71.06716% 0.035114 256.7878);
+    --color-accent: oklch(71.37400% 0.143381 254.6240);
+    --color-visited: oklch(81.11618% 0.101287 293.5712);
+  }
+}
 ```
 
 ### Tailwind v4
 
 ```css
 @theme {
-  --color-paper: oklch(27.68482% 0.000000 89.8756);
-  --color-panel: oklch(31.08824% 0.003375 48.6190);
-  --color-surface: oklch(34.40675% 0.006603 48.5229);
-  --color-rule: oklch(41.09760% 0.011527 51.8658);
-  --color-ink: oklch(89.41459% 0.056590 89.2405);
-  --color-secondary: oklch(82.54901% 0.050676 85.1158);
-  --color-muted: oklch(69.02596% 0.034629 76.3067);
-  --color-accent: oklch(73.10874% 0.182011 51.6932);
-  --color-visited: oklch(70.54014% 0.097578 2.1895);
-  --color-focus: oklch(73.10874% 0.182011 51.6932);
-  --color-accent-ink: oklch(27.68482% 0.000000 89.8756);
-  --color-edge: oklch(69.02596% 0.034629 76.3067);
+  --color-paper: oklch(98.41519% 0.003413 247.8575);
+  --color-panel: oklch(92.87613% 0.012619 255.5078);
+  --color-surface: oklch(96.82603% 0.006854 247.8956);
+  --color-rule: oklch(86.89814% 0.019848 252.8943);
+  --color-ink: oklch(20.76819% 0.039824 265.7549);
+  --color-secondary: oklch(37.16963% 0.039156 257.2870);
+  --color-muted: oklch(55.43910% 0.040717 257.4166);
+  --color-accent: oklch(54.61497% 0.215208 262.8809);
+  --color-visited: oklch(49.06665% 0.241232 292.5809);
+  --color-focus: oklch(54.61497% 0.215208 262.8809);
+  --color-accent-ink: oklch(98.41519% 0.003413 247.8575);
+  --color-edge: oklch(55.43910% 0.040717 257.4166);
   --color-clear: transparent;
   --font-body: 'Inter Variable', sans-serif;
   --font-display: 'JetBrains Mono Variable', monospace;
@@ -187,18 +158,18 @@ resolution for token pipelines that require fixed dimensions.
 
 ```json
 {
-  "color-paper": {"$value":"oklch(27.68482% 0.000000 89.8756)","$type":"color"},
-  "color-panel": {"$value":"oklch(31.08824% 0.003375 48.6190)","$type":"color"},
-  "color-surface": {"$value":"oklch(34.40675% 0.006603 48.5229)","$type":"color"},
-  "color-rule": {"$value":"oklch(41.09760% 0.011527 51.8658)","$type":"color"},
-  "color-ink": {"$value":"oklch(89.41459% 0.056590 89.2405)","$type":"color"},
-  "color-secondary": {"$value":"oklch(82.54901% 0.050676 85.1158)","$type":"color"},
-  "color-muted": {"$value":"oklch(69.02596% 0.034629 76.3067)","$type":"color"},
-  "color-accent": {"$value":"oklch(73.10874% 0.182011 51.6932)","$type":"color"},
-  "color-visited": {"$value":"oklch(70.54014% 0.097578 2.1895)","$type":"color"},
-  "color-focus": {"$value":"oklch(73.10874% 0.182011 51.6932)","$type":"color"},
-  "color-accent-ink": {"$value":"oklch(27.68482% 0.000000 89.8756)","$type":"color"},
-  "color-edge": {"$value":"oklch(69.02596% 0.034629 76.3067)","$type":"color"},
+  "color-paper": {"$value":"oklch(98.41519% 0.003413 247.8575)","$type":"color"},
+  "color-panel": {"$value":"oklch(92.87613% 0.012619 255.5078)","$type":"color"},
+  "color-surface": {"$value":"oklch(96.82603% 0.006854 247.8956)","$type":"color"},
+  "color-rule": {"$value":"oklch(86.89814% 0.019848 252.8943)","$type":"color"},
+  "color-ink": {"$value":"oklch(20.76819% 0.039824 265.7549)","$type":"color"},
+  "color-secondary": {"$value":"oklch(37.16963% 0.039156 257.2870)","$type":"color"},
+  "color-muted": {"$value":"oklch(55.43910% 0.040717 257.4166)","$type":"color"},
+  "color-accent": {"$value":"oklch(54.61497% 0.215208 262.8809)","$type":"color"},
+  "color-visited": {"$value":"oklch(49.06665% 0.241232 292.5809)","$type":"color"},
+  "color-focus": {"$value":"oklch(54.61497% 0.215208 262.8809)","$type":"color"},
+  "color-accent-ink": {"$value":"oklch(98.41519% 0.003413 247.8575)","$type":"color"},
+  "color-edge": {"$value":"oklch(55.43910% 0.040717 257.4166)","$type":"color"},
   "color-clear": {"$value":"transparent","$type":"color"},
   "font-body": {"$value":"'Inter Variable', sans-serif","$type":"fontFamily"},
   "font-display": {"$value":"'JetBrains Mono Variable', monospace","$type":"fontFamily"},
@@ -242,23 +213,44 @@ project's color-function convention.
 
 ```css
 :root {
-  --background: 27.68482% 0.000000 89.8756;
-  --foreground: 89.41459% 0.056590 89.2405;
-  --card: 31.08824% 0.003375 48.6190;
-  --card-foreground: 89.41459% 0.056590 89.2405;
-  --popover: 31.08824% 0.003375 48.6190;
-  --popover-foreground: 89.41459% 0.056590 89.2405;
-  --primary: 73.10874% 0.182011 51.6932;
-  --primary-foreground: 27.68482% 0.000000 89.8756;
-  --secondary: 34.40675% 0.006603 48.5229;
-  --secondary-foreground: 82.54901% 0.050676 85.1158;
-  --muted: 34.40675% 0.006603 48.5229;
-  --muted-foreground: 69.02596% 0.034629 76.3067;
-  --accent: 34.40675% 0.006603 48.5229;
-  --accent-foreground: 89.41459% 0.056590 89.2405;
-  --border: 41.09760% 0.011527 51.8658;
-  --input: 69.02596% 0.034629 76.3067;
-  --ring: 73.10874% 0.182011 51.6932;
+  --background: 98.41519% 0.003413 247.8575;
+  --foreground: 20.76819% 0.039824 265.7549;
+  --card: 92.87613% 0.012619 255.5078;
+  --card-foreground: 20.76819% 0.039824 265.7549;
+  --popover: 92.87613% 0.012619 255.5078;
+  --popover-foreground: 20.76819% 0.039824 265.7549;
+  --primary: 54.61497% 0.215208 262.8809;
+  --primary-foreground: 98.41519% 0.003413 247.8575;
+  --secondary: 96.82603% 0.006854 247.8956;
+  --secondary-foreground: 37.16963% 0.039156 257.2870;
+  --muted: 96.82603% 0.006854 247.8956;
+  --muted-foreground: 55.43910% 0.040717 257.4166;
+  --accent: 96.82603% 0.006854 247.8956;
+  --accent-foreground: 20.76819% 0.039824 265.7549;
+  --border: 86.89814% 0.019848 252.8943;
+  --input: 55.43910% 0.040717 257.4166;
+  --ring: 54.61497% 0.215208 262.8809;
   --radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 20.76819% 0.039824 265.7549;
+    --foreground: 98.41519% 0.003413 247.8575;
+    --card: 37.16963% 0.039156 257.2870;
+    --card-foreground: 98.41519% 0.003413 247.8575;
+    --popover: 37.16963% 0.039156 257.2870;
+    --popover-foreground: 98.41519% 0.003413 247.8575;
+    --primary: 71.37400% 0.143381 254.6240;
+    --primary-foreground: 20.76819% 0.039824 265.7549;
+    --secondary: 27.94952% 0.036848 260.0310;
+    --secondary-foreground: 86.89814% 0.019848 252.8943;
+    --muted: 27.94952% 0.036848 260.0310;
+    --muted-foreground: 71.06716% 0.035114 256.7878;
+    --accent: 27.94952% 0.036848 260.0310;
+    --accent-foreground: 98.41519% 0.003413 247.8575;
+    --border: 44.55331% 0.037447 257.2808;
+    --input: 71.06716% 0.035114 256.7878;
+    --ring: 71.37400% 0.143381 254.6240;
+  }
 }
 ```

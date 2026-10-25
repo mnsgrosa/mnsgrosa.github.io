@@ -6,6 +6,9 @@ import ArticleLanguageSwitch from '../../components/ArticleLanguageSwitch.astro'
 import ArticleShare from '../../components/ArticleShare.astro';
 import ArticleNeighbors from '../../components/ArticleNeighbors.astro';
 import { readArticlePairs, readGraph } from '../../lib/content-index.mjs';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { resolveDarkBanner } from '../../lib/banner.mjs';
 import defaults from '../../data/defaults.json';
 import { localePath, articlePath } from '../../i18n/paths.mjs';
 import { useTranslations } from '../../i18n/ui.mjs';
@@ -40,6 +43,14 @@ const alternates = sibling ? [{ lang: other, href: sibling.url }] : [];
 // `banner: false` opts out; omitting the field takes the shared default.
 const banner = post.data.banner === false ? undefined : post.data.banner ?? defaults.banner;
 const bannerAlt = post.data.bannerAlt ?? defaults.bannerAlt ?? '';
+// A cover may have a dark-mode twin. The file is checked on disk rather than
+// assumed: a `<source>` pointing at a missing image breaks the cover in dark
+// mode, which is worse than showing the one image in both schemes.
+const publicDir = fileURLToPath(new URL('../../../public', import.meta.url));
+const bannerDark = resolveDarkBanner(banner, {
+  bannerDark: post.data.bannerDark,
+  exists: path => existsSync(publicDir + path),
+});
 // The share link points at the article's own absolute URL: one prefix-free URL
 // per language, the same one the canonical and the graph use.
 const shareUrl = new URL(articlePath(post.slug), Astro.site ?? Astro.url.origin).href;
@@ -55,7 +66,12 @@ const t = useTranslations(lang);
     <div class:list={['article-shell', { 'has-banner': !!banner }]}>
         {banner && (
             <figure class="post-banner">
-                <img src={banner} alt={bannerAlt} width="427" height="1318" loading="eager" decoding="async" />
+                {bannerDark
+                    ? <picture>
+                        <source media="(prefers-color-scheme: dark)" srcset={bannerDark} />
+                        <img src={banner} alt={bannerAlt} width="427" height="1318" loading="eager" decoding="async" />
+                    </picture>
+                    : <img src={banner} alt={bannerAlt} width="427" height="1318" loading="eager" decoding="async" />}
             </figure>
         )}
         <div class="article-body">

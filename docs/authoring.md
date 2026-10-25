@@ -79,6 +79,29 @@ bannerAlt: "Diagram of the routing loop"
 
 The file must live under `public/` because nothing at the project root is served. `banner` also accepts an absolute URL. Leave `bannerAlt` out, or set it to `""`, when the cover is decorative; set it when the image carries meaning the surrounding text does not.
 
+### Dark-mode cover
+
+The cover can have a dark twin, so it does not glare against the dark palette. The rule is a filename convention: keep the twin beside the light file with `-dark` before the extension.
+
+```
+/images/my-cover.jpg       ->  /images/my-cover-dark.jpg
+```
+
+That is all. The build checks the file on disk and emits a `<picture>` with a `(prefers-color-scheme: dark)` source only when the twin is really there — no twin, no switch, and the light cover is used in both schemes. Two frontmatter fields handle the cases the convention cannot:
+
+```yaml
+bannerDark: "https://cdn.example.com/my-cover-night.jpg"   # a twin that does not follow the convention
+bannerDark: false                                          # keep one cover in both schemes
+```
+
+A remote `banner` does **not** get a guessed twin: nothing can prove the remote file exists, and a `<source>` that 404s breaks the cover in dark mode, which is worse than a cover that does not switch. Name the twin explicitly for remote images.
+
+The same `.jpg`/`.png`/`.avif` works in both slots; what matters is that the dark file is actually dark. A copy of the light file is not a dark cover, it just makes the page do a pointless request.
+
+**The twin must share the light cover's crop, not just its subject.** The cover box is portrait: an extreme 260×836 (ratio 0.31) on the wide layout, 4:5 elsewhere, and the image fills it with `object-fit: cover`. A square twin loses about two thirds of its width to the crop — a 500×500 illustration showed a vertical slice of its planet and the figure in it fell outside the frame entirely. The light default is 427×1318; match that proportion (3:4 or taller, 400 to 600px wide) and the crop costs nothing. A square or landscape twin would need a per-image `object-position`, which the CSS cannot choose per file, so the rule would then apply to every dark cover.
+
+The project's own favicon follows the same idea with two files, `public/favicon.svg` and `public/favicon-dark.svg`, wired in `MainLayout.astro` with a `media="(prefers-color-scheme: dark)"` link after the light default, so a browser that ignores `media` on icons keeps the light one rather than showing nothing.
+
 Placement is responsive:
 
 - **Wide screens (1440px and up).** Three columns: the menu, a thin gap, the portrait cover, a thin gap, then the article. The cover is 260px wide, runs the height of the viewport, and holds position while the article scrolls past it. The article begins directly after the cover, so its position on the page depends on whether a cover exists.

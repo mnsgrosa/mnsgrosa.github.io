@@ -65,6 +65,8 @@ export const ui = {
     // anchor always matches the name a screen reader reads out.
     'lang.toEnglish': 'English',
     'lang.toPortuguese': 'Português',
+    'theme.light': 'Light',
+    'theme.dark': 'Dark',
     // Map chrome. The `Placeholders` below are handed to the map script.
     'map.controlsLabel': 'Map controls',
     'map.zoomOut': 'Zoom out',
@@ -192,6 +194,8 @@ export const ui = {
     'lang.switchLabel': 'Idioma',
     'lang.toEnglish': 'English',
     'lang.toPortuguese': 'Português',
+    'theme.light': 'Claro',
+    'theme.dark': 'Escuro',
     'map.controlsLabel': 'Controles do mapa',
     'map.zoomOut': 'Diminuir zoom',
     'map.zoomIn': 'Aumentar zoom',

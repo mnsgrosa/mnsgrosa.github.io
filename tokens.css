@@ -1,16 +1,29 @@
-/* Hallmark · macrostructure: Map / Diagram · tone: playful constellation · anchor hue: orange
- * theme: Gruvbox Dark (user-selected) · nav: N3 adapted side-rail · footer: Ft2
- * pre-emit critique: P4 H4 E4 S5 R5 V4; browser verification recorded separately. */
+/* Hallmark · macrostructure: Map / Diagram · genre: modern-minimal · axes: light/mono/cool
+ * theme: Slate Blue (custom, v1, "electric blue on slate, in both schemes") · nav: N3 adapted side-rail · footer: Ft2
+ * pre-emit critique: P4 H4 E4 S5 R5 V4 · weakest: E, the sweep below still carries open Floor findings
+ */
 :root {
-  --color-paper: oklch(27.68482% 0.000000 89.8756); /* Gruvbox #282828 */
-  --color-panel: oklch(31.08824% 0.003375 48.6190); /* Gruvbox #32302f */
-  --color-surface: oklch(34.40675% 0.006603 48.5229); /* Gruvbox #3c3836 */
-  --color-rule: oklch(41.09760% 0.011527 51.8658); /* Gruvbox #504945 */
-  --color-ink: oklch(89.41459% 0.056590 89.2405); /* Gruvbox #ebdbb2 */
-  --color-secondary: oklch(82.54901% 0.050676 85.1158); /* Gruvbox #d5c4a1 */
-  --color-muted: oklch(69.02596% 0.034629 76.3067); /* Gruvbox #a89984 */
-  --color-accent: oklch(73.10874% 0.182011 51.6932); /* Gruvbox #fe8019 */
-  --color-visited: oklch(70.54014% 0.097578 2.1895); /* Gruvbox #d3869b */
+  --color-paper: oklch(98.41519% 0.003413 247.8575); /* Slate Blue #f8fafc */
+  --color-panel: oklch(92.87613% 0.012619 255.5078); /* Slate Blue #e2e8f0 */
+  --color-surface: oklch(96.82603% 0.006854 247.8956); /* Slate Blue #f1f5f9 */
+  --color-rule: oklch(86.89814% 0.019848 252.8943); /* Slate Blue #cbd5e1 */
+  --color-ink: oklch(20.76819% 0.039824 265.7549); /* Slate Blue #0f172a */
+  --color-secondary: oklch(37.16963% 0.039156 257.2870); /* Slate Blue #334155 */
+  --color-muted: oklch(55.43910% 0.040717 257.4166); /* Slate Blue #64748b */
+  --color-accent: oklch(54.61497% 0.215208 262.8809); /* Slate Blue #2563eb */
+  --color-visited: oklch(49.06665% 0.241232 292.5809); /* Slate Blue #6d28d9 */
+  /* The dark palette's VALUES live here once, so the OS media query below and the
+   * manual `[data-theme="dark"]` override both MAP role names onto them. A colour
+   * value in two places is drift; a role mapping is not. */
+  --dark-paper: oklch(20.76819% 0.039824 265.7549); /* Slate Blue Dark #0f172a */
+  --dark-panel: oklch(37.16963% 0.039156 257.2870); /* Slate Blue Dark #334155 */
+  --dark-surface: oklch(27.94952% 0.036848 260.0310); /* Slate Blue Dark #1e293b */
+  --dark-rule: oklch(44.55331% 0.037447 257.2808); /* Slate Blue Dark #475569 */
+  --dark-ink: oklch(98.41519% 0.003413 247.8575); /* Slate Blue Dark #f8fafc */
+  --dark-secondary: oklch(86.89814% 0.019848 252.8943); /* Slate Blue Dark #cbd5e1 */
+  --dark-muted: oklch(71.06716% 0.035114 256.7878); /* Slate Blue Dark #94a3b8 */
+  --dark-accent: oklch(71.37400% 0.143381 254.6240); /* Slate Blue Dark #60a5fa */
+  --dark-visited: oklch(81.11618% 0.101287 293.5712); /* Slate Blue Dark #c4b5fd */
   --color-focus: var(--color-accent);
   --color-accent-ink: var(--color-paper);
   --color-edge: var(--color-muted);
@@ -68,4 +81,39 @@
   --ctp-lavender: var(--color-secondary);
   --ctp-pink: var(--color-visited);
   --ctp-sapphire: var(--color-secondary);
+}
+
+/* The dark palette is the light set mirrored on the same Tailwind scales:
+ * paper 50->900, surface 100->800, panel 200->700, rule 300->600, ink
+ * 900->50, secondary 700->300, muted 500->400, accent blue-600->blue-400,
+ * visited violet-700->violet-300. Same hues, same relationships, inverted
+ * ground. Only the accent and visited tints move, because a 600-blue on a
+ * 900-navy ground is 3.45:1 and would fail AA as text. The OS preference is
+ * the default when no explicit choice is stored; `:not([data-theme="light"])`
+ * lets a stored light choice win over a dark OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-paper: var(--dark-paper);
+    --color-panel: var(--dark-panel);
+    --color-surface: var(--dark-surface);
+    --color-rule: var(--dark-rule);
+    --color-ink: var(--dark-ink);
+    --color-secondary: var(--dark-secondary);
+    --color-muted: var(--dark-muted);
+    --color-accent: var(--dark-accent);
+    --color-visited: var(--dark-visited);
+  }
+}
+
+/* Manual override: an explicit dark choice wins over a light OS preference. */
+:root[data-theme="dark"] {
+  --color-paper: var(--dark-paper);
+  --color-panel: var(--dark-panel);
+  --color-surface: var(--dark-surface);
+  --color-rule: var(--dark-rule);
+  --color-ink: var(--dark-ink);
+  --color-secondary: var(--dark-secondary);
+  --color-muted: var(--dark-muted);
+  --color-accent: var(--dark-accent);
+  --color-visited: var(--dark-visited);
 }

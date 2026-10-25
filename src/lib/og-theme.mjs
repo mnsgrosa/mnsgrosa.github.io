@@ -1,5 +1,5 @@
 /* Hallmark · component: social card (1200×630) · genre: technical modern-minimal
- * theme: Gruvbox Dark (locked — mirror of tokens.css, never a catalog pick)
+ * theme: Slate Blue (light raster — the default palette; a static image has no media query)
  * pre-emit critique: P4 H5 E4 S5 R5 V4
  * contrast: pass (40–41) · tokens: pass (48) · honest: pass (46) · chrome: pass (47)
  * states: n/a — a build-time raster has no interactive states
@@ -14,17 +14,17 @@
  * size may be typed inline in `og-card.mjs` (slop-test gate 48).
  */
 
-/** Colour roles, in tokens.css order. Values are the Gruvbox hexes its comments cite. */
+/** Colour roles, in tokens.css order. Values are the Slate Blue (light) hexes its comments cite — the raster follows the default palette. */
 export const colors = {
-  paper: '#282828',
-  panel: '#32302f',
-  surface: '#3c3836',
-  rule: '#504945',
-  ink: '#ebdbb2',
-  secondary: '#d5c4a1',
-  muted: '#a89984',
-  accent: '#fe8019',
-  visited: '#d3869b',
+  paper: '#f8fafc',
+  panel: '#e2e8f0',
+  surface: '#f1f5f9',
+  rule: '#cbd5e1',
+  ink: '#0f172a',
+  secondary: '#334155',
+  muted: '#64748b',
+  accent: '#2563eb',
+  visited: '#6d28d9',
 };
 
 /**

@@ -6,6 +6,7 @@
 import { localePath } from '../i18n/paths.mjs';
 import { useTranslations } from '../i18n/ui.mjs';
 import LanguageSwitch from './LanguageSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
@@ -38,4 +39,5 @@ const isCurrent = link => (link.exact ? bare === link.route : bare.startsWith(li
     </ul>
   </nav>
   <LanguageSwitch lang={lang} />
+  <ThemeToggle lang={lang} />
 </aside>

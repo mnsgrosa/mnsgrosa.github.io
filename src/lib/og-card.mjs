@@ -1,5 +1,5 @@
 /* Hallmark · component: social card (1200×630) · genre: technical modern-minimal
- * theme: Gruvbox Dark (locked) · anatomy: wordmark → hairline → kicker → title
+ * theme: Slate Blue (light raster — the OG card follows the default palette) · anatomy: wordmark → hairline → kicker → title
  * pre-emit critique: P4 H5 E4 S5 R5 V4
  * contrast: pass (40–41) · tokens: pass (48) · honest: pass (46) · chrome: pass (47)
  * states: n/a — a build-time raster has no interactive states
