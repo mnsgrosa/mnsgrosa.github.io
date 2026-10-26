@@ -28,7 +28,7 @@ _Tecnologias: Databricks, PySpark, Delta Lake, MLflow, Terraform, Agno, GitHub A
 ---
 
 ### Capgemini — Recife, Brasil (Híbrido)  
-**Engenheiro de IA · contrato temporário** · jan. 2026 – abr. 2026
+**Engenheiro de IA** · jan. 2026 – abr. 2026
 
 - **Avaliação de agentes**  
   Montei uma suíte de avaliação que confere escolha de ferramenta, argumentos e ordem das chamadas nos fluxos de agentes, pegando quatro regressões antes de chegarem ao cliente.
@@ -41,7 +41,7 @@ _Tecnologias: Python, avaliação de LLM, frameworks de agentes, validação de 
 ---
 
 ### Triggo.ai — Remoto  
-**Engenheiro de IA · contrato temporário** · dez. 2025 – jan. 2026
+**Engenheiro de IA** · dez. 2025 – jan. 2026
 
 - **Controle da saída do LLM**  
   Usei self-consistency e tree-of-thoughts no prompt para manter o tom consistente. Ajustei as chamadas das APIs da Anthropic e da OpenAI para saídas em JSON, com limite de tamanho.
@@ -51,7 +51,7 @@ _Tecnologias: Python, Bruno, DocumentDB._
 ---
 
 ### Oncase — Recife, Brasil (Híbrido)  
-**Engenheiro de Dados · contrato temporário** · ago. 2025 – nov. 2025
+**Engenheiro de Dados** · ago. 2025 – nov. 2025
 
 - **Inferência de visão computacional**  
   Mantive uma API de processamento de imagens em Flask, com upload para o S3, a serviço de um pipeline de inferência de visão computacional.

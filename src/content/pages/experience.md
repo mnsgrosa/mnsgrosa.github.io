@@ -21,7 +21,7 @@ _Stack: Databricks, PySpark, Delta Lake, MLflow, Terraform, Agno, GitHub Actions
 ---
 
 ### Capgemini — Recife, Brazil (Hybrid)  
-**AI Engineer · temporary contract** · Jan. 2026 – Apr. 2026
+**AI Engineer** · Jan. 2026 – Apr. 2026
 
 - **Agent evaluation**  
   Built an evaluation suite checking tool choice, arguments, and call order in agent workflows, catching four regressions before they reached the client.
@@ -34,7 +34,7 @@ _Stack: Python, LLM evaluation, agent frameworks, tool-calling validation, RAG, 
 ---
 
 ### Triggo.ai — Remote  
-**AI Engineer · temporary contract** · Dec. 2025 – Jan. 2026
+**AI Engineer** · Dec. 2025 – Jan. 2026
 
 - **LLM output control**  
   Used self-consistency and tree-of-thoughts prompting to keep tone consistent. Tuned Anthropic and OpenAI API calls for JSON-formatted, length-constrained outputs.
@@ -44,7 +44,7 @@ _Stack: Python, Bruno, DocumentDB._
 ---
 
 ### Oncase — Recife, Brazil (Hybrid)  
-**Data Engineer · temporary contract** · Aug. 2025 – Nov. 2025
+**Data Engineer** · Aug. 2025 – Nov. 2025
 
 - **Computer vision inference**  
   Maintained a Flask image-processing API with S3 uploads for a computer vision inference pipeline.

@@ -1,6 +1,6 @@
 ---
 company: "Triggo.ai"
-role: "AI Engineer (temporary contract)"
+role: "AI Engineer"
 startDate: 2025-12-01
 endDate: 2026-01-01
 location: "Remote"

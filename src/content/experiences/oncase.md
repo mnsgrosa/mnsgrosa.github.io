@@ -1,6 +1,6 @@
 ---
 company: "Oncase"
-role: "Data Engineer (temporary contract)"
+role: "Data Engineer"
 startDate: 2025-08-01
 endDate: 2025-11-01
 location: "Recife, Brazil (Hybrid)"
