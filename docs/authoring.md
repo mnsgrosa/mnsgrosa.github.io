@@ -60,7 +60,7 @@ translationKey: understanding-routing
 
 **`subject`** names exactly one island from the registry. Leave it off and the article is still published at its URL but omitted from the map, the counts, and the neighborhood lists. Membership is single by design: an article belongs to one island, and its links are what cross between islands.
 
-**`graph: false`** publishes and indexes nothing, for drafts and off-topic posts. `teste_1` uses this. Setting both a valid `subject` and `graph: false` is pointless; the exclusion wins.
+**`graph: false`** publishes and indexes nothing, for drafts and off-topic posts. No published article uses it today. Setting both a valid `subject` and `graph: false` is pointless; the exclusion wins.
 
 ## Cover image
 
@@ -124,7 +124,7 @@ Size the asset before committing; there is no image pipeline. A tall portrait cr
 - `npm run build` writes one PNG per article to `dist/og/posts/<slug>.png`, plus `dist/og/en.png` and `dist/og/pt.png` for the site routes. Nothing is committed to `public/`, and there is no prebuild step to remember.
 - The card is drawn by `satori` into SVG and rasterized by `sharp` (`src/lib/og-card.mjs`), in the fonts the site already bundles and the colours `tokens.css` already declares — `src/lib/og-theme.mjs` mirrors them by role name, and `npm test` fails if the two drift apart.
 - It carries the `mr.` wordmark, the article's island and date, and the title, at most four lines and ellipsized past that. Every string is real frontmatter or `src/i18n/ui.mjs`; nothing on the card is invented.
-- Cards are keyed by **slug**, not by `translationKey`: a translated article gets its own card behind its own URL, in its own language. `teste_1` has `banner: false` and still gets one.
+- Cards are keyed by **slug**, not by `translationKey`: a translated article gets its own card behind its own URL, in its own language. An article that opts out of a cover with `banner: false` still gets one: a social card is not a cover.
 
 `MainLayout.astro` emits the tags, derived from the route: `og:locale` follows the article's frontmatter `lang` (a site route's own prefix), and `og:locale:alternate` is built from the same list as `hreflang`, so the two cannot disagree. Only the article page overrides anything — its description, its card, and `og:type=article`.
 

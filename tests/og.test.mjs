@@ -10,7 +10,7 @@ import { renderCard } from '../src/lib/og-card.mjs';
 
 const root = path.resolve('.');
 const postsDir = path.join(root, 'src/content/posts');
-const postFiles = ['como_comecaria.mdx', 'Make_the_LLM_choose_PT.md', 'rag-to-production.mdx', 'stepback.md', 'teste_1.md'];
+const postFiles = ['como_comecaria.mdx', 'rag-to-production.mdx'];
 
 function readPosts() {
   return postFiles.map(file => {

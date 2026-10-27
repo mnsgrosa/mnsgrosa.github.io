@@ -22,15 +22,17 @@ and the token roles in `tokens.css`.
 - `src/i18n/ui.mjs` — the chrome and prose dictionary, one block per language.
   Every visible string comes from here.
 - `src/i18n/paths.mjs` — the only place that turns a language into a URL
-  (`localePath`, `catalogPath`, `articlePath`, `switchLocalePath`).
+  (`localePath`, `catalogPath`, `explorePath`, `articlePath`, `switchLocalePath`).
 - `src/pages/pt/` — the Portuguese twins of the site routes. Articles have no
   locale twin: they live at `/posts/<slug>/` in both languages.
 - `src/lib/knowledge.mjs` — link resolution, graph assembly, layout. Pure
   functions with no file or Astro APIs, and the only unit-tested module.
 - `src/lib/content-index.mjs` — reads frontmatter and the registry from disk.
 - `src/lib/remark-wikilinks.mjs` — the Astro markdown/MDX plugin.
-- `src/pages/index.astro`, `src/pages/posts/[slug].astro` — the two pages that
-  render the graph, via `src/components/Constellation.astro`.
+- `src/pages/index.astro` and `src/pages/posts/[slug].astro` are the two pages
+  that render the graph: the home one through `HomeScene.astro` (the whole
+  world), the article one through `ArticleNeighbors.astro` (a compact map of
+  that article's neighborhood plus its incoming and outgoing lists).
 - `tokens.css` + `src/styles/constellation.css` — all styling. Colours and fonts
   come from named tokens; the light Slate Blue palette is the default and the
   Slate Blue Dark palette — the same scales mirrored — applies automatically
@@ -46,6 +48,14 @@ and the token roles in `tokens.css`.
   soften that into a warning.
 - The topic list is the accessible and no-JavaScript path to every article; the
   SVG map is an enhancement. Keep both working.
+- The article map is a subgraph: it draws article nodes only, never subject
+  nodes, and reaches the whole world through one plain link built by
+  `explorePath` (`/?island=<id>#explore`). The home map reads that `island`
+  parameter to open the subject, ahead of any remembered view state. Keep the
+  door an anchor, never a click handler on a node.
+- Every article is published as a language pair: both files land in the same
+  merge, share `translationKey`, and carry the same `pubDate`. An article with
+  no twin is a deliberate exception, not the default.
 - The language of a page comes from its route (`/pt/...`) or, for an article,
   from frontmatter `lang`. Never from client state, and never by prefixing an
   article URL.

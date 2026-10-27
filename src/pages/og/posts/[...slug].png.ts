@@ -7,8 +7,8 @@ import { useTranslations } from '../../../i18n/ui.mjs';
 
 // One card per published article, keyed by slug — never by `translationKey`, so
 // the Portuguese and the English version of an article each get their own card
-// behind their own URL. `teste_1` has `banner: false` and still gets one: a
-// social card is not a cover.
+// behind their own URL. An article that opts out of a cover with `banner: false`
+// still gets one: a social card is not a cover.
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts');
   return posts.map(post => ({ params: { slug: post.slug }, props: { post } }));

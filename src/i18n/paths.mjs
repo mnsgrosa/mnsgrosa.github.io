@@ -47,6 +47,17 @@ export function catalogPath(lang) {
   return localePath(lang, '/posts/');
 }
 
+/**
+ * The home map for a language, optionally with one island already open. The
+ * island rides in the query so the link stays a plain URL: the map script reads
+ * it, and a reader without JavaScript still lands on the page and its topic
+ * list. `#explore` is the anchor the rest of the site already links to.
+ */
+export function explorePath(lang, subjectId) {
+  const query = subjectId ? `?island=${encodeURIComponent(String(subjectId))}` : '';
+  return localePath(lang, `/${query}#explore`);
+}
+
 /** An article URL. Always prefix-free, whatever the language. */
 export function articlePath(slug) {
   const clean = String(slug ?? '').replace(/^\/+|\/+$/g, '');

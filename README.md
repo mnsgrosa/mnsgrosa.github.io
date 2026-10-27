@@ -47,7 +47,7 @@ lang: "en"
 subject: ai-engineering
 ---
 
-Body in normal Markdown. Link to another article with [[posts/stepback]].
+Body in normal Markdown. Link to another article with [[posts/rag-to-production]].
 ```
 
 The first four fields are required, and `lang` is either `"pt"` or `"en"`. The
@@ -93,7 +93,7 @@ one island.
 ## Link articles to each other
 
 Write `[[posts/slug]]` to link to an article. Add a label with a pipe:
-`[[posts/stepback|Dando um passo atrás]]`. Both render as normal links, and the
+`[[posts/rag-to-production|From RAG to production]]`. Both render as normal links, and the
 same resolution draws the map arrows and builds the backlinks, so the two can
 never disagree.
 

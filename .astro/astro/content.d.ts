@@ -233,13 +233,6 @@ declare module 'astro:content' {
 } & { render(): Render[".md"] };
 };
 "posts": {
-"Make_the_LLM_choose_PT.md": {
-	id: "Make_the_LLM_choose_PT.md";
-  slug: "make_the_llm_choose_pt";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
 "como_comecaria.mdx": {
 	id: "como_comecaria.mdx";
   slug: "como_comecaria";
@@ -254,20 +247,6 @@ declare module 'astro:content' {
   collection: "posts";
   data: InferEntrySchema<"posts">
 } & { render(): Render[".mdx"] };
-"stepback.md": {
-	id: "stepback.md";
-  slug: "stepback";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
-"teste_1.md": {
-	id: "teste_1.md";
-  slug: "teste_1";
-  body: string;
-  collection: "posts";
-  data: InferEntrySchema<"posts">
-} & { render(): Render[".md"] };
 };
 "projects": {
 "project-1.md": {

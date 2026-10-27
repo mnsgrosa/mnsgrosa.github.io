@@ -1,12 +1,15 @@
 ---
 import { layoutGraph } from '../lib/knowledge.mjs';
-import { catalogPath } from '../i18n/paths.mjs';
+import { catalogPath, explorePath } from '../i18n/paths.mjs';
 import { useTranslations } from '../i18n/ui.mjs';
 
 const { graph, currentId = '', compact = false, lang = 'en' } = Astro.props;
 const t = useTranslations(lang);
 const layout = layoutGraph(graph);
 const current = graph.articles.find(article => article.id === currentId);
+// The island the current article belongs to. The neighborhood map is a subgraph
+// and draws no island node, so this is what names the way out to the whole world.
+const currentSubject = current ? graph.subjects.find(subject => subject.id === current.subject) : undefined;
 const key = currentId || 'world';
 const catalog = catalogPath(lang);
 /** Fills the `{name}` placeholders; only the language decides the word order. */
@@ -57,6 +60,11 @@ const strings = {
       <p class="map-hint" hidden>{t('map.hint')}</p>
       <p class="map-status" role="status" aria-live="polite">{current ? fill(strings.reading, { title: current.title }) : strings.choose}</p>
       <div class="map-legend" hidden><span>◎ {t('map.legendSubject')}</span><span>○ {t('map.legendArticle')}</span><span>{t('map.legendEdges')}</span></div>
+      {compact && currentSubject && (
+        <a class="index-link map-world-link" href={explorePath(lang, currentSubject.id)}>
+          {fill(t('map.openWorld'), { title: currentSubject.title })} ↗
+        </a>
+      )}
     </div>
     <div class="topic-index">
       <h3>{compact ? t('map.indexTitleNeighborhood') : t('map.indexTitle')}</h3>

@@ -216,6 +216,16 @@ class KnowledgeMap extends HTMLElement {
     width = viewport.clientWidth; height = viewport.clientHeight;
     surface.setAttribute('viewBox', `0 0 ${width} ${height}`);
     if (currentId && !saved) view.zoom = clamp(Math.min(width / 660, height / 580), .45, 1);
+    // An explicit `?island=` names an island to open, and outranks whatever this
+    // browser last left in `history.state`. It is how an article's neighborhood
+    // hands the reader to the same island on the whole map.
+    const named = currentId ? '' : new URLSearchParams(location.search).get('island') || '';
+    const focus = graph.subjects.find(subject => subject.id === named);
+    if (focus) {
+      view.selected = focus.id;
+      view.x = focus.x; view.y = focus.y;
+      view.zoom = clamp(Math.min(width / 660, height / 580), .45, 1);
+    }
     resize.observe(viewport);
     this.cleanup = () => { abort.abort(); resize.disconnect(); delete this.dataset.ready; };
     render();

@@ -92,7 +92,6 @@ try {
       assert.ok(a.x >= 0 && a.right <= width, `knowledge label inside viewport at ${width}`);
       for (const b of nodes.slice(i + 1)) assert.ok(a.right <= b.x || b.right <= a.x || a.bottom <= b.y || b.bottom <= a.y, `knowledge labels do not overlap at ${width}`);
     }
-    assert.equal(await page.locator('.topic-articles a[href="/posts/stepback/"]').count(), 0, 'graph:false stays out of the map');
     assert.equal(await page.locator('[id]').evaluateAll(elements => {
       const ids = elements.map(el => el.id); return ids.length - new Set(ids).size;
     }), 0, 'home has no duplicate IDs');
@@ -320,8 +319,27 @@ try {
       assert.ok(column.height <= 0.61 * (await page.evaluate(() => innerHeight)), 'cover card is capped in height');
       await page.screenshot({ path: `${artifacts}/banner-${width}.png`, fullPage: width === 375 });
     }
-    await page.goto(`${origin}/posts/teste_1/`);
-    assert.equal(await page.locator('.post-banner').count(), 0, 'banner: false opts out of the default');
+  }
+  // The neighborhood hands the reader to the whole world. The compact map draws
+  // no island node, so the door is a plain link: the same island, on the home
+  // map, in the article's own language. A reader without JavaScript keeps the
+  // page and its topic list; only the island's open state is the enhancement.
+  for (const [slug, expected, lang] of [
+    ['rag-to-production', '/?island=ai-engineering#explore', 'en'],
+    ['como_comecaria', '/pt/?island=ai-engineering#explore', 'pt'],
+  ]) {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${origin}/posts/${slug}/`);
+    const world = page.locator('knowledge-map.compact a.map-world-link');
+    assert.equal(await world.count(), 1, `${slug}: the neighborhood links into the whole world`);
+    assert.equal(await world.getAttribute('href'), expected, `${slug}: the link names its island in its own language`);
+    await world.click();
+    await page.waitForURL(url => url.pathname === expected.split('?')[0] && url.search === '?island=ai-engineering');
+    await page.locator('knowledge-map[data-ready="true"]').first().waitFor();
+    assert.equal(new URL(page.url()).hash, '#explore', `${slug}: the world opens at the map`);
+    assert.equal(await page.locator('html').getAttribute('lang'), lang);
+    assert.equal(await page.locator('.topic-toggle[data-subject="ai-engineering"]').getAttribute('aria-expanded'), 'true', `${slug}: the island arrives open`);
+    assert.ok(await page.locator('#world-ai-engineering').isVisible(), `${slug}: its articles are listed`);
   }
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto(origin);
@@ -386,7 +404,6 @@ try {
   assert.notEqual(zoomed, dragged);
   await page.locator('.topic-articles a').filter({ hasText: 'From RAG to production' }).click();
   await page.locator('knowledge-map[data-ready="true"]').waitFor();
-  assert.equal(await page.locator('.post-content a[href="/posts/make_the_llm_choose_pt/"]').count(), 1);
   await page.goBack();
   await page.locator('knowledge-map[data-ready="true"]').waitFor();
   assert.equal(await page.locator('[data-camera]').getAttribute('transform'), dragged, 'Back restores map viewport');
@@ -490,10 +507,7 @@ try {
   assert.equal(ptProjects.includes('Another project description'), false, 'pt projects show no English prose');
   assert.equal(await plain.locator('.projects-empty').count(), 0, 'the pt projects list is not empty');
   await noJSRoutes.close();
-  await page.goto(`${origin}/posts/stepback/`);
-  assert.equal(await page.locator('knowledge-map').count(), 0, 'excluded article remains published without a neighborhood');
-  assert.ok(await page.locator('.post-content').isVisible());
-  for (const route of ['/posts/', '/experience/', '/projects/', '/posts/teste_1/', '/dashboard/', '/pt/', '/pt/posts/', '/pt/experience/', '/pt/projects/']) {
+  for (const route of ['/posts/', '/experience/', '/projects/', '/dashboard/', '/pt/', '/pt/posts/', '/pt/experience/', '/pt/projects/']) {
     assert.equal((await page.goto(`${origin}${route}`)).status(), 200, route);
   }
   // The visited cue. In the map, "this article has been read" is signalled by
